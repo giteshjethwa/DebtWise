@@ -110,105 +110,32 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary)}
     <div class="metrics">
       <div class="metric">
         <div class="metric-label">Total outstanding</div>
-        <div class="metric-value danger" id="m-total">₹18,42,500</div>
-        <div class="metric-sub">across 3 loans</div>
+        <div class="metric-value danger" id="m-total"></div>
+        <div class="metric-sub"></div>
       </div>
       <div class="metric">
         <div class="metric-label">This month's EMIs</div>
-        <div class="metric-value" id="m-emi">₹42,350</div>
-        <div class="metric-sub">2 due this week</div>
+        <div class="metric-value" id="m-emi"></div>
+        <div class="metric-sub"></div>
       </div>
       <div class="metric">
         <div class="metric-label">Next due date</div>
-        <div class="metric-value" style="font-size:15px" id="m-next">15 Jun</div>
-        <div class="metric-sub">HDFC Home Loan</div>
+        <div class="metric-value" style="font-size:15px" id="m-next"></div>
+        <div class="metric-sub"></div>
       </div>
       <div class="metric">
         <div class="metric-label">Interest paid (YTD)</div>
-        <div class="metric-value" style="font-size:16px">₹1,24,800</div>
-        <div class="metric-sub">Jan – Jun 2026</div>
+        <div class="metric-value" style="font-size:16px"></div>
+        <div class="metric-sub"></div>
       </div>
     </div>
 
     <div class="section-header">
       <span class="section-title">My loans</span>
-      <button class="add-btn" onclick="openModal()"><i class="ti ti-plus" aria-hidden="true" style="font-size:14px"></i> Add loan</button>
+      <button class="add-btn" onclick="window.location.href='debtwise_upload.html'"><i class="ti ti-plus" aria-hidden="true" style="font-size:14px"></i> Add loan</button>
     </div>
 
     <div class="debt-list" id="debt-list">
-
-      <div class="debt-card overdue">
-        <div class="debt-top">
-          <div class="debt-info">
-            <div class="debt-name">Personal Loan</div>
-            <div class="debt-bank">Bajaj Finserv</div>
-          </div>
-          <span class="debt-badge badge-overdue"><i class="ti ti-alert-circle" style="font-size:10px;vertical-align:-1px" aria-hidden="true"></i> Overdue</span>
-        </div>
-        <div class="debt-nums">
-          <div><div class="debt-num-label">Outstanding</div><div class="debt-num-value">₹2,42,500</div></div>
-          <div><div class="debt-num-label">EMI</div><div class="debt-num-value">₹8,350</div></div>
-          <div><div class="debt-num-label">Rate</div><div class="debt-num-value">14.5%</div></div>
-        </div>
-        <div class="progress-wrap">
-          <div class="progress-label"><span>Paid so far</span><span>38%</span></div>
-          <div class="progress-bar"><div class="progress-fill" style="width:38%;background:#E24B4A"></div></div>
-        </div>
-        <div class="debt-actions">
-          <button class="action-btn" onclick="viewDetail('Personal Loan','Bajaj Finserv')"><i class="ti ti-eye" style="font-size:13px" aria-hidden="true"></i> Details</button>
-          <button class="action-btn" onclick="viewDetail('Personal Loan','Bajaj Finserv')"><i class="ti ti-edit" style="font-size:13px" aria-hidden="true"></i> Edit</button>
-          <button class="action-btn primary" onclick="markPaid('Personal Loan','8,350')"><i class="ti ti-check" style="font-size:13px" aria-hidden="true"></i> Mark paid</button>
-        </div>
-      </div>
-      
-      <div class="debt-card due-soon">
-        <div class="debt-top">
-          <div class="debt-info">
-            <div class="debt-name">Home Loan</div>
-            <div class="debt-bank">HDFC Bank</div>
-          </div>
-          <span class="debt-badge badge-soon"><i class="ti ti-clock" style="font-size:10px;vertical-align:-1px" aria-hidden="true"></i> Due in 6 days</span>
-        </div>
-        <div class="debt-nums">
-          <div><div class="debt-num-label">Outstanding</div><div class="debt-num-value">₹14,80,000</div></div>
-          <div><div class="debt-num-label">EMI</div><div class="debt-num-value">₹28,500</div></div>
-          <div><div class="debt-num-label">Rate</div><div class="debt-num-value">8.75%</div></div>
-        </div>
-        <div class="progress-wrap">
-          <div class="progress-label"><span>Paid so far</span><span>22%</span></div>
-          <div class="progress-bar"><div class="progress-fill" style="width:22%"></div></div>
-        </div>
-        <div class="debt-actions">
-          <button class="action-btn" onclick="viewDetail('Home Loan','HDFC Bank')"><i class="ti ti-eye" style="font-size:13px" aria-hidden="true"></i> Details</button>
-          <button class="action-btn" onclick="viewDetail('Home Loan','HDFC Bank')"><i class="ti ti-edit" style="font-size:13px" aria-hidden="true"></i> Edit</button>
-          <button class="action-btn primary" onclick="markPaid('Home Loan','28,500')"><i class="ti ti-check" style="font-size:13px" aria-hidden="true"></i> Mark paid</button>
-        </div>
-      </div>
-
-      <div class="debt-card ok">
-        <div class="debt-top">
-          <div class="debt-info">
-            <div class="debt-name">Business Loan</div>
-            <div class="debt-bank">ICICI Bank</div>
-          </div>
-          <span class="debt-badge badge-ok"><i class="ti ti-check" style="font-size:10px;vertical-align:-1px" aria-hidden="true"></i> Paid this month</span>
-        </div>
-        <div class="debt-nums">
-          <div><div class="debt-num-label">Outstanding</div><div class="debt-num-value">₹1,20,000</div></div>
-          <div><div class="debt-num-label">EMI</div><div class="debt-num-value">₹5,500</div></div>
-          <div><div class="debt-num-label">Rate</div><div class="debt-num-value">11.0%</div></div>
-        </div>
-        <div class="progress-wrap">
-          <div class="progress-label"><span>Paid so far</span><span>65%</span></div>
-          <div class="progress-bar"><div class="progress-fill" style="width:65%"></div></div>
-        </div>
-        <div class="debt-actions">
-          <button class="action-btn" onclick="viewDetail('Business Loan','ICICI Bank')"><i class="ti ti-eye" style="font-size:13px" aria-hidden="true"></i> Details</button>
-          <button class="action-btn" onclick="viewDetail('Business Loan','ICICI Bank')"><i class="ti ti-edit" style="font-size:13px" aria-hidden="true"></i> Edit</button>
-          <button class="action-btn" style="opacity:0.5;cursor:default"><i class="ti ti-check" style="font-size:13px" aria-hidden="true"></i> Paid</button>
-        </div>
-      </div>
-
     </div>
 
     <div class="section-header">
@@ -219,38 +146,33 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary)}
         <div class="upcoming-left">
           <div class="upcoming-icon" style="background:#FCEBEB"><i class="ti ti-alert-circle" style="color:#A32D2D;font-size:15px" aria-hidden="true"></i></div>
           <div>
-            <div class="upcoming-name">Personal Loan — Bajaj</div>
-            <div class="upcoming-date">Was due 5 Jun · Overdue</div>
+            <div class="upcoming-name"></div>
+            <div class="upcoming-date"></div>
           </div>
         </div>
-        <div class="upcoming-amount" style="color:#A32D2D">₹8,350</div>
+        <div class="upcoming-amount" style="color:#A32D2D"></div>
       </div>
       <div class="upcoming-row">
         <div class="upcoming-left">
           <div class="upcoming-icon" style="background:#FAEEDA"><i class="ti ti-calendar" style="color:#854F0B;font-size:15px" aria-hidden="true"></i></div>
           <div>
-            <div class="upcoming-name">Home Loan — HDFC</div>
-            <div class="upcoming-date">Due 15 Jun · 6 days away</div>
+            <div class="upcoming-name"></div>
+            <div class="upcoming-date"></div>
           </div>
         </div>
-        <div class="upcoming-amount">₹28,500</div>
+        <div class="upcoming-amount"></div>
       </div>
       <div class="upcoming-row">
         <div class="upcoming-left">
           <div class="upcoming-icon" style="background:#E1F5EE"><i class="ti ti-check" style="color:#0F6E56;font-size:15px" aria-hidden="true"></i></div>
           <div>
-            <div class="upcoming-name">Business Loan — ICICI</div>
-            <div class="upcoming-date">Paid on 3 Jun</div>
+            <div class="upcoming-name"></div>
+            <div class="upcoming-date"></div>
           </div>
         </div>
-        <div class="upcoming-amount" style="color:#0F6E56">₹5,500</div>
+        <div class="upcoming-amount" style="color:#0F6E56"></div>
       </div>
     </div>
-
-    <button style="width:100%;padding:10px;border-radius:var(--border-radius-md);background:none;border:0.5px solid var(--color-border-secondary);font-size:13px;color:var(--color-text-secondary);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px" onclick="sendPrompt('Build the DebtWise sanction letter upload screen — where user can upload a PDF or image and AI auto-fills the loan details')">
-      <i class="ti ti-upload" aria-hidden="true"></i> Build next screen: sanction letter upload ↗
-    </button>
-
   </div>
 
   <div class="nav-bottom">
@@ -258,11 +180,11 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary)}
       <i class="ti ti-home nav-icon" aria-hidden="true"></i>
       <span class="nav-label">Home</span>
     </div>
-    <div class="nav-item" onclick="sendPrompt('Build the DebtWise sanction letter upload screen')">
+    <div class="nav-item" onclick=window.location.href='debtwise_upload.html'>
       <i class="ti ti-upload nav-icon" aria-hidden="true"></i>
       <span class="nav-label">Add loan</span>
     </div>
-    <div class="nav-item" onclick="sendPrompt('Build the DebtWise payoff strategy screen showing snowball vs avalanche method')">
+    <div class="nav-item" onclick=window.location.href='debtwise_strategy.html'>
       <i class="ti ti-chart-line nav-icon" aria-hidden="true"></i>
       <span class="nav-label">Strategy</span>
     </div>
