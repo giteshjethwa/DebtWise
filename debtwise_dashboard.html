@@ -270,4 +270,85 @@ const now=new Date();
 document.getElementById('greeting-date').textContent=days[now.getDay()]+', '+now.getDate()+' '+months[now.getMonth()]+' '+now.getFullYear();
 const hr=now.getHours();
 document.querySelector('.greeting-name').textContent=(hr<12?'Good morning':'hr<17?Good afternoon':'Good evening')+', Gitesh';
+
+function fmt(n) {
+  return '₹' + Math.round(Number(n)).toLocaleString('en-IN');
+}
+
+function renderLoans() {
+  const loans = JSON.parse(localStorage.getItem('dw_loans') || '[]');
+  const list = document.getElementById('debt-list');
+
+  if (loans.length === 0) {
+    list.innerHTML = `
+      <div style="background:var(--color-background-primary);border:0.5px dashed var(--color-border-secondary);border-radius:var(--border-radius-lg);padding:2rem;text-align:center">
+        <div style="font-size:14px;font-weight:500;color:var(--color-text-primary);margin-bottom:6px">No loans yet</div>
+        <div style="font-size:13px;color:var(--color-text-secondary);margin-bottom:1rem">Upload a sanction letter to get started.</div>
+        <button onclick="window.location.href='debtwise_upload.html'" style="font-size:13px;padding:8px 16px;border-radius:var(--border-radius-md);background:#1D9E75;color:#fff;border:none;cursor:pointer">
+          + Add your first loan
+        </button>
+      </div>`;
+    return;
+  }
+
+  // Compute summary metrics
+  const totalOutstanding = loans.reduce((s,l) => s + Number(l.amount), 0);
+  const totalEMI = loans.reduce((s,l) => s + Number(l.emi), 0);
+  document.getElementById('m-total').textContent = fmt(totalOutstanding);
+  document.getElementById('m-emi').textContent = fmt(totalEMI);
+
+  // Next due date
+  const sorted = [...loans].sort((a,b) => new Date(a.dueDate) - new Date(b.dueDate));
+  if (sorted[0]) {
+    const d = new Date(sorted[0].dueDate);
+    document.getElementById('m-next').textContent =
+      d.getDate() + ' ' + d.toLocaleString('en-IN',{month:'short'});
+  }
+
+  // Render loan cards
+  list.innerHTML = loans.map(loan => {
+    const statusClass = loan.status || 'ok';
+    const badgeMap = {
+      overdue: '<span class="debt-badge badge-overdue">Overdue</span>',
+      'due-soon': '<span class="debt-badge badge-soon">Due soon</span>',
+      ok: '<span class="debt-badge badge-ok">On track</span>'
+    };
+    const pct = loan.paidPct || 0;
+    return `
+    <div class="debt-card ${statusClass}">
+      <div class="debt-top">
+        <div class="debt-info">
+          <div class="debt-name">${loan.type}</div>
+          <div class="debt-bank">${loan.bank}</div>
+        </div>
+        ${badgeMap[statusClass] || badgeMap.ok}
+      </div>
+      <div class="debt-nums">
+        <div><div class="debt-num-label">Outstanding</div><div class="debt-num-value">${fmt(loan.amount)}</div></div>
+        <div><div class="debt-num-label">EMI</div><div class="debt-num-value">${fmt(loan.emi)}</div></div>
+        <div><div class="debt-num-label">Rate</div><div class="debt-num-value">${loan.rate}%</div></div>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-label"><span>Paid so far</span><span>${pct}%</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+      </div>
+      <div class="debt-actions">
+        <button class="action-btn" onclick="deleteLoan(${loan.id})">
+          <i class="ti ti-trash" style="font-size:13px" aria-hidden="true"></i> Remove
+        </button>
+        <button class="action-btn primary" onclick="markPaid('${loan.type}','${Number(loan.emi).toLocaleString('en-IN')}')">
+          <i class="ti ti-check" style="font-size:13px" aria-hidden="true"></i> Mark paid
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function deleteLoan(id) {
+  const loans = JSON.parse(localStorage.getItem('dw_loans') || '[]');
+  localStorage.setItem('dw_loans', JSON.stringify(loans.filter(l => l.id !== id)));
+  renderLoans();
+}
+
+renderLoans();
 </script>
