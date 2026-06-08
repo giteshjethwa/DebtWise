@@ -303,43 +303,30 @@ function handleFile(f){
   if(f) startProcessing(f.name, (f.size/1024/1024).toFixed(1)+' MB');
 }
 function simulateUpload(type){
-  const name = type==='camera' ? 'Sanction_Letter_photo.jpg' : null;
-  if(type==='manual'){
-    sendPrompt('Show me the DebtWise manual loan entry form');
-    return;
-  }
-  startProcessing(name || 'HDFC_Sanction_Letter.pdf','2.3 MB');
+  if(type==='manual'){ window.location.href='debtwise_dashboard.html'; return; }
+  const name = type==='camera' ? 'Sanction_Letter_photo.jpg' : 'HDFC_Sanction_Letter.pdf';
+  startProcessing(name,'2.3 MB');
 }
 function startProcessing(fname,fsize){
-  document.getElementById('preview-filename').textContent = fname || 'HDFC_Sanction_Letter.pdf';
-  const isPdf = (fname||'').toLowerCase().endsWith('.pdf');
-  document.getElementById('preview-filesize').textContent = fsize + ' · ' + (isPdf ? 'PDF document' : 'Image file');
-  document.querySelector('.file-icon i').className = isPdf ? 'ti ti-file-type-pdf' : 'ti ti-photo';
-
+  document.getElementById('preview-filename').textContent = fname;
+  const isPdf = fname.toLowerCase().endsWith('.pdf');
+  document.getElementById('preview-filesize').textContent = fsize+' · '+(isPdf?'PDF document':'Image file');
+  document.querySelector('.file-icon i').className = isPdf?'ti ti-file-type-pdf':'ti ti-photo';
   hide('upload-view');
   document.getElementById('processing-view').style.display='block';
   runSteps();
 }
 function runSteps(){
   const steps=[
-    {delay:800, s:'s2', title:'Reading document', desc:'Parsing text layers and structure…'},
-    {delay:2000, s:'s2', done:true, next:'s3', title:'AI field extraction', desc:'Found loan amount, interest rate, tenure…'},
-    {delay:3500, s:'s3', done:true, next:'s4', title:'Verification', desc:'Cross-checking extracted values…'},
+    {delay:800,  s:'s2', title:'Reading document',   desc:'Parsing text layers…'},
+    {delay:2000, s:'s2', done:true, next:'s3'},
+    {delay:3500, s:'s3', done:true, next:'s4'},
     {delay:4800, s:'s4', done:true, finish:true}
   ];
-  steps.forEach(({delay,s,done,next,title,desc,finish})=>{
+  steps.forEach(({delay,s,done,next,finish})=>{
     setTimeout(()=>{
-      if(done){
-        const el=document.getElementById(s);
-        el.className='step-circle done';
-        el.innerHTML='<i class="ti ti-check" style="font-size:14px" aria-hidden="true"></i>';
-      }
-      if(next){
-        const nel=document.getElementById(next);
-        nel.className='step-circle active spinning';
-        nel.innerHTML='<div class="spinner"></div>';
-      }
-      if(title) document.getElementById('s2-title') && (document.getElementById('s2-title').textContent=title);
+      if(done){ const el=document.getElementById(s); el.className='step-circle done'; el.innerHTML='<i class="ti ti-check" style="font-size:14px"></i>'; }
+      if(next){ const nel=document.getElementById(next); nel.className='step-circle active spinning'; nel.innerHTML='<div class="spinner"></div>'; }
       if(finish) setTimeout(showResults,400);
     },delay);
   });
@@ -356,31 +343,29 @@ function resetUpload(){
   const s2=document.getElementById('s2');
   s2.className='step-circle active spinning';
   s2.innerHTML='<div class="spinner"></div>';
-  ['s3','s4'].forEach(id=>{
-    const el=document.getElementById(id);
-    el.className='step-circle';
-  });
-  document.getElementById('s3').innerHTML='<i class="ti ti-brain" style="font-size:14px" aria-hidden="true"></i>';
-  document.getElementById('s4').innerHTML='<i class="ti ti-check" style="font-size:14px" aria-hidden="true"></i>';
+  ['s3','s4'].forEach(id=>{ const el=document.getElementById(id); el.className='step-circle'; });
+  document.getElementById('s3').innerHTML='<i class="ti ti-brain" style="font-size:14px"></i>';
+  document.getElementById('s4').innerHTML='<i class="ti ti-check" style="font-size:14px"></i>';
 }
-  
-  function saveLoanAndRedirect() {
+
+// ── THE FIX: save loan to localStorage then navigate ──
+function saveLoanAndRedirect(){
+  const inputs = document.querySelectorAll('input.field-val');
   const loan = {
-    id: Date.now(),
-    bank:    document.querySelectorAll('.field-val')[0].value,
-    type:    document.querySelectorAll('.field-val')[1].value,
-    amount:  document.querySelectorAll('.field-val')[2].value.replace(/,/g,''),
-    rate:    document.querySelectorAll('.field-val')[3].value,
-    emi:     document.querySelectorAll('.field-val')[4].value.replace(/,/g,''),
-    tenure:  document.querySelectorAll('.field-val')[5].value,
-    dueDate: document.querySelector('input[type="date"]').value,
+    id:      Date.now(),
+    bank:    inputs[0].value.trim()  || 'HDFC Bank',
+    type:    inputs[1].value.trim()  || 'Home Loan',
+    amount:  inputs[2].value.replace(/,/g,'').trim() || '1900000',
+    rate:    inputs[3].value.trim()  || '8.75',
+    emi:     inputs[4].value.replace(/,/g,'').trim() || '28500',
+    tenure:  inputs[5].value.trim()  || '240',
+    dueDate: document.querySelector('input[type="date"]').value || '2026-07-05',
     paidPct: 0,
-    status: 'due-soon'
+    status:  'due-soon'
   };
   const existing = JSON.parse(localStorage.getItem('dw_loans') || '[]');
   existing.push(loan);
   localStorage.setItem('dw_loans', JSON.stringify(existing));
   window.location.href = 'debtwise_dashboard.html';
-}
-  
+}  
 </script>
