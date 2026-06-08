@@ -103,30 +103,66 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary)}
 
   <div class="main">
     <div class="greeting">
-      <div class="greeting-name">Good morning, Gitesh</div>
-      <div class="greeting-sub" id="greeting-date">Monday, 9 June 2026</div>
-    </div>
+    <div class="greeting-name">Welcome to DebtWise</div>
+    <div class="greeting-sub" id="greeting-date">
+    Add your first loan to start tracking EMIs
+  </div>
+  </div>
+  </div>
 
     <div class="metrics">
-      <div class="metric">
-        <div class="metric-label">Total outstanding</div>
-        <div class="metric-value danger" id="m-total">₹18,42,500</div>
-        <div class="metric-sub">across 3 loans</div>
-      </div>
-      <div class="metric">
-        <div class="metric-label">This month's EMIs</div>
-        <div class="metric-value" id="m-emi">₹42,350</div>
-        <div class="metric-sub">2 due this week</div>
-      </div>
-      <div class="metric">
-        <div class="metric-label">Next due date</div>
-        <div class="metric-value" style="font-size:15px" id="m-next">15 Jun</div>
-        <div class="metric-sub">HDFC Home Loan</div>
-      </div>
-      <div class="metric">
-        <div class="metric-label">Interest paid (YTD)</div>
-        <div class="metric-value" style="font-size:16px">₹1,24,800</div>
-        <div class="metric-sub">Jan – Jun 2026</div>
+      <div class="metrics">
+
+  <div class="metric">
+    
+    <div class="metric-label">Total outstanding</div>
+    <div class="metric-value danger" id="m-total">₹0</div>
+    <div class="metric-sub" id="loan-count">
+      No loans added
+    </div>
+  </div>
+
+  <div class="metric">
+    <div class="metric-label">
+      This month's EMIs
+    </div>
+    <div class="metric-value" id="m-emi">
+      ₹0
+    </div>
+    <div class="metric-sub" id="emi-sub">
+      No upcoming EMIs
+    </div>
+  </div>
+
+  <div class="metric">
+    <div class="metric-label">
+      Next due date
+    </div>
+    <div class="metric-value"
+         style="font-size:15px"
+         id="m-next">
+      —
+    </div>
+    <div class="metric-sub" id="next-loan">
+      Add a loan first
+    </div>
+  </div>
+
+  <div class="metric">
+    <div class="metric-label">
+      Interest paid (YTD)
+    </div>
+    <div class="metric-value"
+         style="font-size:16px"
+         id="interest-paid">
+      ₹0
+    </div>
+    <div class="metric-sub">
+      Starts after first EMI
+    </div>
+  </div>
+
+</div>
       </div>
     </div>
 
@@ -137,116 +173,22 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary)}
 
     <div class="debt-list" id="debt-list">
 
-      <div class="debt-card overdue">
-        <div class="debt-top">
-          <div class="debt-info">
-            <div class="debt-name">Personal Loan</div>
-            <div class="debt-bank">Bajaj Finserv</div>
-          </div>
-          <span class="debt-badge badge-overdue"><i class="ti ti-alert-circle" style="font-size:10px;vertical-align:-1px" aria-hidden="true"></i> Overdue</span>
-        </div>
-        <div class="debt-nums">
-          <div><div class="debt-num-label">Outstanding</div><div class="debt-num-value">₹2,42,500</div></div>
-          <div><div class="debt-num-label">EMI</div><div class="debt-num-value">₹8,350</div></div>
-          <div><div class="debt-num-label">Rate</div><div class="debt-num-value">14.5%</div></div>
-        </div>
-        <div class="progress-wrap">
-          <div class="progress-label"><span>Paid so far</span><span>38%</span></div>
-          <div class="progress-bar"><div class="progress-fill" style="width:38%;background:#E24B4A"></div></div>
-        </div>
-        <div class="debt-actions">
-          <button class="action-btn" onclick="viewDetail('Personal Loan','Bajaj Finserv')"><i class="ti ti-eye" style="font-size:13px" aria-hidden="true"></i> Details</button>
-          <button class="action-btn" onclick="viewDetail('Personal Loan','Bajaj Finserv')"><i class="ti ti-edit" style="font-size:13px" aria-hidden="true"></i> Edit</button>
-          <button class="action-btn primary" onclick="markPaid('Personal Loan','8,350')"><i class="ti ti-check" style="font-size:13px" aria-hidden="true"></i> Mark paid</button>
-        </div>
-      </div>
-
-      <div class="debt-card due-soon">
-        <div class="debt-top">
-          <div class="debt-info">
-            <div class="debt-name">Home Loan</div>
-            <div class="debt-bank">HDFC Bank</div>
-          </div>
-          <span class="debt-badge badge-soon"><i class="ti ti-clock" style="font-size:10px;vertical-align:-1px" aria-hidden="true"></i> Due in 6 days</span>
-        </div>
-        <div class="debt-nums">
-          <div><div class="debt-num-label">Outstanding</div><div class="debt-num-value">₹14,80,000</div></div>
-          <div><div class="debt-num-label">EMI</div><div class="debt-num-value">₹28,500</div></div>
-          <div><div class="debt-num-label">Rate</div><div class="debt-num-value">8.75%</div></div>
-        </div>
-        <div class="progress-wrap">
-          <div class="progress-label"><span>Paid so far</span><span>22%</span></div>
-          <div class="progress-bar"><div class="progress-fill" style="width:22%"></div></div>
-        </div>
-        <div class="debt-actions">
-          <button class="action-btn" onclick="viewDetail('Home Loan','HDFC Bank')"><i class="ti ti-eye" style="font-size:13px" aria-hidden="true"></i> Details</button>
-          <button class="action-btn" onclick="viewDetail('Home Loan','HDFC Bank')"><i class="ti ti-edit" style="font-size:13px" aria-hidden="true"></i> Edit</button>
-          <button class="action-btn primary" onclick="markPaid('Home Loan','28,500')"><i class="ti ti-check" style="font-size:13px" aria-hidden="true"></i> Mark paid</button>
-        </div>
-      </div>
-
-      <div class="debt-card ok">
-        <div class="debt-top">
-          <div class="debt-info">
-            <div class="debt-name">Business Loan</div>
-            <div class="debt-bank">ICICI Bank</div>
-          </div>
-          <span class="debt-badge badge-ok"><i class="ti ti-check" style="font-size:10px;vertical-align:-1px" aria-hidden="true"></i> Paid this month</span>
-        </div>
-        <div class="debt-nums">
-          <div><div class="debt-num-label">Outstanding</div><div class="debt-num-value">₹1,20,000</div></div>
-          <div><div class="debt-num-label">EMI</div><div class="debt-num-value">₹5,500</div></div>
-          <div><div class="debt-num-label">Rate</div><div class="debt-num-value">11.0%</div></div>
-        </div>
-        <div class="progress-wrap">
-          <div class="progress-label"><span>Paid so far</span><span>65%</span></div>
-          <div class="progress-bar"><div class="progress-fill" style="width:65%"></div></div>
-        </div>
-        <div class="debt-actions">
-          <button class="action-btn" onclick="viewDetail('Business Loan','ICICI Bank')"><i class="ti ti-eye" style="font-size:13px" aria-hidden="true"></i> Details</button>
-          <button class="action-btn" onclick="viewDetail('Business Loan','ICICI Bank')"><i class="ti ti-edit" style="font-size:13px" aria-hidden="true"></i> Edit</button>
-          <button class="action-btn" style="opacity:0.5;cursor:default"><i class="ti ti-check" style="font-size:13px" aria-hidden="true"></i> Paid</button>
-        </div>
-      </div>
-
     </div>
 
-    <div class="section-header">
-      <span class="section-title">Upcoming this month</span>
-    </div>
-    <div class="upcoming">
-      <div class="upcoming-row">
-        <div class="upcoming-left">
-          <div class="upcoming-icon" style="background:#FCEBEB"><i class="ti ti-alert-circle" style="color:#A32D2D;font-size:15px" aria-hidden="true"></i></div>
-          <div>
-            <div class="upcoming-name">Personal Loan — Bajaj</div>
-            <div class="upcoming-date">Was due 5 Jun · Overdue</div>
-          </div>
-        </div>
-        <div class="upcoming-amount" style="color:#A32D2D">₹8,350</div>
-      </div>
-      <div class="upcoming-row">
-        <div class="upcoming-left">
-          <div class="upcoming-icon" style="background:#FAEEDA"><i class="ti ti-calendar" style="color:#854F0B;font-size:15px" aria-hidden="true"></i></div>
-          <div>
-            <div class="upcoming-name">Home Loan — HDFC</div>
-            <div class="upcoming-date">Due 15 Jun · 6 days away</div>
-          </div>
-        </div>
-        <div class="upcoming-amount">₹28,500</div>
-      </div>
-      <div class="upcoming-row">
-        <div class="upcoming-left">
-          <div class="upcoming-icon" style="background:#E1F5EE"><i class="ti ti-check" style="color:#0F6E56;font-size:15px" aria-hidden="true"></i></div>
-          <div>
-            <div class="upcoming-name">Business Loan — ICICI</div>
-            <div class="upcoming-date">Paid on 3 Jun</div>
-          </div>
-        </div>
-        <div class="upcoming-amount" style="color:#0F6E56">₹5,500</div>
-      </div>
-    </div>
+    <div id="upcoming-wrapper"
+     style="display:none;">
+
+  <div class="section-header">
+    <span class="section-title">
+      Upcoming this month
+    </span>
   </div>
+
+  <div class="upcoming"
+       id="upcoming-list">
+  </div>
+
+</div>
 
   <div class="nav-bottom">
     <div class="nav-item active">
@@ -319,28 +261,136 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary)}
 </div>
 
 <script>
-function openModal(){document.getElementById('modal-bg').classList.add('open')}
-function closeModal(){document.getElementById('modal-bg').classList.remove('open')}
-function closePaidModal(){document.getElementById('paid-modal-bg').classList.remove('open')}
-function markPaid(name,emi){
-  document.getElementById('paid-title').textContent='Mark paid — '+name;
-  document.getElementById('paid-emi-amt').textContent='₹'+emi;
-  const raw=parseInt(emi.replace(/,/g,''));
-  const interest=Math.round(raw*0.35);
-  const principal=raw-interest;
-  document.getElementById('paid-interest').textContent='₹'+interest.toLocaleString('en-IN');
-  document.getElementById('paid-principal').textContent='₹'+principal.toLocaleString('en-IN');
-  const today=new Date().toISOString().split('T')[0];
-  document.getElementById('paid-date').value=today;
-  document.getElementById('paid-modal-bg').classList.add('open');
+<script>
+
+const loans =
+JSON.parse(
+localStorage.getItem('debtwiseLoans')
+) || [];
+
+renderDashboard();
+
+function renderDashboard(){
+
+  const debtList =
+  document.getElementById('debt-list');
+
+  const emptyState =
+  document.getElementById('empty-state');
+
+  if(loans.length === 0){
+
+    emptyState.style.display = 'block';
+
+    debtList.innerHTML = '';
+
+    return;
+  }
+
+  emptyState.style.display = 'none';
+
+  document.getElementById(
+    'loan-count'
+  ).innerText =
+  `${loans.length} loan(s) added`;
+
+  let totalOutstanding = 0;
+  let totalEmi = 0;
+
+  debtList.innerHTML = '';
+
+  loans.forEach((loan,index)=>{
+
+    totalOutstanding +=
+    Number(loan.outstanding || 0);
+
+    totalEmi +=
+    Number(loan.emi || 0);
+
+    debtList.innerHTML += `
+      <div class="debt-card ok">
+
+        <div class="debt-top">
+
+          <div class="debt-info">
+            <div class="debt-name">
+              ${loan.loanType}
+            </div>
+
+            <div class="debt-bank">
+              ${loan.lender}
+            </div>
+          </div>
+
+          <span class="debt-badge badge-ok">
+            Active
+          </span>
+
+        </div>
+
+        <div class="debt-nums">
+
+          <div>
+            <div class="debt-num-label">
+              Outstanding
+            </div>
+
+            <div class="debt-num-value">
+              ₹${Number(
+                loan.outstanding
+              ).toLocaleString()}
+            </div>
+          </div>
+
+          <div>
+            <div class="debt-num-label">
+              EMI
+            </div>
+
+            <div class="debt-num-value">
+              ₹${Number(
+                loan.emi
+              ).toLocaleString()}
+            </div>
+          </div>
+
+          <div>
+            <div class="debt-num-label">
+              Rate
+            </div>
+
+            <div class="debt-num-value">
+              ${loan.rate}%
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    `;
+  });
+
+  document.getElementById(
+    'm-total'
+  ).innerText =
+  `₹${totalOutstanding.toLocaleString()}`;
+
+  document.getElementById(
+    'm-emi'
+  ).innerText =
+  `₹${totalEmi.toLocaleString()}`;
+
+  document.getElementById(
+    'm-next'
+  ).innerText =
+  'Active';
+
+  document.getElementById(
+    'next-loan'
+  ).innerText =
+  loans[0].loanType;
+
 }
-function viewDetail(name,bank){
-  sendPrompt('Build the DebtWise loan detail screen for '+name+' from '+bank+' showing full amortisation schedule, payment history, and early payment simulator');
-}
-const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
-const now=new Date();
-document.getElementById('greeting-date').textContent=days[now.getDay()]+', '+now.getDate()+' '+months[now.getMonth()]+' '+now.getFullYear();
-const hr=now.getHours();
-document.querySelector('.greeting-name').textContent=(hr<12?'Good morning':'hr<17?Good afternoon':'Good evening')+', Gitesh';
+
+</script>
 </script>
