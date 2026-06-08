@@ -256,7 +256,7 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary)}
 
       <div class="action-row">
         <button class="btn-secondary" onclick="resetUpload()"><i class="ti ti-refresh" style="font-size:13px" aria-hidden="true"></i> Re-upload</button>
-        <button class="btn-primary" onclick=window.location.href='debtwise_dashboard.html'>
+        <button class="btn-primary" onclick="saveLoanAndRedirect()">
           <i class="ti ti-check" style="font-size:13px" aria-hidden="true"></i> Save loan ↗
         </button>
       </div>
@@ -363,4 +363,24 @@ function resetUpload(){
   document.getElementById('s3').innerHTML='<i class="ti ti-brain" style="font-size:14px" aria-hidden="true"></i>';
   document.getElementById('s4').innerHTML='<i class="ti ti-check" style="font-size:14px" aria-hidden="true"></i>';
 }
+  
+  function saveLoanAndRedirect() {
+  const loan = {
+    id: Date.now(),
+    bank:    document.querySelectorAll('.field-val')[0].value,
+    type:    document.querySelectorAll('.field-val')[1].value,
+    amount:  document.querySelectorAll('.field-val')[2].value.replace(/,/g,''),
+    rate:    document.querySelectorAll('.field-val')[3].value,
+    emi:     document.querySelectorAll('.field-val')[4].value.replace(/,/g,''),
+    tenure:  document.querySelectorAll('.field-val')[5].value,
+    dueDate: document.querySelector('input[type="date"]').value,
+    paidPct: 0,
+    status: 'due-soon'
+  };
+  const existing = JSON.parse(localStorage.getItem('dw_loans') || '[]');
+  existing.push(loan);
+  localStorage.setItem('dw_loans', JSON.stringify(existing));
+  window.location.href = 'debtwise_dashboard.html';
+}
+  
 </script>
