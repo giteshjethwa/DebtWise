@@ -363,4 +363,30 @@ function resetUpload(){
   document.getElementById('s3').innerHTML='<i class="ti ti-brain" style="font-size:14px" aria-hidden="true"></i>';
   document.getElementById('s4').innerHTML='<i class="ti ti-check" style="font-size:14px" aria-hidden="true"></i>';
 }
+
+const loanData = {
+  lender: "HDFC Bank",
+  loanType: "Home Loan",
+  outstanding: 1480000,
+  emi: 28500,
+  rate: 8.75
+};
+
+let loans =
+JSON.parse(
+localStorage.getItem(
+'debtwiseLoans'
+)) || [];
+
+loans.push(loanData);
+
+localStorage.setItem(
+'debtwiseLoans',
+JSON.stringify(loans)
+);
+
+window.location.href =
+'debtwise_dashboard.html';  
+
+  
 </script>
