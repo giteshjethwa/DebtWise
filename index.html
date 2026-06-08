@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DebtWise — Portfolio Project</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --green: #1D9E75;
+  --green-dim: #0F6E56;
+  --green-glow: rgba(29,158,117,0.15);
+  --bg: #0C0E0D;
+  --surface: #131614;
+  --border: rgba(255,255,255,0.07);
+  --text: #F0F2F0;
+  --muted: #7A8A80;
+  --faint: #2A2E2C;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Instrument Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── grain overlay ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 999;
+  opacity: 0.4;
+}
+
+/* ── nav ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 18px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(12,14,13,0.85);
+  backdrop-filter: blur(16px);
+  border-bottom: 0.5px solid var(--border);
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.nav-logo-icon {
+  width: 30px;
+  height: 30px;
+  background: var(--green);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-logo-icon svg { display: block; }
+
+.nav-logo-text {
+  font-family: 'DM Serif Display', serif;
+  font-size: 17px;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.nav-links a {
+  font-size: 13px;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.nav-links a:hover { color: var(--text); }
+
+.nav-cta {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 7px 16px;
+  border-radius: 6px;
+  background: var(--green);
+  color: #fff !important;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+.nav-cta:hover { background: var(--green-dim) !important; }
+
+/* ── hero ── */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 120px 24px 80px;
+  position: relative;
+}
+
+/* radial glow behind hero text */
+.hero::after {
+  content: '';
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  height: 400px;
+  background: radial-gradient(ellipse, rgba(29,158,117,0.12) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hero > * { position: relative; z-index: 1; }
+
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--green);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  border: 0.5px solid rgba(29,158,117,0.35);
+  border-radius: 20px;
+  background: rgba(29,158,117,0.06);
+  margin-bottom: 28px;
+  opacity: 0;
+  animation: fadeUp 0.6s ease forwards 0.1s;
+}
+
+.hero-eyebrow span {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--green);
+  display: inline-block;
+}
+
+h1 {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(44px, 8vw, 88px);
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  margin-bottom: 10px;
+  opacity: 0;
+  animation: fadeUp 0.7s ease forwards 0.25s;
+}
+
+h1 em {
+  font-style: italic;
+  color: var(--green);
+}
+
+.hero-sub {
+  font-size: clamp(15px, 2vw, 18px);
+  color: var(--muted);
+  line-height: 1.65;
+  max-width: 520px;
+  margin: 0 auto 40px;
+  opacity: 0;
+  animation: fadeUp 0.7s ease forwards 0.4s;
+}
+
+.hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  justify-content: center;
+  opacity: 0;
+  animation: fadeUp 0.7s ease forwards 0.55s;
+}
+
+.btn-launch {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 12px 24px;
+  border-radius: 8px;
+  background: var(--green);
+  color: #fff;
+  text-decoration: none;
+  transition: background 0.2s, transform 0.15s;
+}
+
+.btn-launch:hover { background: var(--green-dim); transform: translateY(-1px); }
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  padding: 12px 20px;
+  border-radius: 8px;
+  border: 0.5px solid var(--border);
+  color: var(--muted);
+  text-decoration: none;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.btn-ghost:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
+
+.hero-scroll {
+  margin-top: 72px;
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  opacity: 0;
+  animation: fadeUp 0.7s ease forwards 0.8s;
+}
+
+.scroll-line {
+  width: 0.5px;
+  height: 36px;
+  background: linear-gradient(to bottom, var(--green), transparent);
+}
+
+/* ── screens section ── */
+.screens {
+  padding: 80px 24px 120px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.section-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--green);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 48px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.section-label::after {
+  content: '';
+  flex: 1;
+  height: 0.5px;
+  background: var(--border);
+}
+
+.screen-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 680px) {
+  .screen-grid { grid-template-columns: 1fr; }
+  nav { padding: 14px 20px; }
+  .nav-links { display: none; }
+}
+
+.screen-card {
+  background: var(--surface);
+  border: 0.5px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  text-decoration: none;
+  display: block;
+  transition: border-color 0.25s, transform 0.2s, box-shadow 0.25s;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.screen-card.visible {
+  animation: fadeUp 0.55s ease forwards;
+}
+
+.screen-card:hover {
+  border-color: rgba(29,158,117,0.4);
+  transform: translateY(-3px);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 0.5px rgba(29,158,117,0.2);
+}
+
+.screen-preview {
+  width: 100%;
+  aspect-ratio: 16/10;
+  background: var(--faint);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* mock phone frame in each card */
+.mock-phone {
+  width: 130px;
+  height: 220px;
+  background: #1A1E1C;
+  border-radius: 18px;
+  border: 1.5px solid rgba(255,255,255,0.1);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+}
+
+.mock-topbar {
+  height: 28px;
+  background: rgba(255,255,255,0.04);
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  gap: 6px;
+  border-bottom: 0.5px solid rgba(255,255,255,0.05);
+}
+
+.mock-dot { width: 5px; height: 5px; border-radius: 50%; }
+
+.mock-body { padding: 8px; display: flex; flex-direction: column; gap: 5px; }
+
+.mock-line {
+  height: 5px;
+  border-radius: 3px;
+  background: rgba(255,255,255,0.08);
+}
+
+.mock-line.accent { background: rgba(29,158,117,0.5); }
+.mock-line.short { width: 55%; }
+.mock-line.med { width: 75%; }
+
+.mock-card-inner {
+  background: rgba(255,255,255,0.04);
+  border-radius: 6px;
+  padding: 6px;
+  margin-top: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mock-bar-wrap {
+  height: 3px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 2px;
+}
+
+.mock-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: var(--green);
+}
+
+/* screen number badge */
+.screen-num {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--green);
+  background: rgba(29,158,117,0.1);
+  border: 0.5px solid rgba(29,158,117,0.2);
+  padding: 3px 8px;
+  border-radius: 10px;
+}
+
+.screen-arrow {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 28px;
+  height: 28px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  font-size: 13px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.screen-card:hover .screen-arrow {
+  background: var(--green);
+  color: #fff;
+}
+
+.screen-meta {
+  padding: 16px 18px 20px;
+}
+
+.screen-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.screen-name {
+  font-family: 'DM Serif Display', serif;
+  font-size: 20px;
+  color: var(--text);
+  margin-bottom: 6px;
+  letter-spacing: -0.01em;
+}
+
+.screen-desc {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.screen-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.chip {
+  font-size: 11px;
+  padding: 3px 9px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.04);
+  border: 0.5px solid var(--border);
+  color: var(--muted);
+}
+
+.chip.green {
+  background: rgba(29,158,117,0.1);
+  border-color: rgba(29,158,117,0.25);
+  color: #5DBBAA;
+}
+
+/* ── stack section ── */
+.stack-section {
+  border-top: 0.5px solid var(--border);
+  padding: 80px 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.stack-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin-top: 48px;
+}
+
+.stack-item {
+  background: var(--surface);
+  border: 0.5px solid var(--border);
+  border-radius: 12px;
+  padding: 18px 20px;
+  opacity: 0;
+  transform: translateY(16px);
+}
+
+.stack-item.visible {
+  animation: fadeUp 0.5s ease forwards;
+}
+
+.stack-layer {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--green);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.stack-value {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  line-height: 1.5;
+}
+
+/* ── footer ── */
+footer {
+  border-top: 0.5px solid var(--border);
+  padding: 32px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.footer-left {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.footer-left strong { color: var(--text); font-weight: 500; }
+
+.footer-links {
+  display: flex;
+  gap: 20px;
+}
+
+.footer-links a {
+  font-size: 12px;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.footer-links a:hover { color: var(--green); }
+
+/* ── animations ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="#">
+    <div class="nav-logo-icon">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M8 2L14 5.5V10.5L8 14L2 10.5V5.5L8 2Z" stroke="#fff" stroke-width="1.2" fill="none"/>
+        <circle cx="8" cy="8" r="2" fill="#fff"/>
+      </svg>
+    </div>
+    <span class="nav-logo-text">DebtWise</span>
+  </a>
+  <div class="nav-links">
+    <a href="#screens">Screens</a>
+    <a href="#stack">Stack</a>
+    <a href="https://github.com/your-username/debtwise" target="_blank">GitHub ↗</a>
+    <a href="debtwise_onboarding.html" class="nav-cta">Launch demo →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-eyebrow"><span></span> Portfolio project · 2025</div>
+  <h1>Debt, <em>finally</em><br>under control.</h1>
+  <p class="hero-sub">A 4-screen app prototype for tracking loans, planning smart repayment, and auto-extracting details from sanction letters using AI.</p>
+  <div class="hero-actions">
+    <a href="debtwise_onboarding.html" class="btn-launch">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><polygon points="3,1 13,7 3,13" fill="white"/></svg>
+      Start the prototype
+    </a>
+    <a href="https://github.com/your-username/debtwise" class="btn-ghost" target="_blank">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.38.6.1.82-.26.82-.57v-2c-3.34.72-4.04-1.6-4.04-1.6-.54-1.38-1.33-1.75-1.33-1.75-1.08-.74.08-.72.08-.72 1.2.08 1.83 1.22 1.83 1.22 1.06 1.82 2.8 1.3 3.48.99.1-.77.42-1.3.76-1.6-2.66-.3-5.46-1.33-5.46-5.93 0-1.3.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 3-.4c1.02 0 2.04.13 3 .4 2.28-1.55 3.3-1.23 3.3-1.23.66 1.66.24 2.88.12 3.18.77.84 1.24 1.92 1.24 3.22 0 4.61-2.8 5.63-5.48 5.92.43.37.82 1.1.82 2.22v3.3c0 .31.22.68.83.56C20.56 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/></svg>
+      View source
+    </a>
+  </div>
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    scroll
+  </div>
+</section>
+
+<!-- SCREENS -->
+<section class="screens" id="screens">
+  <div class="section-label">Four screens</div>
+
+  <div class="screen-grid">
+
+    <!-- Onboarding -->
+    <a href="debtwise_onboarding.html" class="screen-card" style="animation-delay:0s">
+      <div class="screen-preview">
+        <div class="mock-phone">
+          <div class="mock-topbar">
+            <div class="mock-dot" style="background:#1D9E75"></div>
+            <div class="mock-dot" style="background:rgba(255,255,255,0.15)"></div>
+            <div class="mock-dot" style="background:rgba(255,255,255,0.15)"></div>
+          </div>
+          <div class="mock-body">
+            <div class="mock-line accent short"></div>
+            <div class="mock-line" style="width:90%;margin-bottom:6px"></div>
+            <div class="mock-card-inner">
+              <div class="mock-line short"></div>
+              <div class="mock-line" style="height:12px;background:rgba(255,255,255,0.05);border-radius:4px"></div>
+            </div>
+            <div class="mock-card-inner" style="margin-top:2px">
+              <div class="mock-line short"></div>
+              <div class="mock-line" style="height:12px;background:rgba(255,255,255,0.05);border-radius:4px"></div>
+            </div>
+            <div class="mock-line accent" style="height:14px;border-radius:4px;margin-top:6px;background:rgba(29,158,117,0.6)"></div>
+          </div>
+        </div>
+        <div class="screen-num">01</div>
+        <div class="screen-arrow">→</div>
+      </div>
+      <div class="screen-meta">
+        <div class="screen-tag">Entry point</div>
+        <div class="screen-name">Onboarding</div>
+        <div class="screen-desc">3-step signup with validation, Google shortcut, and EMI reminder opt-in.</div>
+        <div class="screen-chips">
+          <span class="chip">Form validation</span>
+          <span class="chip">Step progress</span>
+          <span class="chip green">Welcome state</span>
+        </div>
+      </div>
+    </a>
+
+    <!-- Dashboard -->
+    <a href="debtwise_dashboard.html" class="screen-card" style="animation-delay:0.1s">
+      <div class="screen-preview">
+        <div class="mock-phone">
+          <div class="mock-topbar">
+            <div class="mock-dot" style="background:#1D9E75"></div>
+            <div class="mock-line" style="width:50%;height:4px;margin-left:auto"></div>
+          </div>
+          <div class="mock-body">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:4px">
+              <div style="background:rgba(255,255,255,0.04);border-radius:5px;padding:5px">
+                <div class="mock-line short" style="margin-bottom:3px"></div>
+                <div class="mock-line accent" style="width:70%;height:6px"></div>
+              </div>
+              <div style="background:rgba(255,255,255,0.04);border-radius:5px;padding:5px">
+                <div class="mock-line short" style="margin-bottom:3px"></div>
+                <div class="mock-line" style="width:70%;height:6px"></div>
+              </div>
+            </div>
+            <div style="background:rgba(255,255,255,0.04);border-radius:5px;padding:6px;margin-bottom:3px">
+              <div class="mock-line med" style="margin-bottom:4px"></div>
+              <div class="mock-bar-wrap"><div class="mock-bar-fill" style="width:62%"></div></div>
+            </div>
+            <div style="background:rgba(255,255,255,0.04);border-radius:5px;padding:6px">
+              <div class="mock-line med" style="margin-bottom:4px"></div>
+              <div class="mock-bar-wrap"><div class="mock-bar-fill" style="width:35%"></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="screen-num">02</div>
+        <div class="screen-arrow">→</div>
+      </div>
+      <div class="screen-meta">
+        <div class="screen-tag">Home screen</div>
+        <div class="screen-name">Dashboard</div>
+        <div class="screen-desc">All loans at a glance — balance, EMI status, progress bars, and mark-as-paid flow.</div>
+        <div class="screen-chips">
+          <span class="chip">Status badges</span>
+          <span class="chip">Mark paid modal</span>
+          <span class="chip green">Add loan form</span>
+        </div>
+      </div>
+    </a>
+
+    <!-- Strategy -->
+    <a href="debtwise_strategy.html" class="screen-card" style="animation-delay:0.2s">
+      <div class="screen-preview">
+        <div class="mock-phone">
+          <div class="mock-topbar">
+            <div class="mock-dot" style="background:#1D9E75"></div>
+          </div>
+          <div class="mock-body">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:5px">
+              <div style="border:1.5px solid rgba(29,158,117,0.6);border-radius:5px;padding:5px">
+                <div style="font-size:0;width:12px;height:12px;border-radius:3px;background:rgba(29,158,117,0.3);margin-bottom:4px"></div>
+                <div class="mock-line short"></div>
+              </div>
+              <div style="border:0.5px solid rgba(255,255,255,0.07);border-radius:5px;padding:5px">
+                <div style="font-size:0;width:12px;height:12px;border-radius:3px;background:rgba(83,74,183,0.3);margin-bottom:4px"></div>
+                <div class="mock-line short"></div>
+              </div>
+            </div>
+            <!-- mini SVG chart -->
+            <div style="background:rgba(255,255,255,0.04);border-radius:5px;padding:5px;height:60px;overflow:hidden">
+              <svg width="100%" height="100%" viewBox="0 0 110 46" preserveAspectRatio="none">
+                <polyline points="0,40 18,36 36,28 54,18 72,12 90,6 110,2" fill="none" stroke="rgba(29,158,117,0.8)" stroke-width="1.5"/>
+                <polyline points="0,40 18,34 36,24 54,16 72,8 90,4 110,1" fill="none" stroke="rgba(83,74,183,0.6)" stroke-width="1.5" stroke-dasharray="3,2"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+        <div class="screen-num">03</div>
+        <div class="screen-arrow">→</div>
+      </div>
+      <div class="screen-meta">
+        <div class="screen-tag">Planning tool</div>
+        <div class="screen-name">Payoff Strategy</div>
+        <div class="screen-desc">Snowball vs. Avalanche with live interest savings, payoff timeline, and SVG chart.</div>
+        <div class="screen-chips">
+          <span class="chip">Extra payment slider</span>
+          <span class="chip green">Interest saved calc</span>
+          <span class="chip">SVG chart</span>
+        </div>
+      </div>
+    </a>
+
+    <!-- Upload -->
+    <a href="debtwise_upload.html" class="screen-card" style="animation-delay:0.3s">
+      <div class="screen-preview">
+        <div class="mock-phone">
+          <div class="mock-topbar">
+            <div class="mock-dot" style="background:#1D9E75"></div>
+          </div>
+          <div class="mock-body">
+            <div style="border:1px dashed rgba(29,158,117,0.4);border-radius:6px;padding:8px;text-align:center;margin-bottom:5px">
+              <div style="width:18px;height:18px;border-radius:4px;background:rgba(29,158,117,0.2);margin:0 auto 4px;display:flex;align-items:center;justify-content:center">
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 7V3M3 5l2-2 2 2" stroke="rgba(29,158,117,0.9)" stroke-width="1.2" stroke-linecap="round"/></svg>
+              </div>
+              <div class="mock-line" style="width:60%;margin:0 auto"></div>
+            </div>
+            <div style="background:rgba(29,158,117,0.08);border-radius:5px;padding:5px;display:flex;align-items:center;gap:4px">
+              <div style="width:14px;height:14px;border-radius:50%;background:rgba(29,158,117,0.3);flex-shrink:0"></div>
+              <div style="flex:1"><div class="mock-line med" style="margin-bottom:2px"></div><div class="mock-line short"></div></div>
+            </div>
+            <div class="mock-card-inner" style="margin-top:3px">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px">
+                <div><div class="mock-line short" style="margin-bottom:2px"></div><div class="mock-line accent" style="height:5px"></div></div>
+                <div><div class="mock-line short" style="margin-bottom:2px"></div><div class="mock-line" style="height:5px"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="screen-num">04</div>
+        <div class="screen-arrow">→</div>
+      </div>
+      <div class="screen-meta">
+        <div class="screen-tag">AI feature</div>
+        <div class="screen-name">Sanction Letter Upload</div>
+        <div class="screen-desc">Upload a PDF or photo — Claude API extracts all loan fields automatically.</div>
+        <div class="screen-chips">
+          <span class="chip green">Claude API</span>
+          <span class="chip">Base64 extraction</span>
+          <span class="chip">Auto-fill form</span>
+        </div>
+      </div>
+    </a>
+
+  </div>
+</section>
+
+<!-- STACK -->
+<section class="stack-section" id="stack">
+  <div class="section-label">Tech stack</div>
+  <div class="stack-grid">
+    <div class="stack-item">
+      <div class="stack-layer">UI</div>
+      <div class="stack-value">HTML5 · CSS3 · Vanilla JS</div>
+    </div>
+    <div class="stack-item">
+      <div class="stack-layer">AI</div>
+      <div class="stack-value">Anthropic Claude API<br><span style="font-size:12px;color:var(--muted)">claude-sonnet-4-20250514</span></div>
+    </div>
+    <div class="stack-item">
+      <div class="stack-layer">Charts</div>
+      <div class="stack-value">Plain SVG — no library</div>
+    </div>
+    <div class="stack-item">
+      <div class="stack-layer">Icons</div>
+      <div class="stack-value">Tabler Icons (CDN)</div>
+    </div>
+    <div class="stack-item">
+      <div class="stack-layer">Build</div>
+      <div class="stack-value">None — open and run</div>
+    </div>
+    <div class="stack-item">
+      <div class="stack-layer">Deploy</div>
+      <div class="stack-value">GitHub Pages</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-left">Built by <strong>Gitesh Jethwa</strong> · Portfolio project 2025</div>
+  <div class="footer-links">
+    <a href="https://linkedin.com/in/your-handle" target="_blank">LinkedIn</a>
+    <a href="https://github.com/your-username/debtwise" target="_blank">GitHub</a>
+    <a href="debtwise_onboarding.html">Launch →</a>
+  </div>
+</footer>
+
+<script>
+// Intersection observer for scroll animations
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((entry, i) => {
+    if (entry.isIntersecting) {
+      const el = entry.target;
+      const delay = el.dataset.delay || 0;
+      setTimeout(() => el.classList.add('visible'), delay * 1000);
+      observer.unobserve(el);
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.screen-card').forEach((el, i) => {
+  el.dataset.delay = i * 0.1;
+  observer.observe(el);
+});
+
+document.querySelectorAll('.stack-item').forEach((el, i) => {
+  el.dataset.delay = i * 0.07;
+  observer.observe(el);
+});
+</script>
+</body>
+</html>
