@@ -3,153 +3,325 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DebtWise — Sign up or Log in</title>
+<title>DebtWise</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
-<link rel="stylesheet" href="debtwise.css">
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:var(--font-sans);background:var(--color-background-tertiary);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1.5rem 1rem}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:2rem;width:100%;max-width:400px}
+:root {
+  --bg:       #F8F9F8;
+  --white:    #FFFFFF;
+  --green:    #1D9E75;
+  --green-dk: #0F6E56;
+  --green-lt: #EBF7F2;
+  --ink:      #0D1410;
+  --ink-2:    #4A5550;
+  --ink-3:    #8A9690;
+  --border:   rgba(0,0,0,0.07);
+  --danger:   #D93025;
+  --warn:     #E37400;
+  --radius:   12px;
+  --shadow:   0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+}
 
-/* Logo */
-.logo-row{display:flex;align-items:center;gap:10px;margin-bottom:1.75rem}
-.logo-icon{width:40px;height:40px;border-radius:var(--border-radius-md);background:#E1F5EE;display:flex;align-items:center;justify-content:center}
-.logo-text{font-size:18px;font-weight:500;color:var(--color-text-primary)}
-.logo-sub{font-size:12px;color:var(--color-text-tertiary)}
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: var(--bg);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  -webkit-font-smoothing: antialiased;
+}
 
-/* Tabs */
-.tabs{display:flex;background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:3px;margin-bottom:1.5rem}
-.tab{flex:1;padding:7px;font-size:13px;font-weight:500;border:none;background:none;cursor:pointer;border-radius:6px;color:var(--color-text-secondary);transition:all 0.15s}
-.tab.active{background:var(--color-background-primary);color:var(--color-text-primary);box-shadow:0 1px 4px rgba(0,0,0,0.08)}
+/* ── Card ── */
+.card {
+  background: var(--white);
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+  padding: 32px 28px;
+  width: 100%;
+  max-width: 400px;
+}
 
-/* Step dots */
-.step-dots{display:flex;gap:6px;margin-bottom:1.5rem}
-.dot{width:6px;height:6px;border-radius:50%;background:var(--color-border-secondary);transition:all 0.2s}
-.dot.active{width:18px;border-radius:3px;background:#1D9E75}
-.dot.done{background:#1D9E75}
+/* ── Logo ── */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 28px;
+}
+.logo-mark {
+  width: 36px; height: 36px;
+  background: var(--green);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 17px;
+  flex-shrink: 0;
+}
+.logo-name { font-size: 17px; font-weight: 600; color: var(--ink); letter-spacing: -0.3px; }
+.logo-tag  { font-size: 11px; color: var(--ink-3); margin-top: 1px; }
 
-/* Fields */
-.heading{font-size:18px;font-weight:500;color:var(--color-text-primary);margin-bottom:6px}
-.subtext{font-size:13px;color:var(--color-text-secondary);line-height:1.6;margin-bottom:1.5rem}
-.field{margin-bottom:1rem}
-.field label{display:block;font-size:12px;font-weight:500;color:var(--color-text-secondary);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.04em}
-.field input{width:100%;font-size:14px;padding:9px 12px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);outline:none;transition:border-color 0.15s,box-shadow 0.15s}
-.field input:focus{border-color:#1D9E75;box-shadow:0 0 0 3px rgba(29,158,117,0.12)}
-.field input.error{border-color:#E24B4A}
-.err-msg{font-size:12px;color:#A32D2D;margin-top:4px;display:none}
-.err-msg.show{display:block}
+/* ── Tabs ── */
+.tabs {
+  display: flex;
+  background: var(--bg);
+  border-radius: 10px;
+  padding: 3px;
+  margin-bottom: 28px;
+  gap: 2px;
+}
+.tab {
+  flex: 1; padding: 8px 12px;
+  font-size: 13px; font-weight: 500;
+  border: none; background: none; cursor: pointer;
+  border-radius: 8px;
+  color: var(--ink-3);
+  transition: all 0.18s ease;
+}
+.tab.active {
+  background: var(--white);
+  color: var(--ink);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
 
-/* Password wrapper */
-.password-wrapper{position:relative}
-.password-wrapper input{padding-right:40px}
-.toggle-pw{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--color-text-tertiary);font-size:17px;padding:4px;line-height:1;display:flex;align-items:center;justify-content:center}
-.toggle-pw:hover{color:var(--color-text-secondary)}
+/* ── Step dots ── */
+.dots {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 24px;
+}
+.dot {
+  height: 4px; width: 20px;
+  border-radius: 2px;
+  background: #E5EAE8;
+  transition: all 0.25s ease;
+}
+.dot.active { background: var(--green); }
+.dot.done   { background: #A8D9C8; width: 20px; }
 
-/* Buttons */
-.btn-primary{width:100%;padding:10px;border-radius:var(--border-radius-md);background:#1D9E75;color:#fff;font-size:14px;font-weight:500;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:0.5rem;transition:background 0.15s}
-.btn-primary:hover{background:#0F6E56}
+/* ── Typography ── */
+.heading {
+  font-size: 20px; font-weight: 600;
+  color: var(--ink); letter-spacing: -0.4px;
+  margin-bottom: 6px; line-height: 1.2;
+}
+.subtext {
+  font-size: 13px; color: var(--ink-2);
+  line-height: 1.6; margin-bottom: 24px;
+}
 
-.btn-secondary{width:100%;padding:9px;border-radius:var(--border-radius-md);background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);font-size:13px;color:var(--color-text-secondary);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:background 0.15s}
-.btn-secondary:hover{background:var(--color-background-secondary)}
+/* ── Fields ── */
+.field { margin-bottom: 16px; }
+.field label {
+  display: block;
+  font-size: 11px; font-weight: 600;
+  color: var(--ink-3);
+  letter-spacing: 0.06em; text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.field input, .field select {
+  width: 100%;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px; font-weight: 400;
+  padding: 11px 14px;
+  border-radius: 10px;
+  border: 1.5px solid #E8EDEB;
+  background: var(--white);
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.18s, box-shadow 0.18s;
+  -webkit-appearance: none;
+}
+.field input:focus, .field select:focus {
+  border-color: var(--green);
+  box-shadow: 0 0 0 3px rgba(29,158,117,0.1);
+}
+.field input.err { border-color: var(--danger); }
+.field input.err:focus { box-shadow: 0 0 0 3px rgba(217,48,37,0.1); }
 
-/* Divider */
-.divider-row{display:flex;align-items:center;gap:10px;margin:1rem 0}
-.divider-line{flex:1;height:0.5px;background:var(--color-border-tertiary)}
-.divider-text{font-size:12px;color:var(--color-text-tertiary)}
+.err-msg {
+  font-size: 12px; color: var(--danger);
+  margin-top: 5px; display: none;
+  align-items: center; gap: 4px;
+}
+.err-msg.show { display: flex; }
 
-/* Checkboxes */
-.check-row{display:flex;align-items:flex-start;gap:8px;margin-top:0.75rem}
-.check-row input[type=checkbox]{margin-top:3px;accent-color:#1D9E75;width:14px;height:14px;flex-shrink:0;cursor:pointer}
-.check-row label{font-size:12px;color:var(--color-text-secondary);line-height:1.5;cursor:pointer}
+/* ── Password wrapper ── */
+.pw-wrap { position: relative; }
+.pw-wrap input { padding-right: 44px; }
+.pw-toggle {
+  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+  background: none; border: none; cursor: pointer;
+  color: var(--ink-3); font-size: 16px; padding: 4px;
+  display: flex; align-items: center; justify-content: center;
+  transition: color 0.15s;
+}
+.pw-toggle:hover { color: var(--ink-2); }
 
-.footer-note{font-size:11px;color:var(--color-text-tertiary);text-align:center;margin-top:1.25rem;line-height:1.6}
-.link{color:#1D9E75;cursor:pointer;text-decoration:none}
-.link:hover{text-decoration:underline}
+/* ── Buttons ── */
+.btn {
+  width: 100%; padding: 12px;
+  border-radius: 10px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px; font-weight: 600;
+  border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: all 0.18s ease;
+  letter-spacing: -0.1px;
+}
+.btn-green {
+  background: var(--green); color: #fff;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+.btn-green:hover { background: var(--green-dk); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(29,158,117,0.25); }
+.btn-green:active { transform: translateY(0); }
 
-/* Phone input with country code */
-.phone-row{display:flex;gap:8px}
-.country-code{width:80px;flex-shrink:0;font-size:14px;padding:9px 10px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);outline:none;cursor:pointer}
-.country-code:focus{border-color:#1D9E75;box-shadow:0 0 0 3px rgba(29,158,117,0.12)}
-.phone-row input{flex:1}
+.btn-ghost {
+  background: var(--white); color: var(--ink-2);
+  border: 1.5px solid #E8EDEB;
+}
+.btn-ghost:hover { background: var(--bg); border-color: #C8D5D0; }
 
-/* OTP boxes */
-.otp-row{display:flex;gap:8px;justify-content:center;margin-top:0.5rem}
-.otp-box{width:44px;height:48px;text-align:center;font-size:20px;font-weight:600;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);outline:none;transition:border-color 0.15s,box-shadow 0.15s}
-.otp-box:focus{border-color:#1D9E75;box-shadow:0 0 0 3px rgba(29,158,117,0.12)}
-.resend-row{text-align:center;margin-top:10px;font-size:12px;color:var(--color-text-tertiary)}
+.btn + .btn { margin-top: 8px; }
 
-/* Welcome step */
-.welcome-screen{text-align:center;padding:0.5rem 0}
-.avatar{width:64px;height:64px;border-radius:50%;background:#E1F5EE;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:22px;font-weight:500;color:#0F6E56}
-.welcome-name{font-size:20px;font-weight:500;color:var(--color-text-primary);margin-bottom:6px}
-.welcome-sub{font-size:13px;color:var(--color-text-secondary);line-height:1.6;margin-bottom:1.5rem}
-.stats-preview{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.5rem}
-.stat{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px;text-align:left}
-.stat-label{font-size:11px;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:0.04em}
-.stat-value{font-size:16px;font-weight:500;color:var(--color-text-primary);margin-top:3px}
-.stat-value.green{color:#0F6E56}
+/* ── Divider ── */
+.divider {
+  display: flex; align-items: center; gap: 12px;
+  margin: 20px 0;
+}
+.divider-line { flex: 1; height: 1px; background: #F0F4F2; }
+.divider-text { font-size: 12px; color: var(--ink-3); flex-shrink: 0; }
 
-/* Toast */
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#111;color:#fff;font-size:13px;padding:10px 18px;border-radius:20px;opacity:0;transition:all 0.3s;pointer-events:none;white-space:nowrap;z-index:200}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+/* ── Checkboxes ── */
+.check {
+  display: flex; align-items: flex-start; gap: 10px;
+  margin-top: 14px;
+}
+.check input[type=checkbox] {
+  width: 16px; height: 16px; margin-top: 2px;
+  accent-color: var(--green); cursor: pointer; flex-shrink: 0;
+}
+.check label { font-size: 12px; color: var(--ink-2); line-height: 1.55; cursor: pointer; }
+
+/* ── Footer note ── */
+.foot-note {
+  font-size: 11px; color: var(--ink-3);
+  text-align: center; margin-top: 20px; line-height: 1.6;
+}
+.link { color: var(--green); cursor: pointer; font-weight: 500; text-decoration: none; }
+.link:hover { text-decoration: underline; }
+
+/* ── Phone row ── */
+.phone-row { display: flex; gap: 8px; }
+.phone-row .country { width: 82px; flex-shrink: 0; }
+.phone-row input  { flex: 1; }
+
+/* ── OTP ── */
+.otp-row { display: flex; gap: 8px; justify-content: center; margin: 4px 0 8px; }
+.otp-box {
+  width: 44px; height: 52px;
+  text-align: center; font-size: 22px; font-weight: 600;
+  border-radius: 10px; border: 1.5px solid #E8EDEB;
+  background: var(--white); color: var(--ink); outline: none;
+  transition: border-color 0.18s, box-shadow 0.18s;
+  font-family: 'Inter', sans-serif;
+}
+.otp-box:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(29,158,117,0.1); }
+.resend { text-align: center; font-size: 12px; color: var(--ink-3); margin-top: 8px; }
+
+/* ── Welcome screen ── */
+.welcome { text-align: center; padding: 8px 0; }
+.avatar {
+  width: 64px; height: 64px; border-radius: 50%;
+  background: var(--green-lt); color: var(--green-dk);
+  font-size: 22px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 16px;
+}
+.welcome-name { font-size: 22px; font-weight: 700; color: var(--ink); letter-spacing: -0.5px; margin-bottom: 6px; }
+.welcome-sub  { font-size: 13px; color: var(--ink-2); margin-bottom: 24px; line-height: 1.6; }
+
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px; }
+.stat {
+  background: var(--bg); border-radius: 12px;
+  padding: 14px; text-align: left;
+}
+.stat-label { font-size: 10px; font-weight: 600; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.06em; }
+.stat-val   { font-size: 16px; font-weight: 600; color: var(--ink); margin-top: 4px; }
+.stat-val.green { color: var(--green); }
+
+/* ── Toast ── */
+.toast {
+  position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(60px);
+  background: var(--ink); color: #fff;
+  font-size: 13px; font-weight: 500;
+  padding: 10px 20px; border-radius: 24px;
+  opacity: 0; transition: all 0.3s cubic-bezier(.34,1.56,.64,1);
+  pointer-events: none; white-space: nowrap; z-index: 999;
+  font-family: 'Inter', sans-serif;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* Forgot password link alignment */
+.forgot { text-align: right; margin-top: -8px; margin-bottom: 16px; }
+.forgot span { font-size: 12px; color: var(--ink-3); cursor: pointer; }
+.forgot span:hover { color: var(--green); }
 </style>
 </head>
 <body>
 
 <div class="card">
-  <div class="logo-row">
-    <div class="logo-icon"><i class="ti ti-chart-pie" style="color:#1D9E75;font-size:20px"></i></div>
+
+  <!-- Logo -->
+  <div class="logo">
+    <div class="logo-mark"><i class="ti ti-chart-pie"></i></div>
     <div>
-      <div class="logo-text">DebtWise</div>
-      <div class="logo-sub">Your debt. Simplified.</div>
+      <div class="logo-name">DebtWise</div>
+      <div class="logo-tag">Your debt. Simplified.</div>
     </div>
   </div>
 
-  <!-- ── TABS ── -->
-  <div class="tabs" id="auth-tabs">
+  <!-- Tabs -->
+  <div class="tabs">
     <button type="button" class="tab active" onclick="switchTab('signup')">Sign up</button>
     <button type="button" class="tab" onclick="switchTab('login')">Log in</button>
   </div>
 
-  <!-- ══════════════════════════════════════════════
-       SIGNUP FLOW
-  ══════════════════════════════════════════════ -->
+  <!-- ════════════════ SIGNUP ════════════════ -->
   <div id="signup-flow">
-
-    <div class="step-dots" id="signup-dots">
+    <div class="dots" id="sdots">
       <div class="dot active" id="sd1"></div>
       <div class="dot" id="sd2"></div>
       <div class="dot" id="sd3"></div>
     </div>
 
-    <!-- Step 1: Name + Email -->
-    <div id="s-step1">
+    <!-- Step 1 -->
+    <div id="s1">
       <div class="heading">Create your account</div>
-      <div class="subtext">Get a complete picture of all your debts in one place — and never miss an EMI again.</div>
+      <div class="subtext">Track all your loans in one place and never miss an EMI.</div>
 
       <div class="field">
-        <label for="fname">Your name</label>
-        <input type="text" id="fname" placeholder="e.g. Gitesh Jethwa" autocomplete="given-name">
-        <div class="err-msg" id="err-fname">Please enter your name</div>
+        <label for="fname">Full name</label>
+        <input type="text" id="fname" placeholder="Gitesh Jethwa" autocomplete="name">
+        <div class="err-msg" id="err-fname"><i class="ti ti-alert-circle" style="font-size:12px"></i> Enter your name</div>
       </div>
       <div class="field">
-        <label for="email">Email address</label>
-        <input type="email" id="email" placeholder="you@email.com" autocomplete="email">
-        <div class="err-msg" id="err-email">Please enter a valid email</div>
+        <label for="femail">Email</label>
+        <input type="email" id="femail" placeholder="you@email.com" autocomplete="email">
+        <div class="err-msg" id="err-femail"><i class="ti ti-alert-circle" style="font-size:12px"></i> Enter a valid email</div>
       </div>
 
-      <button type="button" class="btn-primary" onclick="goSignupStep2()">
+      <button type="button" class="btn btn-green" onclick="s1Next()">
         Continue <i class="ti ti-arrow-right"></i>
       </button>
 
-      <div class="divider-row">
-        <div class="divider-line"></div>
-        <div class="divider-text">or</div>
-        <div class="divider-line"></div>
-      </div>
+      <div class="divider"><div class="divider-line"></div><div class="divider-text">or</div><div class="divider-line"></div></div>
 
-      <button type="button" class="btn-secondary" onclick="mockGoogle()" style="margin-bottom:8px">
+      <button type="button" class="btn btn-ghost" onclick="mockGoogle()" style="margin-bottom:8px">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
           <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
           <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
@@ -158,182 +330,144 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary);mi
         </svg>
         Continue with Google
       </button>
-
-      <button type="button" class="btn-secondary" onclick="showPhoneSignup()">
+      <button type="button" class="btn btn-ghost" onclick="goPhone()">
         <i class="ti ti-device-mobile"></i> Continue with Phone
       </button>
 
-      <div class="footer-note">We'll send EMI reminders to your email. No spam, ever.</div>
+      <div class="foot-note">No spam, ever. Unsubscribe any time.</div>
     </div>
 
-    <!-- Step 1b: Phone OTP -->
+    <!-- Step 1b: Phone -->
     <div id="s-phone" style="display:none">
       <div class="heading">Your phone number</div>
-      <div class="subtext">We'll send a 6-digit OTP to verify your number.</div>
+      <div class="subtext">We'll send a 6-digit OTP to verify.</div>
       <div class="field">
         <label>Mobile number</label>
         <div class="phone-row">
-          <select class="country-code" id="country-code">
-            <option value="+91">🇮🇳 +91</option>
-            <option value="+1">🇺🇸 +1</option>
-            <option value="+44">🇬🇧 +44</option>
-            <option value="+971">🇦🇪 +971</option>
-            <option value="+65">🇸🇬 +65</option>
+          <select class="country" id="cc">
+            <option>🇮🇳 +91</option><option>🇺🇸 +1</option><option>🇬🇧 +44</option><option>🇦🇪 +971</option>
           </select>
-          <input type="tel" id="phone-number" placeholder="98765 43210" maxlength="10">
+          <input type="tel" id="phonenum" placeholder="98765 43210" maxlength="10">
         </div>
-        <div class="err-msg" id="err-phone">Please enter a valid 10-digit number</div>
+        <div class="err-msg" id="err-phone"><i class="ti ti-alert-circle" style="font-size:12px"></i> Enter a valid 10-digit number</div>
       </div>
-      <button type="button" class="btn-primary" onclick="sendOTP()">
+      <button type="button" class="btn btn-green" onclick="sendOTP('s-otp','otp1','otp-hint')">
         Send OTP <i class="ti ti-send"></i>
       </button>
-      <button type="button" class="btn-secondary" style="margin-top:8px" onclick="showStep('s-step1')">
+      <button type="button" class="btn btn-ghost" style="margin-top:8px" onclick="show('s1')">
         <i class="ti ti-arrow-left"></i> Back
       </button>
     </div>
 
-    <!-- Step 1c: Enter OTP -->
+    <!-- Step 1c: OTP -->
     <div id="s-otp" style="display:none">
       <div class="heading">Enter OTP</div>
-      <div class="subtext" id="otp-subtext">We sent a 6-digit code to your number.</div>
+      <div class="subtext" id="otp-hint">OTP sent to your number.</div>
       <div class="otp-row">
-        <input type="text" class="otp-box" maxlength="1" id="otp1" oninput="otpNext(this,'otp2')" onkeydown="otpBack(event,this,'')">
-        <input type="text" class="otp-box" maxlength="1" id="otp2" oninput="otpNext(this,'otp3')" onkeydown="otpBack(event,this,'otp1')">
-        <input type="text" class="otp-box" maxlength="1" id="otp3" oninput="otpNext(this,'otp4')" onkeydown="otpBack(event,this,'otp2')">
-        <input type="text" class="otp-box" maxlength="1" id="otp4" oninput="otpNext(this,'otp5')" onkeydown="otpBack(event,this,'otp3')">
-        <input type="text" class="otp-box" maxlength="1" id="otp5" oninput="otpNext(this,'otp6')" onkeydown="otpBack(event,this,'otp4')">
-        <input type="text" class="otp-box" maxlength="1" id="otp6" oninput="otpNext(this,'')"     onkeydown="otpBack(event,this,'otp5')">
+        <input type="text" class="otp-box" maxlength="1" id="otp1" oninput="oNext(this,'otp2')" onkeydown="oPrev(event,this,'')">
+        <input type="text" class="otp-box" maxlength="1" id="otp2" oninput="oNext(this,'otp3')" onkeydown="oPrev(event,this,'otp1')">
+        <input type="text" class="otp-box" maxlength="1" id="otp3" oninput="oNext(this,'otp4')" onkeydown="oPrev(event,this,'otp2')">
+        <input type="text" class="otp-box" maxlength="1" id="otp4" oninput="oNext(this,'otp5')" onkeydown="oPrev(event,this,'otp3')">
+        <input type="text" class="otp-box" maxlength="1" id="otp5" oninput="oNext(this,'otp6')" onkeydown="oPrev(event,this,'otp4')">
+        <input type="text" class="otp-box" maxlength="1" id="otp6" oninput="oNext(this,'')"     onkeydown="oPrev(event,this,'otp5')">
       </div>
-      <div class="err-msg" id="err-otp" style="text-align:center;margin-top:8px">Incorrect OTP. Try again.</div>
-      <div class="resend-row">Didn't get it? <span class="link" onclick="resendOTP()">Resend OTP</span></div>
-      <button type="button" class="btn-primary" style="margin-top:1rem" onclick="verifyOTP()">
+      <div class="err-msg" id="err-otp" style="justify-content:center;margin-top:6px"><i class="ti ti-alert-circle" style="font-size:12px"></i> Incorrect OTP. Try 123456.</div>
+      <div class="resend">Didn't get it? <span class="link" onclick="toast('OTP resent! Use 123456.')">Resend</span></div>
+      <button type="button" class="btn btn-green" style="margin-top:16px" onclick="verifyOTP('otp1','err-otp','s2')">
         Verify <i class="ti ti-check"></i>
       </button>
-      <button type="button" class="btn-secondary" style="margin-top:8px" onclick="showStep('s-phone')">
+      <button type="button" class="btn btn-ghost" style="margin-top:8px" onclick="show('s-phone')">
         <i class="ti ti-arrow-left"></i> Back
       </button>
     </div>
 
     <!-- Step 2: Password -->
-    <div id="s-step2" style="display:none">
+    <div id="s2" style="display:none">
       <div class="heading">Set a password</div>
-      <div class="subtext">Keep your financial data secure. You'll use this to log back in.</div>
-
+      <div class="subtext">Secure your account. You'll use this to log back in.</div>
       <div class="field">
-        <label for="pw">Password</label>
-        <div class="password-wrapper">
-          <input type="password" id="pw" placeholder="At least 8 characters">
-          <button type="button" class="toggle-pw" onclick="togglePw('pw','eye1')" aria-label="Show/hide password">
-            <i class="ti ti-eye" id="eye1"></i>
-          </button>
+        <label for="pw1">Password</label>
+        <div class="pw-wrap">
+          <input type="password" id="pw1" placeholder="At least 8 characters">
+          <button type="button" class="pw-toggle" onclick="togglePw('pw1','e1')"><i class="ti ti-eye" id="e1"></i></button>
         </div>
-        <div class="err-msg" id="err-pw">Password must be at least 8 characters</div>
+        <div class="err-msg" id="err-pw1"><i class="ti ti-alert-circle" style="font-size:12px"></i> Minimum 8 characters</div>
       </div>
-
       <div class="field">
         <label for="pw2">Confirm password</label>
-        <div class="password-wrapper">
+        <div class="pw-wrap">
           <input type="password" id="pw2" placeholder="Repeat password">
-          <button type="button" class="toggle-pw" onclick="togglePw('pw2','eye2')" aria-label="Show/hide password">
-            <i class="ti ti-eye" id="eye2"></i>
-          </button>
+          <button type="button" class="pw-toggle" onclick="togglePw('pw2','e2')"><i class="ti ti-eye" id="e2"></i></button>
         </div>
-        <div class="err-msg" id="err-pw2">Passwords don't match</div>
+        <div class="err-msg" id="err-pw2"><i class="ti ti-alert-circle" style="font-size:12px"></i> Passwords don't match</div>
       </div>
-
-      <div class="check-row">
-        <input type="checkbox" id="reminders" checked>
-        <label for="reminders">Send me EMI reminders 7 days and 1 day before due dates</label>
+      <div class="check">
+        <input type="checkbox" id="remind" checked>
+        <label for="remind">Send me EMI reminders 7 days and 1 day before due dates</label>
       </div>
-      <div class="check-row">
+      <div class="check">
         <input type="checkbox" id="terms">
         <label for="terms">I agree to the <a class="link" href="#">Terms of Service</a> and <a class="link" href="#">Privacy Policy</a></label>
       </div>
-      <div class="err-msg" id="err-terms" style="margin-top:6px">Please accept the terms to continue</div>
-
-      <button type="button" class="btn-primary" style="margin-top:1rem" onclick="goSignupStep3()">
+      <div class="err-msg" id="err-terms" style="margin-top:8px"><i class="ti ti-alert-circle" style="font-size:12px"></i> Please accept terms to continue</div>
+      <button type="button" class="btn btn-green" style="margin-top:20px" onclick="s2Next()">
         Create account <i class="ti ti-check"></i>
       </button>
-      <button type="button" class="btn-secondary" style="margin-top:8px" onclick="showStep('s-step1')">
+      <button type="button" class="btn btn-ghost" style="margin-top:8px" onclick="show('s1')">
         <i class="ti ti-arrow-left"></i> Back
       </button>
     </div>
 
     <!-- Step 3: Welcome -->
-    <div id="s-step3" style="display:none">
-      <div class="welcome-screen">
-        <div class="avatar" id="avatar-initials">GJ</div>
-        <div class="welcome-name" id="welcome-name">Welcome, Gitesh!</div>
-        <div class="welcome-sub">Your DebtWise account is ready. Here's what you can do next.</div>
-        <div class="stats-preview">
-          <div class="stat">
-            <div class="stat-label">Debts tracked</div>
-            <div class="stat-value">0 loans</div>
-          </div>
-          <div class="stat">
-            <div class="stat-label">Next EMI due</div>
-            <div class="stat-value">— —</div>
-          </div>
-          <div class="stat">
-            <div class="stat-label">Reminders</div>
-            <div class="stat-value green" id="reminder-status">Active</div>
-          </div>
-          <div class="stat">
-            <div class="stat-label">Interest saved</div>
-            <div class="stat-value">₹ 0</div>
-          </div>
+    <div id="s3" style="display:none">
+      <div class="welcome">
+        <div class="avatar" id="av">GJ</div>
+        <div class="welcome-name" id="wname">Welcome, Gitesh!</div>
+        <div class="welcome-sub">Your account is ready. Start by adding your first loan.</div>
+        <div class="stat-grid">
+          <div class="stat"><div class="stat-label">Loans tracked</div><div class="stat-val">0</div></div>
+          <div class="stat"><div class="stat-label">Next EMI</div><div class="stat-val">—</div></div>
+          <div class="stat"><div class="stat-label">Reminders</div><div class="stat-val green" id="remindstat">On</div></div>
+          <div class="stat"><div class="stat-label">Interest saved</div><div class="stat-val">₹0</div></div>
         </div>
-        <button type="button" class="btn-primary" onclick="window.location.href='debtwise_dashboard.html'">
+        <button type="button" class="btn btn-green" onclick="window.location.href='debtwise_dashboard.html'">
           Go to dashboard <i class="ti ti-arrow-right"></i>
         </button>
       </div>
     </div>
 
-  </div><!-- end signup-flow -->
+  </div><!-- /signup -->
 
 
-  <!-- ══════════════════════════════════════════════
-       LOGIN FLOW
-  ══════════════════════════════════════════════ -->
+  <!-- ════════════════ LOGIN ════════════════ -->
   <div id="login-flow" style="display:none">
 
-    <!-- Login with email -->
-    <div id="l-email" >
+    <div id="l1">
       <div class="heading">Welcome back</div>
       <div class="subtext">Log in to see your loans and upcoming EMIs.</div>
 
       <div class="field">
-        <label for="l-email-input">Email address</label>
-        <input type="email" id="l-email-input" placeholder="you@email.com" autocomplete="email">
-        <div class="err-msg" id="err-l-email">Please enter a valid email</div>
+        <label for="lemail">Email</label>
+        <input type="email" id="lemail" placeholder="you@email.com" autocomplete="email">
+        <div class="err-msg" id="err-lemail"><i class="ti ti-alert-circle" style="font-size:12px"></i> Enter a valid email</div>
       </div>
-
       <div class="field">
-        <label for="l-pw">Password</label>
-        <div class="password-wrapper">
-          <input type="password" id="l-pw" placeholder="Your password">
-          <button type="button" class="toggle-pw" onclick="togglePw('l-pw','eye3')" aria-label="Show/hide password">
-            <i class="ti ti-eye" id="eye3"></i>
-          </button>
+        <label for="lpw">Password</label>
+        <div class="pw-wrap">
+          <input type="password" id="lpw" placeholder="Your password">
+          <button type="button" class="pw-toggle" onclick="togglePw('lpw','e3')"><i class="ti ti-eye" id="e3"></i></button>
         </div>
-        <div class="err-msg" id="err-l-pw">Please enter your password</div>
+        <div class="err-msg" id="err-lpw"><i class="ti ti-alert-circle" style="font-size:12px"></i> Enter your password</div>
       </div>
+      <div class="forgot"><span onclick="toast('Reset link sent! (demo)')">Forgot password?</span></div>
 
-      <div style="text-align:right;margin-top:-6px;margin-bottom:12px">
-        <span class="link" style="font-size:12px" onclick="showToast('Password reset link sent! (mock)')">Forgot password?</span>
-      </div>
-
-      <button type="button" class="btn-primary" onclick="doLogin()">
+      <button type="button" class="btn btn-green" onclick="doLogin()">
         Log in <i class="ti ti-arrow-right"></i>
       </button>
 
-      <div class="divider-row">
-        <div class="divider-line"></div>
-        <div class="divider-text">or</div>
-        <div class="divider-line"></div>
-      </div>
+      <div class="divider"><div class="divider-line"></div><div class="divider-text">or</div><div class="divider-line"></div></div>
 
-      <button type="button" class="btn-secondary" onclick="mockGoogleLogin()" style="margin-bottom:8px">
+      <button type="button" class="btn btn-ghost" onclick="toast('Google login — redirecting…');setTimeout(()=>location.href=\'debtwise_dashboard.html\',900)" style="margin-bottom:8px">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
           <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
           <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
@@ -342,282 +476,200 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary);mi
         </svg>
         Continue with Google
       </button>
-
-      <button type="button" class="btn-secondary" onclick="showLoginPhone()">
+      <button type="button" class="btn btn-ghost" onclick="lshow('l-phone')">
         <i class="ti ti-device-mobile"></i> Log in with Phone
       </button>
 
-      <div class="footer-note">Don't have an account? <span class="link" onclick="switchTab('signup')">Sign up free</span></div>
+      <div class="foot-note">No account? <span class="link" onclick="switchTab('signup')">Sign up free</span></div>
     </div>
 
-    <!-- Login with phone OTP -->
+    <!-- Login phone -->
     <div id="l-phone" style="display:none">
       <div class="heading">Log in with phone</div>
-      <div class="subtext">Enter your registered mobile number.</div>
+      <div class="subtext">Enter your registered number.</div>
       <div class="field">
         <label>Mobile number</label>
         <div class="phone-row">
-          <select class="country-code" id="l-country-code">
-            <option value="+91">🇮🇳 +91</option>
-            <option value="+1">🇺🇸 +1</option>
-            <option value="+44">🇬🇧 +44</option>
-          </select>
-          <input type="tel" id="l-phone-number" placeholder="98765 43210" maxlength="10">
+          <select class="country" id="lcc"><option>🇮🇳 +91</option><option>🇺🇸 +1</option><option>🇬🇧 +44</option></select>
+          <input type="tel" id="lphonenum" placeholder="98765 43210" maxlength="10">
         </div>
-        <div class="err-msg" id="err-l-phone">Please enter a valid 10-digit number</div>
+        <div class="err-msg" id="err-lphone"><i class="ti ti-alert-circle" style="font-size:12px"></i> Enter a valid 10-digit number</div>
       </div>
-      <button type="button" class="btn-primary" onclick="sendLoginOTP()">
+      <button type="button" class="btn btn-green" onclick="sendOTP('l-otp','lotp1','lotp-hint','lphonenum','err-lphone')">
         Send OTP <i class="ti ti-send"></i>
       </button>
-      <button type="button" class="btn-secondary" style="margin-top:8px" onclick="showLoginStep('l-email')">
+      <button type="button" class="btn btn-ghost" style="margin-top:8px" onclick="lshow('l1')">
         <i class="ti ti-arrow-left"></i> Back
       </button>
     </div>
 
-    <!-- Login OTP verify -->
+    <!-- Login OTP -->
     <div id="l-otp" style="display:none">
       <div class="heading">Enter OTP</div>
-      <div class="subtext" id="l-otp-subtext">We sent a code to your number.</div>
+      <div class="subtext" id="lotp-hint">OTP sent to your number.</div>
       <div class="otp-row">
-        <input type="text" class="otp-box" maxlength="1" id="lotp1" oninput="otpNext(this,'lotp2')" onkeydown="otpBack(event,this,'')">
-        <input type="text" class="otp-box" maxlength="1" id="lotp2" oninput="otpNext(this,'lotp3')" onkeydown="otpBack(event,this,'lotp1')">
-        <input type="text" class="otp-box" maxlength="1" id="lotp3" oninput="otpNext(this,'lotp4')" onkeydown="otpBack(event,this,'lotp2')">
-        <input type="text" class="otp-box" maxlength="1" id="lotp4" oninput="otpNext(this,'lotp5')" onkeydown="otpBack(event,this,'lotp3')">
-        <input type="text" class="otp-box" maxlength="1" id="lotp5" oninput="otpNext(this,'lotp6')" onkeydown="otpBack(event,this,'lotp4')">
-        <input type="text" class="otp-box" maxlength="1" id="lotp6" oninput="otpNext(this,'')"      onkeydown="otpBack(event,this,'lotp5')">
+        <input type="text" class="otp-box" maxlength="1" id="lotp1" oninput="oNext(this,'lotp2')" onkeydown="oPrev(event,this,'')">
+        <input type="text" class="otp-box" maxlength="1" id="lotp2" oninput="oNext(this,'lotp3')" onkeydown="oPrev(event,this,'lotp1')">
+        <input type="text" class="otp-box" maxlength="1" id="lotp3" oninput="oNext(this,'lotp4')" onkeydown="oPrev(event,this,'lotp2')">
+        <input type="text" class="otp-box" maxlength="1" id="lotp4" oninput="oNext(this,'lotp5')" onkeydown="oPrev(event,this,'lotp3')">
+        <input type="text" class="otp-box" maxlength="1" id="lotp5" oninput="oNext(this,'lotp6')" onkeydown="oPrev(event,this,'lotp4')">
+        <input type="text" class="otp-box" maxlength="1" id="lotp6" oninput="oNext(this,'')"      onkeydown="oPrev(event,this,'lotp5')">
       </div>
-      <div class="err-msg" id="err-l-otp" style="text-align:center;margin-top:8px">Incorrect OTP. Try again.</div>
-      <div class="resend-row">Didn't get it? <span class="link" onclick="resendOTP()">Resend OTP</span></div>
-      <button type="button" class="btn-primary" style="margin-top:1rem" onclick="verifyLoginOTP()">
+      <div class="err-msg" id="err-lotp" style="justify-content:center;margin-top:6px"><i class="ti ti-alert-circle" style="font-size:12px"></i> Incorrect OTP. Try 123456.</div>
+      <div class="resend">Didn't get it? <span class="link" onclick="toast('OTP resent!')">Resend</span></div>
+      <button type="button" class="btn btn-green" style="margin-top:16px" onclick="verifyOTP('lotp1','err-lotp',null,true)">
         Verify & log in <i class="ti ti-check"></i>
       </button>
-      <button type="button" class="btn-secondary" style="margin-top:8px" onclick="showLoginStep('l-phone')">
+      <button type="button" class="btn btn-ghost" style="margin-top:8px" onclick="lshow('l-phone')">
         <i class="ti ti-arrow-left"></i> Back
       </button>
     </div>
 
-  </div><!-- end login-flow -->
+  </div><!-- /login -->
 
-</div><!-- end card -->
+</div><!-- /card -->
 
-<!-- Toast notification -->
-<div class="toast" id="toast"></div>
+<div class="toast" id="toastEl"></div>
 
 <script>
-// ── Helpers ───────────────────────────────────────────────────
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
-}
+// ── Show/hide helpers ────────────────────────────────────────
+const SSTEPS = ['s1','s-phone','s-otp','s2','s3'];
+const LSTEPS = ['l1','l-phone','l-otp'];
 
-function showStep(id) {
-  const steps = ['s-step1','s-phone','s-otp','s-step2','s-step3'];
-  steps.forEach(s => { const el = document.getElementById(s); if(el) el.style.display = 'none'; });
+function show(id) {
+  SSTEPS.forEach(s => { const el=document.getElementById(s); if(el) el.style.display='none'; });
+  document.getElementById(id).style.display = 'block';
+}
+function lshow(id) {
+  LSTEPS.forEach(s => { const el=document.getElementById(s); if(el) el.style.display='none'; });
   document.getElementById(id).style.display = 'block';
 }
 
-function showLoginStep(id) {
-  const steps = ['l-email','l-phone','l-otp'];
-  steps.forEach(s => { const el = document.getElementById(s); if(el) el.style.display = 'none'; });
-  document.getElementById(id).style.display = 'block';
+function switchTab(t) {
+  document.querySelectorAll('.tab')[0].classList.toggle('active', t==='signup');
+  document.querySelectorAll('.tab')[1].classList.toggle('active', t==='login');
+  document.getElementById('signup-flow').style.display = t==='signup' ? 'block':'none';
+  document.getElementById('login-flow').style.display  = t==='login'  ? 'block':'none';
+  document.getElementById('sdots').style.display = t==='signup' ? 'flex':'none';
 }
 
-function setDot(dotId, active) {
-  const el = document.getElementById(dotId);
-  if (!el) return;
-  if (active) {
-    el.style.width = '18px'; el.style.borderRadius = '3px'; el.style.background = '#1D9E75';
-  } else {
-    el.style.width = '6px'; el.style.borderRadius = '50%'; el.style.background = '#D8E0DC';
-  }
+// ── Dot progress ─────────────────────────────────────────────
+function dots(step) {
+  // step 1 = first, 2 = second, 3 = third
+  ['sd1','sd2','sd3'].forEach((id,i) => {
+    const el = document.getElementById(id);
+    el.className = 'dot' + (i < step-1 ? ' done' : i===step-1 ? ' active' : '');
+  });
 }
 
-// ── Tab switch ────────────────────────────────────────────────
-function switchTab(tab) {
-  const tabs = document.querySelectorAll('.tab');
-  tabs[0].classList.toggle('active', tab === 'signup');
-  tabs[1].classList.toggle('active', tab === 'login');
-  document.getElementById('signup-flow').style.display = tab === 'signup' ? 'block' : 'none';
-  document.getElementById('login-flow').style.display = tab === 'login' ? 'block' : 'none';
-  document.getElementById('signup-dots').style.display = tab === 'signup' ? 'flex' : 'none';
+// ── Toast ────────────────────────────────────────────────────
+function toast(msg) {
+  const el = document.getElementById('toastEl');
+  el.textContent = msg; el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'), 2800);
+}
+
+// ── Field validation helpers ─────────────────────────────────
+function setErr(inputId, errId, show) {
+  const inp = document.getElementById(inputId);
+  const err = document.getElementById(errId);
+  if(show) { inp.classList.add('err'); err.classList.add('show'); }
+  else     { inp.classList.remove('err'); err.classList.remove('show'); }
 }
 
 // ── Signup Step 1 ─────────────────────────────────────────────
-function goSignupStep2() {
-  const name = document.getElementById('fname').value.trim();
-  const email = document.getElementById('email').value.trim();
+function s1Next() {
+  const name  = document.getElementById('fname').value.trim();
+  const email = document.getElementById('femail').value.trim();
   let ok = true;
-  if (!name) {
-    document.getElementById('err-fname').classList.add('show');
-    document.getElementById('fname').classList.add('error'); ok = false;
-  } else {
-    document.getElementById('err-fname').classList.remove('show');
-    document.getElementById('fname').classList.remove('error');
-  }
-  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    document.getElementById('err-email').classList.add('show');
-    document.getElementById('email').classList.add('error'); ok = false;
-  } else {
-    document.getElementById('err-email').classList.remove('show');
-    document.getElementById('email').classList.remove('error');
-  }
+  if (!name)  { setErr('fname','err-fname',true);  ok=false; } else setErr('fname','err-fname',false);
+  if (!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setErr('femail','err-femail',true); ok=false; } else setErr('femail','err-femail',false);
   if (!ok) return;
-  showStep('s-step2');
-  setDot('sd1', false); setDot('sd2', true); setDot('sd3', false);
-  document.getElementById('sd1').style.background = '#1D9E75'; // mark done
+  show('s2'); dots(2);
 }
 
-// ── Phone signup ──────────────────────────────────────────────
-function showPhoneSignup() {
-  showStep('s-phone');
+function goPhone() { show('s-phone'); }
+
+function mockGoogle() {
+  document.getElementById('fname').value = 'Gitesh Jethwa';
+  document.getElementById('femail').value = 'jethwagitesh@gmail.com';
+  toast('Google sign-in simulated ✓');
+  setTimeout(()=>{ show('s2'); dots(2); }, 600);
 }
 
-function sendOTP() {
-  const phone = document.getElementById('phone-number').value.trim();
-  if (!/^\d{10}$/.test(phone)) {
-    document.getElementById('err-phone').classList.add('show');
-    document.getElementById('phone-number').classList.add('error'); return;
-  }
-  document.getElementById('err-phone').classList.remove('show');
-  document.getElementById('phone-number').classList.remove('error');
-  const cc = document.getElementById('country-code').value;
-  document.getElementById('otp-subtext').textContent = 'We sent a 6-digit code to ' + cc + ' ' + phone + '. Use 123456 to demo.';
-  showStep('s-otp');
-  setTimeout(() => document.getElementById('otp1').focus(), 100);
+// ── OTP ──────────────────────────────────────────────────────
+function sendOTP(nextScreen, firstBox, hintId, phoneId, errId) {
+  // determine which phone input we're using
+  const pid   = phoneId || 'phonenum';
+  const eid   = errId   || 'err-phone';
+  const phone = document.getElementById(pid).value.trim();
+  if (!/^\d{10}$/.test(phone)) { setErr(pid, eid, true); return; }
+  setErr(pid, eid, false);
+  const hint = document.getElementById(hintId);
+  if (hint) hint.textContent = 'OTP sent. Use 123456 to demo.';
+  // show correct OTP screen
+  if (SSTEPS.includes(nextScreen)) show(nextScreen);
+  else lshow(nextScreen);
+  setTimeout(()=>{ const b=document.getElementById(firstBox); if(b) b.focus(); }, 100);
 }
 
-function verifyOTP() {
-  const otp = ['otp1','otp2','otp3','otp4','otp5','otp6'].map(id => document.getElementById(id).value).join('');
-  if (otp !== '123456') {
-    document.getElementById('err-otp').classList.add('show'); return;
-  }
-  document.getElementById('err-otp').classList.remove('show');
-  // Use phone as "name" since they skipped name step
-  const phone = document.getElementById('phone-number').value.trim();
-  document.getElementById('fname').value = 'User'; // fallback
-  showStep('s-step2');
-  setDot('sd1', false); setDot('sd2', true); setDot('sd3', false);
+function verifyOTP(firstBoxId, errId, nextScreen, redirect) {
+  const prefix = firstBoxId.replace('1','');
+  const ids = [1,2,3,4,5,6].map(n => prefix+n);
+  const otp = ids.map(id => document.getElementById(id).value).join('');
+  if (otp !== '123456') { document.getElementById(errId).classList.add('show'); return; }
+  document.getElementById(errId).classList.remove('show');
+  if (redirect) { toast('Verified! Logging in…'); setTimeout(()=>location.href='debtwise_dashboard.html',900); return; }
+  if (nextScreen) { show(nextScreen); dots(2); }
 }
 
-function resendOTP() {
-  showToast('OTP resent! Use 123456 to demo.');
+function oNext(el, nextId) {
+  el.value = el.value.replace(/\D/g,'').slice(0,1);
+  if (el.value && nextId) document.getElementById(nextId).focus();
+}
+function oPrev(e, el, prevId) {
+  if (e.key==='Backspace' && !el.value && prevId) document.getElementById(prevId).focus();
+}
+
+// ── Password toggle ──────────────────────────────────────────
+function togglePw(id, iconId) {
+  const el = document.getElementById(id);
+  el.type = el.type === 'password' ? 'text' : 'password';
+  document.getElementById(iconId).className = el.type === 'password' ? 'ti ti-eye' : 'ti ti-eye-off';
 }
 
 // ── Signup Step 2 ─────────────────────────────────────────────
-function goSignupStep3() {
-  const pw = document.getElementById('pw').value;
+function s2Next() {
+  const pw  = document.getElementById('pw1').value;
   const pw2 = document.getElementById('pw2').value;
-  const terms = document.getElementById('terms').checked;
+  const trm = document.getElementById('terms').checked;
   let ok = true;
-  if (pw.length < 8) { document.getElementById('err-pw').classList.add('show'); ok = false; }
-  else document.getElementById('err-pw').classList.remove('show');
-  if (pw !== pw2) { document.getElementById('err-pw2').classList.add('show'); ok = false; }
-  else document.getElementById('err-pw2').classList.remove('show');
-  if (!terms) { document.getElementById('err-terms').classList.add('show'); ok = false; }
-  else document.getElementById('err-terms').classList.remove('show');
+  if (pw.length < 8) { document.getElementById('err-pw1').classList.add('show'); ok=false; }
+  else               { document.getElementById('err-pw1').classList.remove('show'); }
+  if (pw !== pw2)    { document.getElementById('err-pw2').classList.add('show'); ok=false; }
+  else               { document.getElementById('err-pw2').classList.remove('show'); }
+  if (!trm)          { document.getElementById('err-terms').classList.add('show'); ok=false; }
+  else               { document.getElementById('err-terms').classList.remove('show'); }
   if (!ok) return;
 
   const name = document.getElementById('fname').value.trim() || 'User';
-  const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-  document.getElementById('avatar-initials').textContent = initials;
-  document.getElementById('welcome-name').textContent = 'Welcome, ' + name.split(' ')[0] + '!';
-  document.getElementById('reminder-status').textContent = document.getElementById('reminders').checked ? 'Active' : 'Off';
-
-  // Save basic user info to localStorage
-  localStorage.setItem('dw_user', JSON.stringify({ name, email: document.getElementById('email').value.trim() }));
-
-  showStep('s-step3');
-  setDot('sd2', false); setDot('sd3', true);
-  document.getElementById('signup-dots').style.display = 'flex';
-}
-
-// ── Password toggle ───────────────────────────────────────────
-function togglePw(inputId, iconId) {
-  const el = document.getElementById(inputId);
-  const icon = document.getElementById(iconId);
-  if (el.type === 'password') {
-    el.type = 'text';
-    icon.className = 'ti ti-eye-off';
-  } else {
-    el.type = 'password';
-    icon.className = 'ti ti-eye';
-  }
-}
-
-// ── Google (mock) ─────────────────────────────────────────────
-function mockGoogle() {
-  document.getElementById('fname').value = 'Gitesh Jethwa';
-  document.getElementById('email').value = 'jethwagitesh@gmail.com';
-  showToast('Google sign-in simulated ✓');
-  setTimeout(goSignupStep2, 500);
-}
-
-function mockGoogleLogin() {
-  showToast('Google login simulated — redirecting…');
-  setTimeout(() => window.location.href = 'debtwise_dashboard.html', 1200);
+  document.getElementById('av').textContent = name.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
+  document.getElementById('wname').textContent = 'Welcome, ' + name.split(' ')[0] + '!';
+  document.getElementById('remindstat').textContent = document.getElementById('remind').checked ? 'On' : 'Off';
+  localStorage.setItem('dw_user', JSON.stringify({ name, email: document.getElementById('femail').value.trim() }));
+  show('s3'); dots(3);
 }
 
 // ── Login ─────────────────────────────────────────────────────
 function doLogin() {
-  const email = document.getElementById('l-email-input').value.trim();
-  const pw = document.getElementById('l-pw').value;
+  const email = document.getElementById('lemail').value.trim();
+  const pw    = document.getElementById('lpw').value;
   let ok = true;
-  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    document.getElementById('err-l-email').classList.add('show');
-    document.getElementById('l-email-input').classList.add('error'); ok = false;
-  } else {
-    document.getElementById('err-l-email').classList.remove('show');
-    document.getElementById('l-email-input').classList.remove('error');
-  }
-  if (!pw) {
-    document.getElementById('err-l-pw').classList.add('show');
-    document.getElementById('l-pw').classList.add('error'); ok = false;
-  } else {
-    document.getElementById('err-l-pw').classList.remove('show');
-    document.getElementById('l-pw').classList.remove('error');
-  }
+  if (!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setErr('lemail','err-lemail',true);  ok=false; } else setErr('lemail','err-lemail',false);
+  if (!pw) { setErr('lpw','err-lpw',true); ok=false; } else setErr('lpw','err-lpw',false);
   if (!ok) return;
-  showToast('Logging in…');
-  setTimeout(() => window.location.href = 'debtwise_dashboard.html', 1000);
-}
-
-// ── Login with phone ──────────────────────────────────────────
-function showLoginPhone() { showLoginStep('l-phone'); }
-
-function sendLoginOTP() {
-  const phone = document.getElementById('l-phone-number').value.trim();
-  if (!/^\d{10}$/.test(phone)) {
-    document.getElementById('err-l-phone').classList.add('show');
-    document.getElementById('l-phone-number').classList.add('error'); return;
-  }
-  document.getElementById('err-l-phone').classList.remove('show');
-  document.getElementById('l-phone-number').classList.remove('error');
-  const cc = document.getElementById('l-country-code').value;
-  document.getElementById('l-otp-subtext').textContent = 'We sent a 6-digit code to ' + cc + ' ' + phone + '. Use 123456 to demo.';
-  showLoginStep('l-otp');
-  setTimeout(() => document.getElementById('lotp1').focus(), 100);
-}
-
-function verifyLoginOTP() {
-  const otp = ['lotp1','lotp2','lotp3','lotp4','lotp5','lotp6'].map(id => document.getElementById(id).value).join('');
-  if (otp !== '123456') {
-    document.getElementById('err-l-otp').classList.add('show'); return;
-  }
-  showToast('Verified! Logging in…');
-  setTimeout(() => window.location.href = 'debtwise_dashboard.html', 1000);
-}
-
-// ── OTP box UX ────────────────────────────────────────────────
-function otpNext(el, nextId) {
-  el.value = el.value.replace(/\D/g, '').slice(0, 1);
-  if (el.value && nextId) document.getElementById(nextId).focus();
-}
-function otpBack(e, el, prevId) {
-  if (e.key === 'Backspace' && !el.value && prevId) {
-    document.getElementById(prevId).focus();
-  }
+  toast('Logging in…');
+  setTimeout(()=>location.href='debtwise_dashboard.html', 900);
 }
 </script>
 </body>

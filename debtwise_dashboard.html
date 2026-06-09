@@ -1,339 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DebtWise — Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
-<link rel="stylesheet" href="debtwise.css">
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:var(--font-sans);background:var(--color-background-tertiary)}
-.app{min-height:100vh;background:var(--color-background-tertiary)}
-.topbar{background:var(--color-background-primary);border-bottom:0.5px solid var(--color-border-tertiary);padding:14px 20px;display:flex;align-items:center;justify-content:space-between}
-.topbar-left{display:flex;align-items:center;gap:10px}
-.logo-icon{width:32px;height:32px;border-radius:var(--border-radius-md);background:#E1F5EE;display:flex;align-items:center;justify-content:center}
-.logo-text{font-size:15px;font-weight:500;color:var(--color-text-primary)}
-.topbar-right{display:flex;align-items:center;gap:10px}
-.avatar-sm{width:32px;height:32px;border-radius:50%;background:#E1F5EE;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:#0F6E56}
-.main{padding:20px}
-.greeting{margin-bottom:20px}
-.greeting-name{font-size:20px;font-weight:500;color:var(--color-text-primary)}
-.greeting-sub{font-size:13px;color:var(--color-text-secondary);margin-top:2px}
-.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:20px}
-.metric{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:14px}
-.metric-label{font-size:11px;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:0.05em}
-.metric-value{font-size:20px;font-weight:500;color:var(--color-text-primary);margin-top:4px}
-.metric-value.danger{color:#A32D2D}
-.metric-value.success{color:#0F6E56}
-.metric-sub{font-size:11px;color:var(--color-text-tertiary);margin-top:2px}
-.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-.section-title{font-size:14px;font-weight:500;color:var(--color-text-primary)}
-.add-btn{display:flex;align-items:center;gap:5px;font-size:12px;padding:6px 12px;border-radius:var(--border-radius-md);background:#1D9E75;color:#fff;border:none;cursor:pointer}
-.add-btn:hover{background:#0F6E56}
-.debt-list{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
-.debt-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px 16px}
-.debt-card.overdue{border-left:3px solid #E24B4A;border-radius:0 var(--border-radius-lg) var(--border-radius-lg) 0}
-.debt-card.due-soon{border-left:3px solid #EF9F27;border-radius:0 var(--border-radius-lg) var(--border-radius-lg) 0}
-.debt-card.ok{border-left:3px solid #1D9E75;border-radius:0 var(--border-radius-lg) var(--border-radius-lg) 0}
-.debt-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
-.debt-info{}
-.debt-name{font-size:14px;font-weight:500;color:var(--color-text-primary)}
-.debt-bank{font-size:12px;color:var(--color-text-secondary);margin-top:2px}
-.debt-badge{font-size:10px;padding:3px 8px;border-radius:10px;font-weight:500}
-.badge-overdue{background:#FCEBEB;color:#A32D2D}
-.badge-soon{background:#FAEEDA;color:#854F0B}
-.badge-ok{background:#E1F5EE;color:#0F6E56}
-.debt-nums{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px}
-.debt-num-label{font-size:10px;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:0.04em}
-.debt-num-value{font-size:13px;font-weight:500;color:var(--color-text-primary);margin-top:2px}
-.progress-wrap{margin-bottom:10px}
-.progress-label{display:flex;justify-content:space-between;font-size:11px;color:var(--color-text-tertiary);margin-bottom:4px}
-.progress-bar{height:5px;background:var(--color-border-tertiary);border-radius:3px;overflow:hidden}
-.progress-fill{height:100%;border-radius:3px;background:#1D9E75}
-.debt-actions{display:flex;gap:8px}
-.action-btn{flex:1;font-size:12px;padding:7px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-secondary);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px}
-.action-btn:hover{background:var(--color-background-secondary)}
-.action-btn.primary{background:#1D9E75;color:#fff;border-color:#1D9E75}
-.action-btn.primary:hover{background:#0F6E56}
-.empty-state{background:var(--color-background-primary);border:0.5px dashed var(--color-border-secondary);border-radius:var(--border-radius-lg);padding:2rem;text-align:center;display:none}
-.empty-title{font-size:14px;font-weight:500;color:var(--color-text-primary);margin-bottom:6px}
-.empty-sub{font-size:13px;color:var(--color-text-secondary);margin-bottom:1rem;line-height:1.5}
-.add-first-btn{display:inline-flex;align-items:center;gap:6px;font-size:13px;padding:8px 16px;border-radius:var(--border-radius-md);background:#1D9E75;color:#fff;border:none;cursor:pointer}
-.upcoming{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px 16px;margin-bottom:20px}
-.upcoming-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:0.5px solid var(--color-border-tertiary)}
-.upcoming-row:last-child{border-bottom:none;padding-bottom:0}
-.upcoming-row:first-child{padding-top:0}
-.upcoming-left{display:flex;align-items:center;gap:10px}
-.upcoming-icon{width:32px;height:32px;border-radius:var(--border-radius-md);display:flex;align-items:center;justify-content:center;font-size:15px}
-.upcoming-name{font-size:13px;font-weight:500;color:var(--color-text-primary)}
-.upcoming-date{font-size:11px;color:var(--color-text-secondary);margin-top:1px}
-.upcoming-amount{font-size:13px;font-weight:500;color:var(--color-text-primary)}
-.modal-bg{display:none;min-height:500px;background:rgba(0,0,0,0.45);align-items:center;justify-content:center;border-radius:var(--border-radius-lg);padding:1rem}
-.modal-bg.open{display:flex}
-.modal{background:var(--color-background-primary);border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary);padding:1.25rem;width:100%;max-width:380px}
-.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
-.modal-title{font-size:15px;font-weight:500;color:var(--color-text-primary)}
-.close-btn{background:none;border:none;cursor:pointer;color:var(--color-text-tertiary);font-size:18px;padding:2px}
-.field{margin-bottom:12px}
-.field label{display:block;font-size:11px;font-weight:500;color:var(--color-text-secondary);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.04em}
-.field input,.field select{width:100%;font-size:13px}
-.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.modal-footer{display:flex;gap:8px;margin-top:14px}
-.btn-cancel{flex:1;font-size:13px;padding:8px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:none;color:var(--color-text-secondary);cursor:pointer}
-.btn-save{flex:2;font-size:13px;padding:8px;border-radius:var(--border-radius-md);background:#1D9E75;color:#fff;border:none;cursor:pointer;font-weight:500}
-.btn-save:hover{background:#0F6E56}
-.paid-modal-bg{display:none;min-height:400px;background:rgba(0,0,0,0.45);align-items:center;justify-content:center;border-radius:var(--border-radius-lg);padding:1rem}
-.paid-modal-bg.open{display:flex}
-.nav-bottom{background:var(--color-background-primary);border-top:0.5px solid var(--color-border-tertiary);display:flex;padding:10px 0 6px}
-.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px}
-.nav-item.active .nav-icon{color:#1D9E75}
-.nav-icon{font-size:20px;color:var(--color-text-tertiary)}
-.nav-label{font-size:10px;color:var(--color-text-tertiary)}
-.nav-item.active .nav-label{color:#1D9E75}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:       #F8F9F8;
+  --white:    #FFFFFF;
+  --green:    #1D9E75;
+  --green-dk: #0F6E56;
+  --green-lt: #EBF7F2;
+  --ink:      #0D1410;
+  --ink-2:    #4A5550;
+  --ink-3:    #8A9690;
+  --border:   #EDF0EE;
+  --danger:   #D93025;
+  --danger-lt:#FEF0EF;
+  --warn:     #E37400;
+  --warn-lt:  #FEF3E2;
+  --radius:   14px;
+  --shadow:   0 1px 3px rgba(0,0,0,0.05), 0 4px 16px rgba(0,0,0,0.04);
+}
+
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: var(--bg);
+  min-height: 100vh;
+  padding-bottom: 80px;
+  -webkit-font-smoothing: antialiased;
+  color: var(--ink);
+}
+
+/* ── Topbar ── */
+.topbar {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 20px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 20;
+}
+.logo { display: flex; align-items: center; gap: 9px; }
+.logo-mark {
+  width: 30px; height: 30px; border-radius: 8px;
+  background: var(--green); color: #fff;
+  display: flex; align-items: center; justify-content: center; font-size: 15px;
+}
+.logo-name { font-size: 15px; font-weight: 700; color: var(--ink); letter-spacing: -0.3px; }
+.topbar-right { display: flex; align-items: center; gap: 8px; }
+.icon-btn {
+  width: 34px; height: 34px; border-radius: 8px;
+  background: none; border: none; cursor: pointer;
+  color: var(--ink-3); font-size: 18px;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s, color 0.15s;
+}
+.icon-btn:hover { background: var(--bg); color: var(--ink-2); }
+.avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--green-lt); color: var(--green-dk);
+  font-size: 11px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  letter-spacing: 0.5px;
+}
+
+/* ── Main ── */
+.main { padding: 20px 16px; max-width: 540px; margin: 0 auto; }
+
+/* ── Greeting ── */
+.greeting { margin-bottom: 20px; }
+.greeting-name { font-size: 22px; font-weight: 700; color: var(--ink); letter-spacing: -0.5px; }
+.greeting-sub  { font-size: 13px; color: var(--ink-3); margin-top: 2px; }
+
+/* ── Metric strip ── */
+.metrics {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 10px; margin-bottom: 24px;
+}
+.metric {
+  background: var(--white); border-radius: var(--radius);
+  padding: 16px 14px;
+  box-shadow: var(--shadow);
+  transition: transform 0.15s;
+}
+.metric:hover { transform: translateY(-1px); }
+.metric-label { font-size: 10px; font-weight: 600; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.07em; }
+.metric-val   { font-size: 22px; font-weight: 700; color: var(--ink); margin-top: 5px; letter-spacing: -0.5px; line-height: 1; }
+.metric-val.green  { color: var(--green); }
+.metric-val.danger { color: var(--danger); }
+.metric-sub   { font-size: 11px; color: var(--ink-3); margin-top: 4px; }
+
+/* ── Section header ── */
+.sec-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 12px;
+}
+.sec-title { font-size: 14px; font-weight: 600; color: var(--ink); letter-spacing: -0.2px; }
+.add-btn {
+  display: flex; align-items: center; gap: 5px;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px; font-weight: 600;
+  padding: 7px 13px; border-radius: 8px;
+  background: var(--green); color: #fff; border: none; cursor: pointer;
+  transition: background 0.15s, transform 0.15s;
+}
+.add-btn:hover { background: var(--green-dk); transform: translateY(-1px); }
+
+/* ── Loan cards ── */
+.loan-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+
+.loan-card {
+  background: var(--white); border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.loan-card:hover { transform: translateY(-1px); box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 24px rgba(0,0,0,0.06); }
+
+.loan-accent {
+  height: 3px; width: 100%;
+  background: var(--green);
+}
+.loan-accent.danger { background: var(--danger); }
+.loan-accent.warn   { background: var(--warn); }
+
+.loan-body { padding: 14px 16px; }
+.loan-top  { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 14px; }
+.loan-name { font-size: 14px; font-weight: 600; color: var(--ink); letter-spacing: -0.2px; }
+.loan-bank { font-size: 12px; color: var(--ink-3); margin-top: 2px; }
+
+.badge {
+  font-size: 10px; font-weight: 600; padding: 3px 9px;
+  border-radius: 20px; white-space: nowrap; flex-shrink: 0;
+  display: flex; align-items: center; gap: 4px;
+}
+.badge-danger { background: var(--danger-lt); color: var(--danger); }
+.badge-warn   { background: var(--warn-lt);   color: var(--warn); }
+.badge-ok     { background: var(--green-lt);  color: var(--green-dk); }
+
+.loan-nums {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 10px; margin-bottom: 14px;
+}
+.num-label { font-size: 10px; font-weight: 600; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.06em; }
+.num-val   { font-size: 14px; font-weight: 700; color: var(--ink); margin-top: 3px; letter-spacing: -0.3px; }
+
+.progress-wrap { margin-bottom: 14px; }
+.progress-head { display: flex; justify-content: space-between; margin-bottom: 5px; }
+.progress-label { font-size: 11px; color: var(--ink-3); }
+.progress-pct   { font-size: 11px; font-weight: 600; color: var(--ink-2); }
+.progress-track {
+  height: 4px; background: #EDF0EE; border-radius: 2px; overflow: hidden;
+}
+.progress-fill  { height: 100%; border-radius: 2px; background: var(--green); transition: width 0.4s ease; }
+.progress-fill.danger { background: var(--danger); }
+
+.due-line { font-size: 11px; color: var(--ink-3); margin-bottom: 14px; }
+.due-line strong { color: var(--ink-2); font-weight: 500; }
+
+.loan-actions { display: flex; gap: 6px; }
+.act-btn {
+  flex: 1; font-family: 'Inter', sans-serif;
+  font-size: 12px; font-weight: 500;
+  padding: 8px 10px; border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--white); color: var(--ink-2); cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 5px;
+  transition: all 0.15s;
+}
+.act-btn:hover { background: var(--bg); border-color: #C8D5D0; }
+.act-btn.primary { background: var(--green); color: #fff; border-color: var(--green); }
+.act-btn.primary:hover { background: var(--green-dk); border-color: var(--green-dk); }
+.act-btn.ghost-danger  { color: var(--danger); border-color: #F5C5C2; }
+.act-btn.ghost-danger:hover { background: var(--danger-lt); }
+
+/* ── Empty state ── */
+.empty {
+  background: var(--white); border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 40px 24px; text-align: center;
+}
+.empty-icon {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: var(--green-lt); color: var(--green);
+  font-size: 24px; display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 16px;
+}
+.empty-title { font-size: 15px; font-weight: 600; color: var(--ink); margin-bottom: 6px; }
+.empty-sub   { font-size: 13px; color: var(--ink-2); line-height: 1.6; margin-bottom: 20px; }
+.empty-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px; font-weight: 600;
+  padding: 10px 20px; border-radius: 10px;
+  background: var(--green); color: #fff; border: none; cursor: pointer;
+  transition: background 0.15s, transform 0.15s;
+}
+.empty-btn:hover { background: var(--green-dk); transform: translateY(-1px); }
+
+/* ── Bottom nav ── */
+.nav {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: var(--white);
+  border-top: 1px solid var(--border);
+  display: flex; padding: 8px 0 12px;
+  z-index: 20;
+}
+.nav-item {
+  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
+  cursor: pointer; padding: 4px 0;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.nav-icon  { font-size: 20px; color: var(--ink-3); transition: color 0.15s; }
+.nav-label { font-size: 10px; font-weight: 500; color: var(--ink-3); transition: color 0.15s; }
+.nav-item.active .nav-icon,
+.nav-item.active .nav-label { color: var(--green); }
+.nav-item:hover .nav-icon,
+.nav-item:hover .nav-label  { color: var(--ink-2); }
+.nav-item.active:hover .nav-icon,
+.nav-item.active:hover .nav-label { color: var(--green-dk); }
+
+/* ── Modal overlay ── */
+.overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.35);
+  backdrop-filter: blur(2px);
+  z-index: 100; align-items: flex-end; justify-content: center;
+  padding: 0;
+}
+.overlay.open { display: flex; }
+
+/* slide-up sheet */
+.sheet {
+  background: var(--white);
+  border-radius: 20px 20px 0 0;
+  width: 100%; max-width: 540px;
+  padding: 0 0 32px;
+  max-height: 92vh; overflow-y: auto;
+  animation: slideUp 0.28s cubic-bezier(.32,0,.67,0) reverse, slideUp 0.28s cubic-bezier(.33,1,.68,1) forwards;
+}
+@keyframes slideUp {
+  from { transform: translateY(100%); opacity: 0.6; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+.sheet-handle {
+  width: 36px; height: 4px; border-radius: 2px;
+  background: #DDE3DF; margin: 12px auto 20px;
+}
+.sheet-title {
+  font-size: 16px; font-weight: 700; color: var(--ink);
+  letter-spacing: -0.3px; padding: 0 20px; margin-bottom: 20px;
+}
+.sheet-body { padding: 0 20px; }
+
+.field { margin-bottom: 14px; }
+.field label {
+  display: block; font-size: 11px; font-weight: 600;
+  color: var(--ink-3); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 6px;
+}
+.field input, .field select {
+  width: 100%; font-family: 'Inter', sans-serif;
+  font-size: 14px; padding: 11px 14px; border-radius: 10px;
+  border: 1.5px solid #E8EDEB; background: var(--white); color: var(--ink);
+  outline: none; transition: border-color 0.18s, box-shadow 0.18s; -webkit-appearance: none;
+}
+.field input:focus, .field select:focus {
+  border-color: var(--green); box-shadow: 0 0 0 3px rgba(29,158,117,0.1);
+}
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+.hint-box {
+  background: var(--green-lt); border-radius: 10px;
+  padding: 10px 14px; font-size: 12px; color: var(--green-dk);
+  display: flex; align-items: flex-start; gap: 8px; margin-bottom: 6px;
+}
+.hint-box i { flex-shrink: 0; margin-top: 1px; }
+
+.sheet-actions { display: flex; gap: 8px; padding: 0 20px; margin-top: 20px; }
+.sbtn {
+  flex: 1; font-family: 'Inter', sans-serif;
+  font-size: 13px; font-weight: 600;
+  padding: 11px; border-radius: 10px; border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  transition: all 0.15s;
+}
+.sbtn-cancel { background: var(--bg); color: var(--ink-2); flex: 0.7; }
+.sbtn-cancel:hover { background: #E8EDEB; }
+.sbtn-save   { background: var(--green); color: #fff; }
+.sbtn-save:hover { background: var(--green-dk); }
+
+.err-inline { font-size: 12px; color: var(--danger); margin-top: 10px; display: none; align-items: center; gap: 4px; }
+.err-inline.show { display: flex; }
+
+/* Paid breakdown */
+.breakdown {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 10px; background: var(--bg); border-radius: 12px;
+  padding: 14px; margin-bottom: 16px;
+}
+.bd-label { font-size: 10px; font-weight: 600; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.06em; }
+.bd-val   { font-size: 16px; font-weight: 700; margin-top: 4px; letter-spacing: -0.3px; }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 88px; left: 50%; transform: translateX(-50%) translateY(40px);
+  background: var(--ink); color: #fff;
+  font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500;
+  padding: 10px 20px; border-radius: 24px;
+  opacity: 0; transition: all 0.3s cubic-bezier(.34,1.56,.64,1);
+  pointer-events: none; white-space: nowrap; z-index: 999;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 </style>
+</head>
+<body>
 
-<h2 class="sr-only">DebtWise dashboard showing all debts, total outstanding balance, and upcoming EMI payments</h2>
+<!-- Topbar -->
+<div class="topbar">
+  <div class="logo">
+    <div class="logo-mark"><i class="ti ti-chart-pie"></i></div>
+    <div class="logo-name">DebtWise</div>
+  </div>
+  <div class="topbar-right">
+    <button class="icon-btn" aria-label="Notifications"><i class="ti ti-bell"></i></button>
+    <div class="avatar" id="user-av">GJ</div>
+  </div>
+</div>
 
-<div class="app">
-  <div class="topbar">
-    <div class="topbar-left">
-      <div class="logo-icon"><i class="ti ti-chart-pie" style="color:#1D9E75;font-size:16px" aria-hidden="true"></i></div>
-      <span class="logo-text">DebtWise</span>
+<div class="main">
+  <!-- Greeting -->
+  <div class="greeting">
+    <div class="greeting-name" id="greet-name">Good morning, Gitesh</div>
+    <div class="greeting-sub" id="greet-date"></div>
+  </div>
+
+  <!-- Metrics -->
+  <div class="metrics">
+    <div class="metric">
+      <div class="metric-label">Total outstanding</div>
+      <div class="metric-val danger" id="m-total">₹0</div>
+      <div class="metric-sub" id="m-total-sub">no loans yet</div>
     </div>
-    <div class="topbar-right">
-      <button style="background:none;border:none;cursor:pointer;color:var(--color-text-secondary);font-size:18px" aria-label="Notifications"><i class="ti ti-bell" aria-hidden="true"></i></button>
-      <div class="avatar-sm">GJ</div>
+    <div class="metric">
+      <div class="metric-label">Monthly EMIs</div>
+      <div class="metric-val" id="m-emi">₹0</div>
+      <div class="metric-sub" id="m-emi-sub">—</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Next due</div>
+      <div class="metric-val" style="font-size:18px" id="m-next">—</div>
+      <div class="metric-sub" id="m-next-sub">—</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Active loans</div>
+      <div class="metric-val green" id="m-count">0</div>
+      <div class="metric-sub">tracked</div>
     </div>
   </div>
 
-  <div class="main">
-    <div class="greeting">
-      <div class="greeting-name">Good morning, Gitesh</div>
-      <div class="greeting-sub" id="greeting-date">Monday, 9 June 2026</div>
-    </div>
-
-    <div class="metrics">
-      <div class="metric">
-        <div class="metric-label">Total outstanding</div>
-        <div class="metric-value danger" id="m-total"></div>
-        <div class="metric-sub"></div>
-      </div>
-      <div class="metric">
-        <div class="metric-label">This month's EMIs</div>
-        <div class="metric-value" id="m-emi"></div>
-        <div class="metric-sub"></div>
-      </div>
-      <div class="metric">
-        <div class="metric-label">Next due date</div>
-        <div class="metric-value" style="font-size:15px" id="m-next"></div>
-        <div class="metric-sub"></div>
-      </div>
-      <div class="metric">
-        <div class="metric-label">Interest paid (YTD)</div>
-        <div class="metric-value" style="font-size:16px"></div>
-        <div class="metric-sub"></div>
-      </div>
-    </div>
-
-    <div class="section-header">
-      <span class="section-title">My loans</span>
-      <button class="add-btn" onclick="window.location.href='debtwise_upload.html'"><i class="ti ti-plus" aria-hidden="true" style="font-size:14px"></i> Add loan</button>
-    </div>
-
-    <div class="debt-list" id="debt-list">
-    </div>
-
-    <div class="section-header">
-      <span class="section-title">Upcoming this month</span>
-    </div>
-    <div class="upcoming">
-      <div class="upcoming-row">
-        <div class="upcoming-left">
-          <div class="upcoming-icon" style="background:#FCEBEB"><i class="ti ti-alert-circle" style="color:#A32D2D;font-size:15px" aria-hidden="true"></i></div>
-          <div>
-            <div class="upcoming-name"></div>
-            <div class="upcoming-date"></div>
-          </div>
-        </div>
-        <div class="upcoming-amount" style="color:#A32D2D"></div>
-      </div>
-      <div class="upcoming-row">
-        <div class="upcoming-left">
-          <div class="upcoming-icon" style="background:#FAEEDA"><i class="ti ti-calendar" style="color:#854F0B;font-size:15px" aria-hidden="true"></i></div>
-          <div>
-            <div class="upcoming-name"></div>
-            <div class="upcoming-date"></div>
-          </div>
-        </div>
-        <div class="upcoming-amount"></div>
-      </div>
-      <div class="upcoming-row">
-        <div class="upcoming-left">
-          <div class="upcoming-icon" style="background:#E1F5EE"><i class="ti ti-check" style="color:#0F6E56;font-size:15px" aria-hidden="true"></i></div>
-          <div>
-            <div class="upcoming-name"></div>
-            <div class="upcoming-date"></div>
-          </div>
-        </div>
-        <div class="upcoming-amount" style="color:#0F6E56"></div>
-      </div>
-    </div>
+  <!-- Loans -->
+  <div class="sec-header">
+    <span class="sec-title">My loans</span>
+    <button type="button" class="add-btn" onclick="openAdd()">
+      <i class="ti ti-plus" style="font-size:13px"></i> Add loan
+    </button>
   </div>
 
-  <div class="nav-bottom">
-    <div class="nav-item active">
-      <i class="ti ti-home nav-icon" aria-hidden="true"></i>
-      <span class="nav-label">Home</span>
+  <div class="loan-list" id="loan-list"></div>
+  <div class="empty" id="empty-state" style="display:none">
+    <div class="empty-icon"><i class="ti ti-receipt-off"></i></div>
+    <div class="empty-title">No loans yet</div>
+    <div class="empty-sub">Add your first loan to start tracking EMIs, balance, and payoff progress.</div>
+    <button type="button" class="empty-btn" onclick="openAdd()"><i class="ti ti-plus"></i> Add your first loan</button>
+  </div>
+</div>
+
+<!-- Bottom nav -->
+<nav class="nav">
+  <a class="nav-item active" href="debtwise_dashboard.html">
+    <i class="ti ti-home nav-icon"></i>
+    <span class="nav-label">Home</span>
+  </a>
+  <a class="nav-item" href="debtwise_upload.html">
+    <i class="ti ti-upload nav-icon"></i>
+    <span class="nav-label">Upload</span>
+  </a>
+  <a class="nav-item" href="debtwise_strategy.html">
+    <i class="ti ti-chart-line nav-icon"></i>
+    <span class="nav-label">Strategy</span>
+  </a>
+  <a class="nav-item" href="#">
+    <i class="ti ti-settings nav-icon"></i>
+    <span class="nav-label">Settings</span>
+  </a>
+</nav>
+
+<!-- ── Add/Edit sheet ── -->
+<div class="overlay" id="add-overlay" onclick="overlayClose(event,'add-overlay')">
+  <div class="sheet" id="add-sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title" id="add-title">Add a loan</div>
+    <div class="sheet-body">
+      <input type="hidden" id="edit-idx">
+      <div class="field">
+        <label>Loan type</label>
+        <select id="f-type">
+          <option>Personal loan</option>
+          <option>Home loan</option>
+          <option>Vehicle loan</option>
+          <option>Business loan</option>
+          <option>Credit card</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Bank / lender</label>
+        <input type="text" id="f-bank" placeholder="e.g. HDFC Bank">
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Loan amount (₹)</label>
+          <input type="number" id="f-amount" placeholder="500000">
+        </div>
+        <div class="field">
+          <label>Outstanding (₹)</label>
+          <input type="number" id="f-out" placeholder="420000">
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>EMI (₹)</label>
+          <input type="number" id="f-emi" placeholder="12000">
+        </div>
+        <div class="field">
+          <label>Rate (%)</label>
+          <input type="number" id="f-rate" placeholder="8.5" step="0.1">
+        </div>
+      </div>
+      <div class="field">
+        <label>Next due date</label>
+        <input type="date" id="f-due">
+      </div>
+      <div class="hint-box">
+        <i class="ti ti-file-text"></i>
+        <span>Have a sanction letter? <a href="debtwise_upload.html" style="color:var(--green-dk);font-weight:600">Upload it</a> and we'll fill this automatically.</span>
+      </div>
+      <div class="err-inline" id="add-err"><i class="ti ti-alert-circle" style="font-size:12px"></i> Please fill in all required fields</div>
     </div>
-    <div class="nav-item" onclick=window.location.href='debtwise_upload.html'>
-      <i class="ti ti-upload nav-icon" aria-hidden="true"></i>
-      <span class="nav-label">Add loan</span>
-    </div>
-    <div class="nav-item" onclick=window.location.href='debtwise_strategy.html'>
-      <i class="ti ti-chart-line nav-icon" aria-hidden="true"></i>
-      <span class="nav-label">Strategy</span>
-    </div>
-    <div class="nav-item">
-      <i class="ti ti-settings nav-icon" aria-hidden="true"></i>
-      <span class="nav-label">Settings</span>
+    <div class="sheet-actions">
+      <button type="button" class="sbtn sbtn-cancel" onclick="closeAdd()">Cancel</button>
+      <button type="button" class="sbtn sbtn-save" onclick="saveLoan()"><i class="ti ti-check"></i> Save loan</button>
     </div>
   </div>
 </div>
 
-<div class="modal-bg" id="modal-bg">
-  <div class="modal">
-    <div class="modal-header">
-      <span class="modal-title">Add a loan manually</span>
-      <button class="close-btn" onclick="closeModal()" aria-label="Close"><i class="ti ti-x" aria-hidden="true"></i></button>
+<!-- ── Mark paid sheet ── -->
+<div class="overlay" id="paid-overlay" onclick="overlayClose(event,'paid-overlay')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title" id="paid-title">Mark as paid</div>
+    <div class="sheet-body">
+      <div class="breakdown">
+        <div>
+          <div class="bd-label">EMI</div>
+          <div class="bd-val" id="bd-emi">—</div>
+        </div>
+        <div>
+          <div class="bd-label">Principal</div>
+          <div class="bd-val" style="color:var(--green)" id="bd-principal">—</div>
+        </div>
+        <div>
+          <div class="bd-label">Interest</div>
+          <div class="bd-val" style="color:var(--danger)" id="bd-interest">—</div>
+        </div>
+      </div>
+      <div class="field"><label>Payment date</label><input type="date" id="paid-date"></div>
+      <div class="field">
+        <label>Payment mode</label>
+        <select><option>UPI</option><option>Net banking</option><option>Auto debit</option><option>Cheque</option></select>
+      </div>
     </div>
-    <div class="field"><label>Loan type</label><select><option>Personal loan</option><option>Home loan</option><option>Vehicle loan</option><option>Business loan</option><option>Credit card</option></select></div>
-    <div class="field"><label>Lender / bank name</label><input type="text" placeholder="e.g. HDFC Bank"></div>
-    <div class="field-row">
-      <div class="field"><label>Loan amount (₹)</label><input type="number" placeholder="500000"></div>
-      <div class="field"><label>Interest rate (%)</label><input type="number" placeholder="8.5" step="0.1"></div>
-    </div>
-    <div class="field-row">
-      <div class="field"><label>EMI amount (₹)</label><input type="number" placeholder="12000"></div>
-      <div class="field"><label>Tenure (months)</label><input type="number" placeholder="240"></div>
-    </div>
-    <div class="field"><label>First due date</label><input type="date"></div>
-    <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px;font-size:12px;color:var(--color-text-secondary);display:flex;gap:8px;align-items:flex-start">
-      <i class="ti ti-file-upload" style="color:#1D9E75;font-size:15px;flex-shrink:0;margin-top:1px" aria-hidden="true"></i>
-      <span>Have a sanction letter? <span style="color:#1D9E75;cursor:pointer;font-weight:500" onclick="closeModal();sendPrompt('Build the DebtWise sanction letter upload screen — where user can upload a PDF or image and AI auto-fills the loan details')">Upload it instead</span> and we'll fill this for you automatically.</span>
-    </div>
-    <div class="modal-footer">
-      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
-      <button class="btn-save" onclick="closeModal()"><i class="ti ti-check" aria-hidden="true"></i> Save loan</button>
+    <div class="sheet-actions">
+      <button type="button" class="sbtn sbtn-cancel" onclick="closePaid()">Cancel</button>
+      <button type="button" class="sbtn sbtn-save" onclick="confirmPaid()" style="background:var(--green-dk)">
+        <i class="ti ti-check"></i> Confirm payment
+      </button>
     </div>
   </div>
 </div>
 
-<div class="paid-modal-bg" id="paid-modal-bg">
-  <div class="modal">
-    <div class="modal-header">
-      <span class="modal-title" id="paid-title">Mark EMI as paid</span>
-      <button class="close-btn" onclick="closePaidModal()" aria-label="Close"><i class="ti ti-x" aria-hidden="true"></i></button>
-    </div>
-    <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:14px;margin-bottom:14px">
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
-        <div><div style="font-size:10px;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:0.04em">EMI amount</div><div style="font-size:14px;font-weight:500;color:var(--color-text-primary);margin-top:3px" id="paid-emi-amt">₹8,350</div></div>
-        <div><div style="font-size:10px;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:0.04em">Principal</div><div style="font-size:14px;font-weight:500;color:#0F6E56;margin-top:3px" id="paid-principal">₹5,420</div></div>
-        <div><div style="font-size:10px;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:0.04em">Interest</div><div style="font-size:14px;font-weight:500;color:#A32D2D;margin-top:3px" id="paid-interest">₹2,930</div></div>
-      </div>
-    </div>
-    <div class="field"><label>Payment date</label><input type="date" id="paid-date"></div>
-    <div class="field"><label>Payment mode</label><select><option>UPI</option><option>Net banking</option><option>Auto debit</option><option>Cheque</option></select></div>
-    <div class="modal-footer">
-      <button class="btn-cancel" onclick="closePaidModal()">Cancel</button>
-      <button class="btn-save" onclick="closePaidModal()" style="background:#0F6E56"><i class="ti ti-check" aria-hidden="true"></i> Confirm payment</button>
-    </div>
-  </div>
-</div>
+<div class="toast" id="toastEl"></div>
 
 <script>
-function openModal(){document.getElementById('modal-bg').classList.add('open')}
-function closeModal(){document.getElementById('modal-bg').classList.remove('open')}
-function closePaidModal(){document.getElementById('paid-modal-bg').classList.remove('open')}
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const MFULL  = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const DAYS   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 
-function markPaid(name,emi){
-  document.getElementById('paid-title').textContent='Mark paid — '+name;
-  document.getElementById('paid-emi-amt').textContent='₹'+emi;
-  const raw=parseInt(emi.replace(/,/g,''));
-  const interest=Math.round(raw*0.35);
-  const principal=raw-interest;
-  document.getElementById('paid-interest').textContent='₹'+interest.toLocaleString('en-IN');
-  document.getElementById('paid-principal').textContent='₹'+principal.toLocaleString('en-IN');
-  document.getElementById('paid-date').value=new Date().toISOString().split('T')[0];
-  document.getElementById('paid-modal-bg').classList.add('open');
+// ── Init ─────────────────────────────────────────────────────
+const now = new Date();
+const hr = now.getHours();
+const user = (() => { try { return JSON.parse(localStorage.getItem('dw_user') || '{}'); } catch(e){ return {}; } })();
+const firstName = (user.name || 'Gitesh').split(' ')[0];
+const initials  = (user.name || 'GJ').split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
+document.getElementById('greet-name').textContent = (hr<12?'Good morning':hr<17?'Good afternoon':'Good evening') + ', ' + firstName;
+document.getElementById('greet-date').textContent = DAYS[now.getDay()] + ', ' + now.getDate() + ' ' + MFULL[now.getMonth()] + ' ' + now.getFullYear();
+document.getElementById('user-av').textContent = initials;
+
+// ── Storage ───────────────────────────────────────────────────
+function getLoans() { try { return JSON.parse(localStorage.getItem('dw_loans')||'[]'); } catch(e){ return []; } }
+function setLoans(l) { localStorage.setItem('dw_loans', JSON.stringify(l)); }
+
+// ── Helpers ───────────────────────────────────────────────────
+function fmt(n) { return '₹' + Number(n).toLocaleString('en-IN'); }
+
+function status(dueDateStr) {
+  if (!dueDateStr) return 'ok';
+  const d = new Date(dueDateStr); const t = new Date(); t.setHours(0,0,0,0);
+  const diff = Math.round((d - t) / 86400000);
+  return diff < 0 ? 'overdue' : diff <= 7 ? 'warn' : 'ok';
 }
 
-const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
-const now=new Date();
-document.getElementById('greeting-date').textContent=days[now.getDay()]+', '+now.getDate()+' '+months[now.getMonth()]+' '+now.getFullYear();
-const hr=now.getHours();
-document.querySelector('.greeting-name').textContent=(hr<12?'Good morning':hr<17?'Good afternoon':'Good evening')+', Gitesh';
-
-function fmt(n){ return '₹'+Math.round(Number(n)).toLocaleString('en-IN'); }
-
-function deleteLoan(id){
-  const loans=JSON.parse(localStorage.getItem('dw_loans')||'[]');
-  localStorage.setItem('dw_loans',JSON.stringify(loans.filter(l=>l.id!==id)));
-  renderLoans();
+function badge(s, dueStr) {
+  if (s === 'overdue') return `<span class="badge badge-danger"><i class="ti ti-alert-circle"></i> Overdue</span>`;
+  if (s === 'warn') {
+    const diff = Math.round((new Date(dueStr) - new Date()) / 86400000);
+    return `<span class="badge badge-warn"><i class="ti ti-clock"></i> Due in ${diff}d</span>`;
+  }
+  return `<span class="badge badge-ok"><i class="ti ti-check"></i> On track</span>`;
 }
 
-function renderLoans(){
-  const loans=JSON.parse(localStorage.getItem('dw_loans')||'[]');
-  const list=document.getElementById('debt-list');
+function toast(msg) {
+  const el = document.getElementById('toastEl');
+  el.textContent = msg; el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2500);
+}
 
-  if(loans.length===0){
-    list.innerHTML=`<div style="background:var(--color-background-primary);border:0.5px dashed var(--color-border-secondary);border-radius:var(--border-radius-lg);padding:2rem;text-align:center">
-      <div style="font-size:14px;font-weight:500;color:var(--color-text-primary);margin-bottom:6px">No loans yet</div>
-      <div style="font-size:13px;color:var(--color-text-secondary);margin-bottom:1rem">Upload a sanction letter to add your first loan.</div>
-      <button onclick="window.location.href='debtwise_upload.html'" style="font-size:13px;padding:8px 16px;border-radius:var(--border-radius-md);background:#1D9E75;color:#fff;border:none;cursor:pointer">+ Add your first loan</button>
-    </div>`;
-    return;
+// ── Render ────────────────────────────────────────────────────
+function render() {
+  const loans = getLoans();
+  const list  = document.getElementById('loan-list');
+  const empty = document.getElementById('empty-state');
+
+  // Metrics
+  const totOut = loans.reduce((s,l) => s + Number(l.out||0), 0);
+  const totEMI = loans.reduce((s,l) => s + Number(l.emi||0), 0);
+  document.getElementById('m-total').textContent = fmt(totOut);
+  document.getElementById('m-total-sub').textContent = loans.length ? `across ${loans.length} loan${loans.length>1?'s':''}` : 'no loans yet';
+  document.getElementById('m-emi').textContent = fmt(totEMI);
+  document.getElementById('m-emi-sub').textContent = loans.length ? `${loans.length} active` : '—';
+  document.getElementById('m-count').textContent = loans.length;
+
+  const upcoming = loans.filter(l=>l.due).sort((a,b)=>new Date(a.due)-new Date(b.due));
+  if (upcoming.length) {
+    const d = new Date(upcoming[0].due);
+    document.getElementById('m-next').textContent = d.getDate() + ' ' + MONTHS[d.getMonth()];
+    document.getElementById('m-next-sub').textContent = upcoming[0].bank || upcoming[0].type;
+  } else {
+    document.getElementById('m-next').textContent = '—';
+    document.getElementById('m-next-sub').textContent = '—';
   }
 
-  const totalOutstanding=loans.reduce((s,l)=>s+Number(l.amount),0);
-  const totalEMI=loans.reduce((s,l)=>s+Number(l.emi),0);
-  document.getElementById('m-total').textContent=fmt(totalOutstanding);
-  document.getElementById('m-emi').textContent=fmt(totalEMI);
-  const sorted=[...loans].sort((a,b)=>new Date(a.dueDate)-new Date(b.dueDate));
-  if(sorted[0]){
-    const d=new Date(sorted[0].dueDate);
-    document.getElementById('m-next').textContent=d.getDate()+' '+d.toLocaleString('en-IN',{month:'short'});
-  }
+  if (!loans.length) { list.innerHTML=''; empty.style.display='block'; return; }
+  empty.style.display = 'none';
 
-  const badgeMap={
-    overdue:'<span class="debt-badge badge-overdue">Overdue</span>',
-    'due-soon':'<span class="debt-badge badge-soon">Due soon</span>',
-    ok:'<span class="debt-badge badge-ok">On track</span>'
-  };
-  list.innerHTML=loans.map(loan=>{
-    const sc=loan.status||'ok';
-    const pct=loan.paidPct||0;
-    const emiDisplay=Number(loan.emi).toLocaleString('en-IN');
-    return `<div class="debt-card ${sc}">
-      <div class="debt-top">
-        <div class="debt-info">
-          <div class="debt-name">${loan.type}</div>
-          <div class="debt-bank">${loan.bank}</div>
+  list.innerHTML = loans.map((l,i) => {
+    const s   = status(l.due);
+    const pct = l.amount ? Math.round(((l.amount - l.out) / l.amount) * 100) : 0;
+    const dueLabel = l.due ? new Date(l.due).toLocaleDateString('en-IN',{day:'numeric',month:'short'}) : '—';
+    return `
+    <div class="loan-card">
+      <div class="loan-accent${s==='overdue'?' danger':s==='warn'?' warn':''}"></div>
+      <div class="loan-body">
+        <div class="loan-top">
+          <div>
+            <div class="loan-name">${l.type}</div>
+            <div class="loan-bank">${l.bank||'—'}</div>
+          </div>
+          ${badge(s, l.due)}
         </div>
-        ${badgeMap[sc]||badgeMap.ok}
-      </div>
-      <div class="debt-nums">
-        <div><div class="debt-num-label">Outstanding</div><div class="debt-num-value">${fmt(loan.amount)}</div></div>
-        <div><div class="debt-num-label">EMI</div><div class="debt-num-value">${fmt(loan.emi)}</div></div>
-        <div><div class="debt-num-label">Rate</div><div class="debt-num-value">${loan.rate}%</div></div>
-      </div>
-      <div class="progress-wrap">
-        <div class="progress-label"><span>Paid so far</span><span>${pct}%</span></div>
-        <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
-      </div>
-      <div class="debt-actions">
-        <button class="action-btn" onclick="deleteLoan(${loan.id})"><i class="ti ti-trash" style="font-size:13px"></i> Remove</button>
-        <button class="action-btn primary" onclick="markPaid('${loan.type}','${emiDisplay}')"><i class="ti ti-check" style="font-size:13px"></i> Mark paid</button>
+        <div class="loan-nums">
+          <div><div class="num-label">Outstanding</div><div class="num-val">${fmt(l.out)}</div></div>
+          <div><div class="num-label">EMI / mo</div><div class="num-val">${fmt(l.emi)}</div></div>
+          <div><div class="num-label">Rate</div><div class="num-val">${l.rate}%</div></div>
+        </div>
+        <div class="progress-wrap">
+          <div class="progress-head">
+            <span class="progress-label">Repaid</span>
+            <span class="progress-pct">${pct}%</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill${s==='overdue'?' danger':''}" style="width:${pct}%"></div>
+          </div>
+        </div>
+        <div class="due-line">Next due: <strong>${dueLabel}</strong></div>
+        <div class="loan-actions">
+          <button type="button" class="act-btn" onclick="openEdit(${i})"><i class="ti ti-edit" style="font-size:13px"></i> Edit</button>
+          <button type="button" class="act-btn primary" onclick="openPaid(${i})"><i class="ti ti-check" style="font-size:13px"></i> Mark paid</button>
+          <button type="button" class="act-btn ghost-danger" onclick="del(${i})" style="flex:0;padding:8px 10px"><i class="ti ti-trash" style="font-size:13px"></i></button>
+        </div>
       </div>
     </div>`;
   }).join('');
 }
 
-renderLoans();
-  
+// ── Add/Edit sheet ────────────────────────────────────────────
+function openAdd() {
+  document.getElementById('add-title').textContent = 'Add a loan';
+  document.getElementById('edit-idx').value = '';
+  ['f-type','f-bank','f-amount','f-out','f-emi','f-rate','f-due'].forEach(id => {
+    const el = document.getElementById(id); if(el) el.value = '';
+  });
+  document.getElementById('f-type').value = 'Personal loan';
+  document.getElementById('add-err').classList.remove('show');
+  document.getElementById('add-overlay').classList.add('open');
+}
+function openEdit(i) {
+  const l = getLoans()[i];
+  document.getElementById('add-title').textContent = 'Edit loan';
+  document.getElementById('edit-idx').value = i;
+  document.getElementById('f-type').value  = l.type;
+  document.getElementById('f-bank').value  = l.bank;
+  document.getElementById('f-amount').value = l.amount;
+  document.getElementById('f-out').value   = l.out;
+  document.getElementById('f-emi').value   = l.emi;
+  document.getElementById('f-rate').value  = l.rate;
+  document.getElementById('f-due').value   = l.due;
+  document.getElementById('add-err').classList.remove('show');
+  document.getElementById('add-overlay').classList.add('open');
+}
+function closeAdd() { document.getElementById('add-overlay').classList.remove('open'); }
+
+function saveLoan() {
+  const bank = document.getElementById('f-bank').value.trim();
+  const emi  = document.getElementById('f-emi').value;
+  const rate = document.getElementById('f-rate').value;
+  const due  = document.getElementById('f-due').value;
+  if (!bank || !emi || !rate || !due) { document.getElementById('add-err').classList.add('show'); return; }
+
+  const loan = {
+    type:   document.getElementById('f-type').value,
+    bank, emi, rate, due,
+    amount: document.getElementById('f-amount').value || document.getElementById('f-out').value || 0,
+    out:    document.getElementById('f-out').value || document.getElementById('f-amount').value || 0,
+  };
+  const loans = getLoans();
+  const idx   = document.getElementById('edit-idx').value;
+  idx !== '' ? loans[Number(idx)] = loan : loans.push(loan);
+  setLoans(loans); closeAdd(); render();
+  toast(idx !== '' ? 'Loan updated' : 'Loan added ✓');
+}
+
+function del(i) {
+  if (!confirm('Remove this loan?')) return;
+  const loans = getLoans(); loans.splice(i,1); setLoans(loans); render();
+  toast('Loan removed');
+}
+
+// ── Mark paid sheet ───────────────────────────────────────────
+let paidIdx = null;
+function openPaid(i) {
+  paidIdx = i;
+  const l   = getLoans()[i];
+  const emi = Number(l.emi);
+  const int = Math.round(emi * (Number(l.rate) / 100 / 12));
+  const pri = emi - int;
+  document.getElementById('paid-title').textContent = 'Mark paid — ' + l.type;
+  document.getElementById('bd-emi').textContent       = fmt(emi);
+  document.getElementById('bd-principal').textContent = fmt(pri);
+  document.getElementById('bd-interest').textContent  = fmt(int);
+  document.getElementById('paid-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('paid-overlay').classList.add('open');
+}
+function closePaid() { document.getElementById('paid-overlay').classList.remove('open'); }
+function confirmPaid() {
+  if (paidIdx === null) return;
+  const loans = getLoans(); const l = loans[paidIdx];
+  const int = Math.round(Number(l.emi) * (Number(l.rate) / 100 / 12));
+  l.out = Math.max(0, Number(l.out) - (Number(l.emi) - int));
+  if (l.due) { const d = new Date(l.due); d.setMonth(d.getMonth()+1); l.due = d.toISOString().split('T')[0]; }
+  loans[paidIdx] = l; setLoans(loans); closePaid(); render();
+  toast('Payment recorded ✓');
+}
+
+function overlayClose(e, id) {
+  if (e.target.id === id) {
+    if (id==='add-overlay') closeAdd(); else closePaid();
+  }
+}
+
+render();
 </script>
+</body>
+</html>
