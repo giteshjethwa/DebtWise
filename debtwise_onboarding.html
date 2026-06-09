@@ -1,280 +1,624 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DebtWise — Login</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
-  <link rel="stylesheet" href="debtwise.css">
-  <link rel="stylesheet" href="debtwise_onboarding.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DebtWise — Sign up or Log in</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<link rel="stylesheet" href="debtwise.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);background:var(--color-background-tertiary);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1.5rem 1rem}
+
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:2rem;width:100%;max-width:400px}
+
+/* Logo */
+.logo-row{display:flex;align-items:center;gap:10px;margin-bottom:1.75rem}
+.logo-icon{width:40px;height:40px;border-radius:var(--border-radius-md);background:#E1F5EE;display:flex;align-items:center;justify-content:center}
+.logo-text{font-size:18px;font-weight:500;color:var(--color-text-primary)}
+.logo-sub{font-size:12px;color:var(--color-text-tertiary)}
+
+/* Tabs */
+.tabs{display:flex;background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:3px;margin-bottom:1.5rem}
+.tab{flex:1;padding:7px;font-size:13px;font-weight:500;border:none;background:none;cursor:pointer;border-radius:6px;color:var(--color-text-secondary);transition:all 0.15s}
+.tab.active{background:var(--color-background-primary);color:var(--color-text-primary);box-shadow:0 1px 4px rgba(0,0,0,0.08)}
+
+/* Step dots */
+.step-dots{display:flex;gap:6px;margin-bottom:1.5rem}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--color-border-secondary);transition:all 0.2s}
+.dot.active{width:18px;border-radius:3px;background:#1D9E75}
+.dot.done{background:#1D9E75}
+
+/* Fields */
+.heading{font-size:18px;font-weight:500;color:var(--color-text-primary);margin-bottom:6px}
+.subtext{font-size:13px;color:var(--color-text-secondary);line-height:1.6;margin-bottom:1.5rem}
+.field{margin-bottom:1rem}
+.field label{display:block;font-size:12px;font-weight:500;color:var(--color-text-secondary);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.04em}
+.field input{width:100%;font-size:14px;padding:9px 12px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);outline:none;transition:border-color 0.15s,box-shadow 0.15s}
+.field input:focus{border-color:#1D9E75;box-shadow:0 0 0 3px rgba(29,158,117,0.12)}
+.field input.error{border-color:#E24B4A}
+.err-msg{font-size:12px;color:#A32D2D;margin-top:4px;display:none}
+.err-msg.show{display:block}
+
+/* Password wrapper */
+.password-wrapper{position:relative}
+.password-wrapper input{padding-right:40px}
+.toggle-pw{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--color-text-tertiary);font-size:17px;padding:4px;line-height:1;display:flex;align-items:center;justify-content:center}
+.toggle-pw:hover{color:var(--color-text-secondary)}
+
+/* Buttons */
+.btn-primary{width:100%;padding:10px;border-radius:var(--border-radius-md);background:#1D9E75;color:#fff;font-size:14px;font-weight:500;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:0.5rem;transition:background 0.15s}
+.btn-primary:hover{background:#0F6E56}
+
+.btn-secondary{width:100%;padding:9px;border-radius:var(--border-radius-md);background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);font-size:13px;color:var(--color-text-secondary);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:background 0.15s}
+.btn-secondary:hover{background:var(--color-background-secondary)}
+
+/* Divider */
+.divider-row{display:flex;align-items:center;gap:10px;margin:1rem 0}
+.divider-line{flex:1;height:0.5px;background:var(--color-border-tertiary)}
+.divider-text{font-size:12px;color:var(--color-text-tertiary)}
+
+/* Checkboxes */
+.check-row{display:flex;align-items:flex-start;gap:8px;margin-top:0.75rem}
+.check-row input[type=checkbox]{margin-top:3px;accent-color:#1D9E75;width:14px;height:14px;flex-shrink:0;cursor:pointer}
+.check-row label{font-size:12px;color:var(--color-text-secondary);line-height:1.5;cursor:pointer}
+
+.footer-note{font-size:11px;color:var(--color-text-tertiary);text-align:center;margin-top:1.25rem;line-height:1.6}
+.link{color:#1D9E75;cursor:pointer;text-decoration:none}
+.link:hover{text-decoration:underline}
+
+/* Phone input with country code */
+.phone-row{display:flex;gap:8px}
+.country-code{width:80px;flex-shrink:0;font-size:14px;padding:9px 10px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);outline:none;cursor:pointer}
+.country-code:focus{border-color:#1D9E75;box-shadow:0 0 0 3px rgba(29,158,117,0.12)}
+.phone-row input{flex:1}
+
+/* OTP boxes */
+.otp-row{display:flex;gap:8px;justify-content:center;margin-top:0.5rem}
+.otp-box{width:44px;height:48px;text-align:center;font-size:20px;font-weight:600;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);outline:none;transition:border-color 0.15s,box-shadow 0.15s}
+.otp-box:focus{border-color:#1D9E75;box-shadow:0 0 0 3px rgba(29,158,117,0.12)}
+.resend-row{text-align:center;margin-top:10px;font-size:12px;color:var(--color-text-tertiary)}
+
+/* Welcome step */
+.welcome-screen{text-align:center;padding:0.5rem 0}
+.avatar{width:64px;height:64px;border-radius:50%;background:#E1F5EE;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:22px;font-weight:500;color:#0F6E56}
+.welcome-name{font-size:20px;font-weight:500;color:var(--color-text-primary);margin-bottom:6px}
+.welcome-sub{font-size:13px;color:var(--color-text-secondary);line-height:1.6;margin-bottom:1.5rem}
+.stats-preview{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.5rem}
+.stat{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px;text-align:left}
+.stat-label{font-size:11px;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:0.04em}
+.stat-value{font-size:16px;font-weight:500;color:var(--color-text-primary);margin-top:3px}
+.stat-value.green{color:#0F6E56}
+
+/* Toast */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#111;color:#fff;font-size:13px;padding:10px 18px;border-radius:20px;opacity:0;transition:all 0.3s;pointer-events:none;white-space:nowrap;z-index:200}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
 </head>
 <body>
 
-<div class="dw-page">
-  <div class="dw-card">
+<div class="card">
+  <div class="logo-row">
+    <div class="logo-icon"><i class="ti ti-chart-pie" style="color:#1D9E75;font-size:20px"></i></div>
+    <div>
+      <div class="logo-text">DebtWise</div>
+      <div class="logo-sub">Your debt. Simplified.</div>
+    </div>
+  </div>
 
-    <!-- Brand -->
-    <div class="dw-brand">
-      <div class="dw-brand-icon">
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" opacity=".3"/>
-          <path d="M11.5 2C8.47 2 6 4.47 6 7.5c0 2.29 1.37 4.26 3.36 5.15L8.5 22h6l-.86-9.35C15.63 11.76 17 9.79 17 7.5 17 4.47 14.53 2 11.5 2zm0 9c-1.93 0-3.5-1.57-3.5-3.5S9.57 4 11.5 4 15 5.57 15 7.5 13.43 11 11.5 11z"/>
+  <!-- ── TABS ── -->
+  <div class="tabs" id="auth-tabs">
+    <button type="button" class="tab active" onclick="switchTab('signup')">Sign up</button>
+    <button type="button" class="tab" onclick="switchTab('login')">Log in</button>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       SIGNUP FLOW
+  ══════════════════════════════════════════════ -->
+  <div id="signup-flow">
+
+    <div class="step-dots" id="signup-dots">
+      <div class="dot active" id="sd1"></div>
+      <div class="dot" id="sd2"></div>
+      <div class="dot" id="sd3"></div>
+    </div>
+
+    <!-- Step 1: Name + Email -->
+    <div id="s-step1">
+      <div class="heading">Create your account</div>
+      <div class="subtext">Get a complete picture of all your debts in one place — and never miss an EMI again.</div>
+
+      <div class="field">
+        <label for="fname">Your name</label>
+        <input type="text" id="fname" placeholder="e.g. Gitesh Jethwa" autocomplete="given-name">
+        <div class="err-msg" id="err-fname">Please enter your name</div>
+      </div>
+      <div class="field">
+        <label for="email">Email address</label>
+        <input type="email" id="email" placeholder="you@email.com" autocomplete="email">
+        <div class="err-msg" id="err-email">Please enter a valid email</div>
+      </div>
+
+      <button type="button" class="btn-primary" onclick="goSignupStep2()">
+        Continue <i class="ti ti-arrow-right"></i>
+      </button>
+
+      <div class="divider-row">
+        <div class="divider-line"></div>
+        <div class="divider-text">or</div>
+        <div class="divider-line"></div>
+      </div>
+
+      <button type="button" class="btn-secondary" onclick="mockGoogle()" style="margin-bottom:8px">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+          <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+          <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+          <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+          <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
         </svg>
-      </div>
-      <div class="dw-brand-text">
-        <span class="dw-brand-name">DebtWise</span>
-        <span class="dw-brand-tagline">Your debt. Simplified.</span>
-      </div>
+        Continue with Google
+      </button>
+
+      <button type="button" class="btn-secondary" onclick="showPhoneSignup()">
+        <i class="ti ti-device-mobile"></i> Continue with Phone
+      </button>
+
+      <div class="footer-note">We'll send EMI reminders to your email. No spam, ever.</div>
     </div>
 
-    <!-- Tab Toggle -->
-    <div class="dw-tabs" role="tablist" aria-label="Authentication mode">
-      <button class="dw-tab active" id="tab-login" role="tab" aria-selected="true"  aria-controls="panel-login"  onclick="switchTab('login')">Log in</button>
-      <button class="dw-tab"        id="tab-signup" role="tab" aria-selected="false" aria-controls="panel-signup" onclick="switchTab('signup')">Sign up</button>
+    <!-- Step 1b: Phone OTP -->
+    <div id="s-phone" style="display:none">
+      <div class="heading">Your phone number</div>
+      <div class="subtext">We'll send a 6-digit OTP to verify your number.</div>
+      <div class="field">
+        <label>Mobile number</label>
+        <div class="phone-row">
+          <select class="country-code" id="country-code">
+            <option value="+91">🇮🇳 +91</option>
+            <option value="+1">🇺🇸 +1</option>
+            <option value="+44">🇬🇧 +44</option>
+            <option value="+971">🇦🇪 +971</option>
+            <option value="+65">🇸🇬 +65</option>
+          </select>
+          <input type="tel" id="phone-number" placeholder="98765 43210" maxlength="10">
+        </div>
+        <div class="err-msg" id="err-phone">Please enter a valid 10-digit number</div>
+      </div>
+      <button type="button" class="btn-primary" onclick="sendOTP()">
+        Send OTP <i class="ti ti-send"></i>
+      </button>
+      <button type="button" class="btn-secondary" style="margin-top:8px" onclick="showStep('s-step1')">
+        <i class="ti ti-arrow-left"></i> Back
+      </button>
     </div>
 
-    <!-- ═══════════════════════════════ LOGIN PANEL ═══════════════════════════════ -->
-    <div id="panel-login" role="tabpanel" aria-labelledby="tab-login">
-
-      <!-- Social logins -->
-      <div class="dw-social-row">
-        <button class="dw-social-btn" onclick="handleSocial('google')" type="button">
-          <svg class="dw-social-icon" viewBox="0 0 24 24">
-            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
-            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-          </svg>
-          <span class="dw-social-label">Continue with Google</span>
-        </button>
-
-        <button class="dw-social-btn" id="btn-phone-login" onclick="showPhoneLogin()" type="button">
-          <i class="ti ti-device-mobile dw-social-icon" style="font-size:18px;color:#6B7280;width:20px;text-align:center"></i>
-          <span class="dw-social-label">Continue with Phone</span>
-        </button>
+    <!-- Step 1c: Enter OTP -->
+    <div id="s-otp" style="display:none">
+      <div class="heading">Enter OTP</div>
+      <div class="subtext" id="otp-subtext">We sent a 6-digit code to your number.</div>
+      <div class="otp-row">
+        <input type="text" class="otp-box" maxlength="1" id="otp1" oninput="otpNext(this,'otp2')" onkeydown="otpBack(event,this,'')">
+        <input type="text" class="otp-box" maxlength="1" id="otp2" oninput="otpNext(this,'otp3')" onkeydown="otpBack(event,this,'otp1')">
+        <input type="text" class="otp-box" maxlength="1" id="otp3" oninput="otpNext(this,'otp4')" onkeydown="otpBack(event,this,'otp2')">
+        <input type="text" class="otp-box" maxlength="1" id="otp4" oninput="otpNext(this,'otp5')" onkeydown="otpBack(event,this,'otp3')">
+        <input type="text" class="otp-box" maxlength="1" id="otp5" oninput="otpNext(this,'otp6')" onkeydown="otpBack(event,this,'otp4')">
+        <input type="text" class="otp-box" maxlength="1" id="otp6" oninput="otpNext(this,'')"     onkeydown="otpBack(event,this,'otp5')">
       </div>
+      <div class="err-msg" id="err-otp" style="text-align:center;margin-top:8px">Incorrect OTP. Try again.</div>
+      <div class="resend-row">Didn't get it? <span class="link" onclick="resendOTP()">Resend OTP</span></div>
+      <button type="button" class="btn-primary" style="margin-top:1rem" onclick="verifyOTP()">
+        Verify <i class="ti ti-check"></i>
+      </button>
+      <button type="button" class="btn-secondary" style="margin-top:8px" onclick="showStep('s-phone')">
+        <i class="ti ti-arrow-left"></i> Back
+      </button>
+    </div>
 
-      <div class="dw-divider">
-        <div class="dw-divider-line"></div>
-        <span class="dw-divider-text">or log in with email</span>
-        <div class="dw-divider-line"></div>
-      </div>
+    <!-- Step 2: Password -->
+    <div id="s-step2" style="display:none">
+      <div class="heading">Set a password</div>
+      <div class="subtext">Keep your financial data secure. You'll use this to log back in.</div>
 
-      <!-- Email Login Form -->
-      <div id="login-email-form">
-        <div class="dw-field">
-          <label class="dw-label" for="login-email">Email address</label>
-          <div class="dw-input-wrap">
-            <input class="dw-input" type="email" id="login-email" placeholder="you@email.com" autocomplete="email" inputmode="email">
-            <i class="ti ti-mail dw-input-icon" aria-hidden="true"></i>
-          </div>
-          <span class="dw-field-error" id="err-login-email" aria-live="polite"></span>
-        </div>
-
-        <div class="dw-field">
-          <div class="dw-caps-tooltip" id="caps-login-pw" role="alert">
-            <i class="ti ti-lock-square"></i> Caps Lock is on
-          </div>
-          <label class="dw-label" for="login-password">Password</label>
-          <div class="dw-input-wrap">
-            <input class="dw-input" type="password" id="login-password" placeholder="Your password" autocomplete="current-password">
-            <button type="button" class="dw-input-icon clickable" onclick="togglePw('login-password','eye-login')" aria-label="Toggle password visibility">
-              <i class="ti ti-eye" id="eye-login"></i>
-            </button>
-          </div>
-          <span class="dw-field-error" id="err-login-pw" aria-live="polite"></span>
-        </div>
-
-        <div class="text-right mt-2" style="text-align:right;margin-bottom:16px">
-          <a href="#" class="t-small" onclick="showForgotPassword(event)">Forgot password?</a>
-        </div>
-
-        <button class="dw-btn dw-btn-primary" id="btn-login" type="button" onclick="handleLogin()">
-          <i class="ti ti-login"></i> Log in
-        </button>
-      </div>
-
-      <!-- Phone Login Form (hidden by default) -->
-      <div id="login-phone-form" class="hidden">
-        <div class="dw-field">
-          <label class="dw-label" for="login-phone">Phone number</label>
-          <div class="dw-phone-wrap">
-            <select class="dw-country-code" id="login-country" aria-label="Country code">
-              <option value="+91">🇮🇳 +91</option>
-              <option value="+44">🇬🇧 +44</option>
-              <option value="+1">🇺🇸 +1</option>
-              <option value="+61">🇦🇺 +61</option>
-              <option value="+971">🇦🇪 +971</option>
-              <option value="+65">🇸🇬 +65</option>
-            </select>
-            <div class="dw-input-wrap" style="flex:1">
-              <input class="dw-input" type="tel" id="login-phone" placeholder="98765 43210" autocomplete="tel" inputmode="tel">
-              <i class="ti ti-device-mobile dw-input-icon"></i>
-            </div>
-          </div>
-          <span class="dw-field-error" id="err-login-phone" aria-live="polite"></span>
-        </div>
-        <button class="dw-btn dw-btn-primary" type="button" onclick="sendOTP('login')">
-          <i class="ti ti-send"></i> Send OTP
-        </button>
-        <button class="dw-btn dw-btn-ghost mt-2" type="button" onclick="hidePhoneLogin()">
-          Back to email login
-        </button>
-      </div>
-
-      <!-- OTP Verification (hidden by default) -->
-      <div id="otp-panel" class="hidden">
-        <p class="t-body text-center" id="otp-hint" style="margin-bottom:20px"></p>
-        <div class="dw-otp-row" role="group" aria-label="One-time password input">
-          <input class="dw-otp-input" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" aria-label="OTP digit 1" id="otp1">
-          <input class="dw-otp-input" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" aria-label="OTP digit 2" id="otp2">
-          <input class="dw-otp-input" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" aria-label="OTP digit 3" id="otp3">
-          <input class="dw-otp-input" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" aria-label="OTP digit 4" id="otp4">
-          <input class="dw-otp-input" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" aria-label="OTP digit 5" id="otp5">
-          <input class="dw-otp-input" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" aria-label="OTP digit 6" id="otp6">
-        </div>
-        <span class="dw-field-error text-center mt-2" id="err-otp" aria-live="polite" style="justify-content:center"></span>
-        <button class="dw-btn dw-btn-primary mt-4" type="button" onclick="verifyOTP()">
-          <i class="ti ti-shield-check"></i> Verify & Continue
-        </button>
-        <p class="dw-footer-note mt-2">
-          Didn't receive it? <a href="#" onclick="resendOTP(event)">Resend OTP</a>
-          <span id="resend-timer"></span>
-        </p>
-      </div>
-
-    </div><!-- /panel-login -->
-
-    <!-- ═══════════════════════════════ SIGNUP PANEL ═══════════════════════════════ -->
-    <div id="panel-signup" role="tabpanel" aria-labelledby="tab-signup" class="hidden">
-
-      <!-- Social signup -->
-      <div class="dw-social-row">
-        <button class="dw-social-btn" onclick="handleSocial('google')" type="button">
-          <svg class="dw-social-icon" viewBox="0 0 24 24">
-            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
-            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-          </svg>
-          <span class="dw-social-label">Sign up with Google</span>
-        </button>
-      </div>
-
-      <div class="dw-divider">
-        <div class="dw-divider-line"></div>
-        <span class="dw-divider-text">or sign up with email</span>
-        <div class="dw-divider-line"></div>
-      </div>
-
-      <!-- Signup Form -->
-      <div class="dw-field">
-        <label class="dw-label" for="signup-name">Full name</label>
-        <div class="dw-input-wrap">
-          <input class="dw-input" type="text" id="signup-name" placeholder="Gitesh Jethwa" autocomplete="name">
-          <i class="ti ti-user dw-input-icon" aria-hidden="true"></i>
-        </div>
-        <span class="dw-field-error" id="err-signup-name" aria-live="polite"></span>
-      </div>
-
-      <div class="dw-field">
-        <label class="dw-label" for="signup-email">Email address</label>
-        <div class="dw-input-wrap">
-          <input class="dw-input" type="email" id="signup-email" placeholder="you@email.com" autocomplete="email" inputmode="email">
-          <i class="ti ti-mail dw-input-icon" aria-hidden="true"></i>
-        </div>
-        <span class="dw-field-error" id="err-signup-email" aria-live="polite"></span>
-      </div>
-
-      <div class="dw-field">
-        <div class="dw-caps-tooltip" id="caps-signup-pw" role="alert">
-          <i class="ti ti-lock-square"></i> Caps Lock is on
-        </div>
-        <label class="dw-label" for="signup-password">Password</label>
-        <div class="dw-input-wrap">
-          <input class="dw-input" type="password" id="signup-password" placeholder="Min. 8 characters" autocomplete="new-password">
-          <button type="button" class="dw-input-icon clickable" onclick="togglePw('signup-password','eye-signup')" aria-label="Toggle password visibility">
-            <i class="ti ti-eye" id="eye-signup"></i>
+      <div class="field">
+        <label for="pw">Password</label>
+        <div class="password-wrapper">
+          <input type="password" id="pw" placeholder="At least 8 characters">
+          <button type="button" class="toggle-pw" onclick="togglePw('pw','eye1')" aria-label="Show/hide password">
+            <i class="ti ti-eye" id="eye1"></i>
           </button>
         </div>
-        <div class="dw-pw-strength" id="pw-strength">
-          <div class="dw-pw-bars">
-            <div class="dw-pw-bar" id="bar1"></div>
-            <div class="dw-pw-bar" id="bar2"></div>
-            <div class="dw-pw-bar" id="bar3"></div>
-            <div class="dw-pw-bar" id="bar4"></div>
-          </div>
-          <span class="dw-pw-label" id="pw-label"></span>
-        </div>
-        <span class="dw-field-error" id="err-signup-pw" aria-live="polite"></span>
+        <div class="err-msg" id="err-pw">Password must be at least 8 characters</div>
       </div>
 
-      <div class="dw-field">
-        <div class="dw-caps-tooltip" id="caps-signup-pw2" role="alert">
-          <i class="ti ti-lock-square"></i> Caps Lock is on
-        </div>
-        <label class="dw-label" for="signup-confirm">Confirm password</label>
-        <div class="dw-input-wrap">
-          <input class="dw-input" type="password" id="signup-confirm" placeholder="Repeat password" autocomplete="new-password">
-          <button type="button" class="dw-input-icon clickable" onclick="togglePw('signup-confirm','eye-confirm')" aria-label="Toggle confirm password visibility">
-            <i class="ti ti-eye" id="eye-confirm"></i>
+      <div class="field">
+        <label for="pw2">Confirm password</label>
+        <div class="password-wrapper">
+          <input type="password" id="pw2" placeholder="Repeat password">
+          <button type="button" class="toggle-pw" onclick="togglePw('pw2','eye2')" aria-label="Show/hide password">
+            <i class="ti ti-eye" id="eye2"></i>
           </button>
         </div>
-        <span class="dw-field-error" id="err-signup-confirm" aria-live="polite"></span>
+        <div class="err-msg" id="err-pw2">Passwords don't match</div>
       </div>
 
-      <div class="dw-checkbox-row">
-        <input class="dw-checkbox" type="checkbox" id="chk-reminders">
-        <label class="dw-checkbox-label" for="chk-reminders">
-          Send me EMI reminders before due dates (email)
-        </label>
+      <div class="check-row">
+        <input type="checkbox" id="reminders" checked>
+        <label for="reminders">Send me EMI reminders 7 days and 1 day before due dates</label>
       </div>
-
-      <div class="dw-checkbox-row">
-        <input class="dw-checkbox" type="checkbox" id="chk-terms">
-        <label class="dw-checkbox-label" for="chk-terms">
-          I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
-        </label>
+      <div class="check-row">
+        <input type="checkbox" id="terms">
+        <label for="terms">I agree to the <a class="link" href="#">Terms of Service</a> and <a class="link" href="#">Privacy Policy</a></label>
       </div>
-      <span class="dw-field-error" id="err-signup-terms" aria-live="polite" style="margin-top:-8px;margin-bottom:12px"></span>
+      <div class="err-msg" id="err-terms" style="margin-top:6px">Please accept the terms to continue</div>
 
-      <button class="dw-btn dw-btn-primary" id="btn-signup" type="button" onclick="handleSignup()">
-        <i class="ti ti-user-plus"></i> Create account
+      <button type="button" class="btn-primary" style="margin-top:1rem" onclick="goSignupStep3()">
+        Create account <i class="ti ti-check"></i>
       </button>
-
-    </div><!-- /panel-signup -->
-
-    <!-- Forgot password view (hidden) -->
-    <div id="panel-forgot" class="hidden">
-      <button class="back-link" onclick="showPanel('login')" type="button">
-        <i class="ti ti-arrow-left"></i> Back to login
-      </button>
-      <h2 class="t-heading" style="margin-bottom:6px">Reset your password</h2>
-      <p class="t-body" style="margin-bottom:20px">Enter the email linked to your account and we'll send reset instructions.</p>
-      <div class="dw-field">
-        <label class="dw-label" for="forgot-email">Email address</label>
-        <div class="dw-input-wrap">
-          <input class="dw-input" type="email" id="forgot-email" placeholder="you@email.com" inputmode="email">
-          <i class="ti ti-mail dw-input-icon" aria-hidden="true"></i>
-        </div>
-        <span class="dw-field-error" id="err-forgot-email" aria-live="polite"></span>
-      </div>
-      <button class="dw-btn dw-btn-primary" type="button" onclick="handleForgot()">
-        <i class="ti ti-send"></i> Send reset link
+      <button type="button" class="btn-secondary" style="margin-top:8px" onclick="showStep('s-step1')">
+        <i class="ti ti-arrow-left"></i> Back
       </button>
     </div>
 
-    <!-- Success toast area -->
-    <div id="toast" class="dw-toast hidden" role="status" aria-live="polite"></div>
+    <!-- Step 3: Welcome -->
+    <div id="s-step3" style="display:none">
+      <div class="welcome-screen">
+        <div class="avatar" id="avatar-initials">GJ</div>
+        <div class="welcome-name" id="welcome-name">Welcome, Gitesh!</div>
+        <div class="welcome-sub">Your DebtWise account is ready. Here's what you can do next.</div>
+        <div class="stats-preview">
+          <div class="stat">
+            <div class="stat-label">Debts tracked</div>
+            <div class="stat-value">0 loans</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Next EMI due</div>
+            <div class="stat-value">— —</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Reminders</div>
+            <div class="stat-value green" id="reminder-status">Active</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Interest saved</div>
+            <div class="stat-value">₹ 0</div>
+          </div>
+        </div>
+        <button type="button" class="btn-primary" onclick="window.location.href='debtwise_dashboard.html'">
+          Go to dashboard <i class="ti ti-arrow-right"></i>
+        </button>
+      </div>
+    </div>
 
-    <p class="dw-footer-note">
-      Your financial data is encrypted and never shared.
-      <br><a href="#">Privacy Policy</a> · <a href="#">Terms</a>
-    </p>
+  </div><!-- end signup-flow -->
 
-  </div><!-- /dw-card -->
-</div><!-- /dw-page -->
 
-<script src="debtwise_onboarding.js"></script>
+  <!-- ══════════════════════════════════════════════
+       LOGIN FLOW
+  ══════════════════════════════════════════════ -->
+  <div id="login-flow" style="display:none">
+
+    <!-- Login with email -->
+    <div id="l-email" >
+      <div class="heading">Welcome back</div>
+      <div class="subtext">Log in to see your loans and upcoming EMIs.</div>
+
+      <div class="field">
+        <label for="l-email-input">Email address</label>
+        <input type="email" id="l-email-input" placeholder="you@email.com" autocomplete="email">
+        <div class="err-msg" id="err-l-email">Please enter a valid email</div>
+      </div>
+
+      <div class="field">
+        <label for="l-pw">Password</label>
+        <div class="password-wrapper">
+          <input type="password" id="l-pw" placeholder="Your password">
+          <button type="button" class="toggle-pw" onclick="togglePw('l-pw','eye3')" aria-label="Show/hide password">
+            <i class="ti ti-eye" id="eye3"></i>
+          </button>
+        </div>
+        <div class="err-msg" id="err-l-pw">Please enter your password</div>
+      </div>
+
+      <div style="text-align:right;margin-top:-6px;margin-bottom:12px">
+        <span class="link" style="font-size:12px" onclick="showToast('Password reset link sent! (mock)')">Forgot password?</span>
+      </div>
+
+      <button type="button" class="btn-primary" onclick="doLogin()">
+        Log in <i class="ti ti-arrow-right"></i>
+      </button>
+
+      <div class="divider-row">
+        <div class="divider-line"></div>
+        <div class="divider-text">or</div>
+        <div class="divider-line"></div>
+      </div>
+
+      <button type="button" class="btn-secondary" onclick="mockGoogleLogin()" style="margin-bottom:8px">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+          <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+          <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+          <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+          <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+        </svg>
+        Continue with Google
+      </button>
+
+      <button type="button" class="btn-secondary" onclick="showLoginPhone()">
+        <i class="ti ti-device-mobile"></i> Log in with Phone
+      </button>
+
+      <div class="footer-note">Don't have an account? <span class="link" onclick="switchTab('signup')">Sign up free</span></div>
+    </div>
+
+    <!-- Login with phone OTP -->
+    <div id="l-phone" style="display:none">
+      <div class="heading">Log in with phone</div>
+      <div class="subtext">Enter your registered mobile number.</div>
+      <div class="field">
+        <label>Mobile number</label>
+        <div class="phone-row">
+          <select class="country-code" id="l-country-code">
+            <option value="+91">🇮🇳 +91</option>
+            <option value="+1">🇺🇸 +1</option>
+            <option value="+44">🇬🇧 +44</option>
+          </select>
+          <input type="tel" id="l-phone-number" placeholder="98765 43210" maxlength="10">
+        </div>
+        <div class="err-msg" id="err-l-phone">Please enter a valid 10-digit number</div>
+      </div>
+      <button type="button" class="btn-primary" onclick="sendLoginOTP()">
+        Send OTP <i class="ti ti-send"></i>
+      </button>
+      <button type="button" class="btn-secondary" style="margin-top:8px" onclick="showLoginStep('l-email')">
+        <i class="ti ti-arrow-left"></i> Back
+      </button>
+    </div>
+
+    <!-- Login OTP verify -->
+    <div id="l-otp" style="display:none">
+      <div class="heading">Enter OTP</div>
+      <div class="subtext" id="l-otp-subtext">We sent a code to your number.</div>
+      <div class="otp-row">
+        <input type="text" class="otp-box" maxlength="1" id="lotp1" oninput="otpNext(this,'lotp2')" onkeydown="otpBack(event,this,'')">
+        <input type="text" class="otp-box" maxlength="1" id="lotp2" oninput="otpNext(this,'lotp3')" onkeydown="otpBack(event,this,'lotp1')">
+        <input type="text" class="otp-box" maxlength="1" id="lotp3" oninput="otpNext(this,'lotp4')" onkeydown="otpBack(event,this,'lotp2')">
+        <input type="text" class="otp-box" maxlength="1" id="lotp4" oninput="otpNext(this,'lotp5')" onkeydown="otpBack(event,this,'lotp3')">
+        <input type="text" class="otp-box" maxlength="1" id="lotp5" oninput="otpNext(this,'lotp6')" onkeydown="otpBack(event,this,'lotp4')">
+        <input type="text" class="otp-box" maxlength="1" id="lotp6" oninput="otpNext(this,'')"      onkeydown="otpBack(event,this,'lotp5')">
+      </div>
+      <div class="err-msg" id="err-l-otp" style="text-align:center;margin-top:8px">Incorrect OTP. Try again.</div>
+      <div class="resend-row">Didn't get it? <span class="link" onclick="resendOTP()">Resend OTP</span></div>
+      <button type="button" class="btn-primary" style="margin-top:1rem" onclick="verifyLoginOTP()">
+        Verify & log in <i class="ti ti-check"></i>
+      </button>
+      <button type="button" class="btn-secondary" style="margin-top:8px" onclick="showLoginStep('l-phone')">
+        <i class="ti ti-arrow-left"></i> Back
+      </button>
+    </div>
+
+  </div><!-- end login-flow -->
+
+</div><!-- end card -->
+
+<!-- Toast notification -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── Helpers ───────────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function showStep(id) {
+  const steps = ['s-step1','s-phone','s-otp','s-step2','s-step3'];
+  steps.forEach(s => { const el = document.getElementById(s); if(el) el.style.display = 'none'; });
+  document.getElementById(id).style.display = 'block';
+}
+
+function showLoginStep(id) {
+  const steps = ['l-email','l-phone','l-otp'];
+  steps.forEach(s => { const el = document.getElementById(s); if(el) el.style.display = 'none'; });
+  document.getElementById(id).style.display = 'block';
+}
+
+function setDot(dotId, active) {
+  const el = document.getElementById(dotId);
+  if (!el) return;
+  if (active) {
+    el.style.width = '18px'; el.style.borderRadius = '3px'; el.style.background = '#1D9E75';
+  } else {
+    el.style.width = '6px'; el.style.borderRadius = '50%'; el.style.background = '#D8E0DC';
+  }
+}
+
+// ── Tab switch ────────────────────────────────────────────────
+function switchTab(tab) {
+  const tabs = document.querySelectorAll('.tab');
+  tabs[0].classList.toggle('active', tab === 'signup');
+  tabs[1].classList.toggle('active', tab === 'login');
+  document.getElementById('signup-flow').style.display = tab === 'signup' ? 'block' : 'none';
+  document.getElementById('login-flow').style.display = tab === 'login' ? 'block' : 'none';
+  document.getElementById('signup-dots').style.display = tab === 'signup' ? 'flex' : 'none';
+}
+
+// ── Signup Step 1 ─────────────────────────────────────────────
+function goSignupStep2() {
+  const name = document.getElementById('fname').value.trim();
+  const email = document.getElementById('email').value.trim();
+  let ok = true;
+  if (!name) {
+    document.getElementById('err-fname').classList.add('show');
+    document.getElementById('fname').classList.add('error'); ok = false;
+  } else {
+    document.getElementById('err-fname').classList.remove('show');
+    document.getElementById('fname').classList.remove('error');
+  }
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    document.getElementById('err-email').classList.add('show');
+    document.getElementById('email').classList.add('error'); ok = false;
+  } else {
+    document.getElementById('err-email').classList.remove('show');
+    document.getElementById('email').classList.remove('error');
+  }
+  if (!ok) return;
+  showStep('s-step2');
+  setDot('sd1', false); setDot('sd2', true); setDot('sd3', false);
+  document.getElementById('sd1').style.background = '#1D9E75'; // mark done
+}
+
+// ── Phone signup ──────────────────────────────────────────────
+function showPhoneSignup() {
+  showStep('s-phone');
+}
+
+function sendOTP() {
+  const phone = document.getElementById('phone-number').value.trim();
+  if (!/^\d{10}$/.test(phone)) {
+    document.getElementById('err-phone').classList.add('show');
+    document.getElementById('phone-number').classList.add('error'); return;
+  }
+  document.getElementById('err-phone').classList.remove('show');
+  document.getElementById('phone-number').classList.remove('error');
+  const cc = document.getElementById('country-code').value;
+  document.getElementById('otp-subtext').textContent = 'We sent a 6-digit code to ' + cc + ' ' + phone + '. Use 123456 to demo.';
+  showStep('s-otp');
+  setTimeout(() => document.getElementById('otp1').focus(), 100);
+}
+
+function verifyOTP() {
+  const otp = ['otp1','otp2','otp3','otp4','otp5','otp6'].map(id => document.getElementById(id).value).join('');
+  if (otp !== '123456') {
+    document.getElementById('err-otp').classList.add('show'); return;
+  }
+  document.getElementById('err-otp').classList.remove('show');
+  // Use phone as "name" since they skipped name step
+  const phone = document.getElementById('phone-number').value.trim();
+  document.getElementById('fname').value = 'User'; // fallback
+  showStep('s-step2');
+  setDot('sd1', false); setDot('sd2', true); setDot('sd3', false);
+}
+
+function resendOTP() {
+  showToast('OTP resent! Use 123456 to demo.');
+}
+
+// ── Signup Step 2 ─────────────────────────────────────────────
+function goSignupStep3() {
+  const pw = document.getElementById('pw').value;
+  const pw2 = document.getElementById('pw2').value;
+  const terms = document.getElementById('terms').checked;
+  let ok = true;
+  if (pw.length < 8) { document.getElementById('err-pw').classList.add('show'); ok = false; }
+  else document.getElementById('err-pw').classList.remove('show');
+  if (pw !== pw2) { document.getElementById('err-pw2').classList.add('show'); ok = false; }
+  else document.getElementById('err-pw2').classList.remove('show');
+  if (!terms) { document.getElementById('err-terms').classList.add('show'); ok = false; }
+  else document.getElementById('err-terms').classList.remove('show');
+  if (!ok) return;
+
+  const name = document.getElementById('fname').value.trim() || 'User';
+  const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  document.getElementById('avatar-initials').textContent = initials;
+  document.getElementById('welcome-name').textContent = 'Welcome, ' + name.split(' ')[0] + '!';
+  document.getElementById('reminder-status').textContent = document.getElementById('reminders').checked ? 'Active' : 'Off';
+
+  // Save basic user info to localStorage
+  localStorage.setItem('dw_user', JSON.stringify({ name, email: document.getElementById('email').value.trim() }));
+
+  showStep('s-step3');
+  setDot('sd2', false); setDot('sd3', true);
+  document.getElementById('signup-dots').style.display = 'flex';
+}
+
+// ── Password toggle ───────────────────────────────────────────
+function togglePw(inputId, iconId) {
+  const el = document.getElementById(inputId);
+  const icon = document.getElementById(iconId);
+  if (el.type === 'password') {
+    el.type = 'text';
+    icon.className = 'ti ti-eye-off';
+  } else {
+    el.type = 'password';
+    icon.className = 'ti ti-eye';
+  }
+}
+
+// ── Google (mock) ─────────────────────────────────────────────
+function mockGoogle() {
+  document.getElementById('fname').value = 'Gitesh Jethwa';
+  document.getElementById('email').value = 'jethwagitesh@gmail.com';
+  showToast('Google sign-in simulated ✓');
+  setTimeout(goSignupStep2, 500);
+}
+
+function mockGoogleLogin() {
+  showToast('Google login simulated — redirecting…');
+  setTimeout(() => window.location.href = 'debtwise_dashboard.html', 1200);
+}
+
+// ── Login ─────────────────────────────────────────────────────
+function doLogin() {
+  const email = document.getElementById('l-email-input').value.trim();
+  const pw = document.getElementById('l-pw').value;
+  let ok = true;
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    document.getElementById('err-l-email').classList.add('show');
+    document.getElementById('l-email-input').classList.add('error'); ok = false;
+  } else {
+    document.getElementById('err-l-email').classList.remove('show');
+    document.getElementById('l-email-input').classList.remove('error');
+  }
+  if (!pw) {
+    document.getElementById('err-l-pw').classList.add('show');
+    document.getElementById('l-pw').classList.add('error'); ok = false;
+  } else {
+    document.getElementById('err-l-pw').classList.remove('show');
+    document.getElementById('l-pw').classList.remove('error');
+  }
+  if (!ok) return;
+  showToast('Logging in…');
+  setTimeout(() => window.location.href = 'debtwise_dashboard.html', 1000);
+}
+
+// ── Login with phone ──────────────────────────────────────────
+function showLoginPhone() { showLoginStep('l-phone'); }
+
+function sendLoginOTP() {
+  const phone = document.getElementById('l-phone-number').value.trim();
+  if (!/^\d{10}$/.test(phone)) {
+    document.getElementById('err-l-phone').classList.add('show');
+    document.getElementById('l-phone-number').classList.add('error'); return;
+  }
+  document.getElementById('err-l-phone').classList.remove('show');
+  document.getElementById('l-phone-number').classList.remove('error');
+  const cc = document.getElementById('l-country-code').value;
+  document.getElementById('l-otp-subtext').textContent = 'We sent a 6-digit code to ' + cc + ' ' + phone + '. Use 123456 to demo.';
+  showLoginStep('l-otp');
+  setTimeout(() => document.getElementById('lotp1').focus(), 100);
+}
+
+function verifyLoginOTP() {
+  const otp = ['lotp1','lotp2','lotp3','lotp4','lotp5','lotp6'].map(id => document.getElementById(id).value).join('');
+  if (otp !== '123456') {
+    document.getElementById('err-l-otp').classList.add('show'); return;
+  }
+  showToast('Verified! Logging in…');
+  setTimeout(() => window.location.href = 'debtwise_dashboard.html', 1000);
+}
+
+// ── OTP box UX ────────────────────────────────────────────────
+function otpNext(el, nextId) {
+  el.value = el.value.replace(/\D/g, '').slice(0, 1);
+  if (el.value && nextId) document.getElementById(nextId).focus();
+}
+function otpBack(e, el, prevId) {
+  if (e.key === 'Backspace' && !el.value && prevId) {
+    document.getElementById(prevId).focus();
+  }
+}
+</script>
 </body>
 </html>
