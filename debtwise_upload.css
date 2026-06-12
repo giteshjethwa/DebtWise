@@ -1,6 +1,15 @@
 /* debtwise_upload.css — upload screen styles */
 
-.app { background: var(--color-background-tertiary); min-height: 100vh; display: flex; flex-direction: column; }
+body { background: var(--color-background-tertiary); }
+.app {
+  background: var(--color-background-tertiary);
+  min-height: 100vh;
+  max-width: 480px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 0 40px rgba(0,0,0,0.04);
+}
 
 /* ── Top bar ── */
 .topbar {
