@@ -1,0 +1,366 @@
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<link rel="stylesheet" href="debtwise.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);background:var(--color-background-tertiary)}
+.app{background:var(--color-background-tertiary);min-height:100vh}
+.topbar{background:var(--color-background-primary);border-bottom:0.5px solid var(--color-border-tertiary);padding:14px 20px;display:flex;align-items:center;gap:10px}
+.back-btn{background:none;border:none;cursor:pointer;color:var(--color-text-secondary);font-size:18px;padding:2px;display:flex;align-items:center}
+.logo-icon{width:32px;height:32px;border-radius:var(--border-radius-md);background:#E1F5EE;display:flex;align-items:center;justify-content:center}
+.topbar-title{font-size:15px;font-weight:500;color:var(--color-text-primary)}
+.main{padding:20px}
+.page-title{font-size:18px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px}
+.page-sub{font-size:13px;color:var(--color-text-secondary);line-height:1.6;margin-bottom:20px}
+.upload-zone{border:1.5px dashed var(--color-border-secondary);border-radius:var(--border-radius-lg);background:var(--color-background-primary);padding:2rem 1rem;text-align:center;cursor:pointer;margin-bottom:16px;transition:border-color 0.15s}
+.upload-zone:hover{border-color:#1D9E75}
+.upload-zone.dragover{border-color:#1D9E75;background:var(--color-background-secondary)}
+.upload-icon-wrap{width:52px;height:52px;border-radius:50%;background:#E1F5EE;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:22px;color:#0F6E56}
+.upload-title{font-size:14px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px}
+.upload-sub{font-size:12px;color:var(--color-text-secondary);margin-bottom:14px}
+.upload-types{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.type-pill{font-size:11px;padding:3px 10px;border-radius:10px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);color:var(--color-text-secondary)}
+.divider-row{display:flex;align-items:center;gap:10px;margin:0 0 16px}
+.divider-line{flex:1;height:0.5px;background:var(--color-border-tertiary)}
+.divider-text{font-size:12px;color:var(--color-text-tertiary)}
+.alt-options{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+.alt-btn{background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-lg);padding:14px;cursor:pointer;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px}
+.alt-btn:hover{background:var(--color-background-secondary)}
+.alt-icon{width:36px;height:36px;border-radius:var(--border-radius-md);display:flex;align-items:center;justify-content:center;font-size:17px;margin-bottom:2px}
+.alt-label{font-size:13px;font-weight:500;color:var(--color-text-primary)}
+.alt-sub{font-size:11px;color:var(--color-text-secondary)}
+.security-note{display:flex;gap:8px;align-items:flex-start;background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px;margin-bottom:20px}
+.security-note i{color:var(--color-text-tertiary);font-size:15px;flex-shrink:0;margin-top:1px}
+.security-note span{font-size:12px;color:var(--color-text-secondary);line-height:1.5}
+
+.processing-view{display:none;padding:0}
+.file-preview{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px 16px;display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.file-icon{width:40px;height:40px;border-radius:var(--border-radius-md);background:#E6F1FB;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;color:#185FA5}
+.file-name{font-size:13px;font-weight:500;color:var(--color-text-primary)}
+.file-size{font-size:11px;color:var(--color-text-secondary);margin-top:2px}
+.file-remove{background:none;border:none;cursor:pointer;color:var(--color-text-tertiary);font-size:16px;margin-left:auto;padding:2px}
+
+.steps-list{display:flex;flex-direction:column;gap:0;margin-bottom:20px}
+.step-row{display:flex;gap:12px;align-items:flex-start;padding:12px 0;position:relative}
+.step-row:not(:last-child)::after{content:'';position:absolute;left:15px;top:44px;width:1px;height:calc(100% - 20px);background:var(--color-border-tertiary)}
+.step-circle{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;border:0.5px solid var(--color-border-secondary);background:var(--color-background-secondary);color:var(--color-text-tertiary);z-index:1}
+.step-circle.done{background:#E1F5EE;border-color:#1D9E75;color:#0F6E56}
+.step-circle.active{background:#E6F1FB;border-color:#185FA5;color:#185FA5}
+.step-circle.spinning{background:#E6F1FB;border-color:#185FA5}
+.step-body{flex:1;padding-top:6px}
+.step-title{font-size:13px;font-weight:500;color:var(--color-text-primary)}
+.step-desc{font-size:12px;color:var(--color-text-secondary);margin-top:2px;line-height:1.4}
+.spinner{width:14px;height:14px;border:2px solid #B5D4F4;border-top:2px solid #185FA5;border-radius:50%;animation:spin 0.7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.results-view{display:none}
+.success-banner{background:#E1F5EE;border-radius:var(--border-radius-lg);padding:14px 16px;display:flex;gap:10px;align-items:center;margin-bottom:20px}
+.success-banner i{color:#0F6E56;font-size:20px;flex-shrink:0}
+.success-text{font-size:13px;color:#085041;font-weight:500}
+.success-sub{font-size:12px;color:#0F6E56;margin-top:2px}
+.extracted-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px 16px;margin-bottom:16px}
+.extracted-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.extracted-title{font-size:14px;font-weight:500;color:var(--color-text-primary)}
+.edit-all-btn{font-size:12px;color:#1D9E75;background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:4px}
+.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.field-item{display:flex;flex-direction:column;gap:4px}
+.field-label{font-size:10px;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:0.05em}
+.field-val{font-size:13px;font-weight:500;color:var(--color-text-primary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:7px 10px;background:var(--color-background-primary)}
+.field-val.confidence-high{border-color:#1D9E75}
+.field-val.confidence-low{border-color:#EF9F27}
+.confidence-tag{font-size:10px;display:flex;align-items:center;gap:3px}
+.c-high{color:#0F6E56}
+.c-low{color:#854F0B}
+.warning-row{background:#FAEEDA;border-radius:var(--border-radius-md);padding:10px 12px;margin-top:12px;display:flex;gap:8px;align-items:flex-start}
+.warning-row i{color:#854F0B;font-size:15px;flex-shrink:0;margin-top:1px}
+.warning-row span{font-size:12px;color:#633806;line-height:1.5}
+.action-row{display:flex;gap:8px;margin-bottom:20px}
+.btn-primary{flex:2;padding:11px;border-radius:var(--border-radius-md);background:#1D9E75;color:#fff;font-size:13px;font-weight:500;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
+.btn-primary:hover{background:#0F6E56}
+.btn-secondary{flex:1;padding:10px;border-radius:var(--border-radius-md);background:none;border:0.5px solid var(--color-border-secondary);font-size:13px;color:var(--color-text-secondary);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
+.btn-secondary:hover{background:var(--color-background-secondary)}
+.try-another{width:100%;padding:10px;border-radius:var(--border-radius-md);background:none;border:0.5px solid var(--color-border-secondary);font-size:13px;color:var(--color-text-secondary);cursor:pointer;margin-bottom:20px}
+.nav-bottom{background:var(--color-background-primary);border-top:0.5px solid var(--color-border-tertiary);display:flex;padding:10px 0 6px}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px}
+.nav-icon{font-size:20px;color:var(--color-text-tertiary)}
+.nav-label{font-size:10px;color:var(--color-text-tertiary)}
+.nav-item.active .nav-icon,.nav-item.active .nav-label{color:#1D9E75}
+</style>
+
+<h2 class="sr-only">DebtWise sanction letter upload screen — upload a PDF or image and AI automatically extracts loan details</h2>
+
+<div class="app">
+  <div class="topbar">
+    <button class="back-btn" aria-label="Back"><i class="ti ti-arrow-left" aria-hidden="true"></i></button>
+    <div class="logo-icon"><i class="ti ti-chart-pie" style="color:#1D9E75;font-size:16px" aria-hidden="true"></i></div>
+    <span class="topbar-title">Add loan via letter</span>
+  </div>
+
+  <div class="main">
+
+    <div id="upload-view">
+      <div class="page-title">Upload your sanction letter</div>
+      <div class="page-sub">Our AI reads your letter and fills in all loan details automatically. Works with PDFs and photos from any Indian bank.</div>
+
+      <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()" ondragover="handleDrag(event,true)" ondragleave="handleDrag(event,false)" ondrop="handleDrop(event)">
+        <input type="file" id="file-input" accept=".pdf,image/*" style="display:none" onchange="handleFile(this.files[0])">
+        <div class="upload-icon-wrap"><i class="ti ti-cloud-upload" aria-hidden="true"></i></div>
+        <div class="upload-title">Drop your sanction letter here</div>
+        <div class="upload-sub">or click to browse files</div>
+        <div class="upload-types">
+          <span class="type-pill"><i class="ti ti-file-type-pdf" style="font-size:11px;vertical-align:-1px" aria-hidden="true"></i> PDF</span>
+          <span class="type-pill"><i class="ti ti-photo" style="font-size:11px;vertical-align:-1px" aria-hidden="true"></i> JPG / PNG</span>
+          <span class="type-pill"><i class="ti ti-camera" style="font-size:11px;vertical-align:-1px" aria-hidden="true"></i> Scanned image</span>
+        </div>
+      </div>
+
+      <div class="divider-row"><div class="divider-line"></div><div class="divider-text">or</div><div class="divider-line"></div></div>
+
+      <div class="alt-options">
+        <button class="alt-btn" onclick="simulateUpload('camera')">
+          <div class="alt-icon" style="background:#E6F1FB;color:#185FA5"><i class="ti ti-camera" aria-hidden="true"></i></div>
+          <div class="alt-label">Take a photo</div>
+          <div class="alt-sub">Use your phone camera</div>
+        </button>
+        <button class="alt-btn" onclick="simulateUpload('manual')">
+          <div class="alt-icon" style="background:#EEEDFE;color:#3C3489"><i class="ti ti-forms" aria-hidden="true"></i></div>
+          <div class="alt-label">Enter manually</div>
+          <div class="alt-sub">Type details yourself</div>
+        </button>
+      </div>
+
+      <div class="security-note">
+        <i class="ti ti-shield-lock" aria-hidden="true"></i>
+        <span>Your document is processed securely and never stored. Only the extracted fields are saved to your account. We do not retain your original file.</span>
+      </div>
+
+      <div style="background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px 16px;margin-bottom:20px">
+        <div style="font-size:12px;font-weight:500;color:var(--color-text-secondary);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.04em">Works with letters from</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">
+          <span style="font-size:12px;padding:4px 10px;border-radius:10px;background:var(--color-background-secondary);color:var(--color-text-secondary);border:0.5px solid var(--color-border-tertiary)">HDFC Bank</span>
+          <span style="font-size:12px;padding:4px 10px;border-radius:10px;background:var(--color-background-secondary);color:var(--color-text-secondary);border:0.5px solid var(--color-border-tertiary)">ICICI Bank</span>
+          <span style="font-size:12px;padding:4px 10px;border-radius:10px;background:var(--color-background-secondary);color:var(--color-text-secondary);border:0.5px solid var(--color-border-tertiary)">SBI</span>
+          <span style="font-size:12px;padding:4px 10px;border-radius:10px;background:var(--color-background-secondary);color:var(--color-text-secondary);border:0.5px solid var(--color-border-tertiary)">Axis Bank</span>
+          <span style="font-size:12px;padding:4px 10px;border-radius:10px;background:var(--color-background-secondary);color:var(--color-text-secondary);border:0.5px solid var(--color-border-tertiary)">Bajaj Finserv</span>
+          <span style="font-size:12px;padding:4px 10px;border-radius:10px;background:var(--color-background-secondary);color:var(--color-text-secondary);border:0.5px solid var(--color-border-tertiary)">Kotak</span>
+          <span style="font-size:12px;padding:4px 10px;border-radius:10px;background:var(--color-background-secondary);color:var(--color-text-secondary);border:0.5px solid var(--color-border-tertiary)">+ 40 more</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="processing-view" class="processing-view">
+      <div class="page-title" style="margin-bottom:4px">Reading your letter</div>
+      <div class="page-sub">Hang on — this usually takes under 10 seconds.</div>
+
+      <div class="file-preview" id="file-preview">
+        <div class="file-icon"><i class="ti ti-file-type-pdf" aria-hidden="true"></i></div>
+        <div>
+          <div class="file-name" id="preview-filename">HDFC_Sanction_Letter.pdf</div>
+          <div class="file-size" id="preview-filesize">2.3 MB · PDF document</div>
+        </div>
+        <button class="file-remove" onclick="resetUpload()" aria-label="Remove file"><i class="ti ti-x" aria-hidden="true"></i></button>
+      </div>
+
+      <div class="steps-list" id="steps-list">
+        <div class="step-row">
+          <div class="step-circle done" id="s1"><i class="ti ti-check" style="font-size:14px" aria-hidden="true"></i></div>
+          <div class="step-body">
+            <div class="step-title">Document received</div>
+            <div class="step-desc">File uploaded securely</div>
+          </div>
+        </div>
+        <div class="step-row">
+          <div class="step-circle active spinning" id="s2"><div class="spinner"></div></div>
+          <div class="step-body">
+            <div class="step-title" id="s2-title">Reading document</div>
+            <div class="step-desc" id="s2-desc">Extracting text from your letter…</div>
+          </div>
+        </div>
+        <div class="step-row">
+          <div class="step-circle" id="s3"><i class="ti ti-brain" style="font-size:14px" aria-hidden="true"></i></div>
+          <div class="step-body">
+            <div class="step-title">AI field extraction</div>
+            <div class="step-desc">Identifying loan amount, rate, tenure…</div>
+          </div>
+        </div>
+        <div class="step-row">
+          <div class="step-circle" id="s4"><i class="ti ti-check" style="font-size:14px" aria-hidden="true"></i></div>
+          <div class="step-body">
+            <div class="step-title">Verification</div>
+            <div class="step-desc">Checking extracted values for accuracy</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="results-view" class="results-view">
+      <div class="success-banner">
+        <i class="ti ti-circle-check" aria-hidden="true"></i>
+        <div>
+          <div class="success-text">Letter read successfully</div>
+          <div class="success-sub">6 of 6 fields extracted · 1 field needs your attention</div>
+        </div>
+      </div>
+
+      <div class="extracted-card">
+        <div class="extracted-header">
+          <span class="extracted-title">Extracted loan details</span>
+          <button class="edit-all-btn"><i class="ti ti-edit" style="font-size:12px" aria-hidden="true"></i> Edit all</button>
+        </div>
+
+        <div class="field-grid">
+          <div class="field-item">
+            <div class="field-label">Bank / lender</div>
+            <input class="field-val confidence-high" value="HDFC Bank" style="width:100%;font-size:13px;font-weight:500;border:0.5px solid #1D9E75;border-radius:var(--border-radius-md);padding:7px 10px;background:var(--color-background-primary);color:var(--color-text-primary)">
+            <div class="confidence-tag c-high"><i class="ti ti-check" style="font-size:10px" aria-hidden="true"></i> High confidence</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">Loan type</div>
+            <input class="field-val confidence-high" value="Home Loan" style="width:100%;font-size:13px;font-weight:500;border:0.5px solid #1D9E75;border-radius:var(--border-radius-md);padding:7px 10px;background:var(--color-background-primary);color:var(--color-text-primary)">
+            <div class="confidence-tag c-high"><i class="ti ti-check" style="font-size:10px" aria-hidden="true"></i> High confidence</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">Loan amount (₹)</div>
+            <input class="field-val confidence-high" value="19,00,000" style="width:100%;font-size:13px;font-weight:500;border:0.5px solid #1D9E75;border-radius:var(--border-radius-md);padding:7px 10px;background:var(--color-background-primary);color:var(--color-text-primary)">
+            <div class="confidence-tag c-high"><i class="ti ti-check" style="font-size:10px" aria-hidden="true"></i> High confidence</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">Interest rate (%)</div>
+            <input class="field-val confidence-high" value="8.75" style="width:100%;font-size:13px;font-weight:500;border:0.5px solid #1D9E75;border-radius:var(--border-radius-md);padding:7px 10px;background:var(--color-background-primary);color:var(--color-text-primary)">
+            <div class="confidence-tag c-high"><i class="ti ti-check" style="font-size:10px" aria-hidden="true"></i> High confidence</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">EMI amount (₹)</div>
+            <input class="field-val confidence-high" value="28,500" style="width:100%;font-size:13px;font-weight:500;border:0.5px solid #1D9E75;border-radius:var(--border-radius-md);padding:7px 10px;background:var(--color-background-primary);color:var(--color-text-primary)">
+            <div class="confidence-tag c-high"><i class="ti ti-check" style="font-size:10px" aria-hidden="true"></i> High confidence</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">Tenure (months)</div>
+            <input class="field-val confidence-high" value="240" style="width:100%;font-size:13px;font-weight:500;border:0.5px solid #1D9E75;border-radius:var(--border-radius-md);padding:7px 10px;background:var(--color-background-primary);color:var(--color-text-primary)">
+            <div class="confidence-tag c-high"><i class="ti ti-check" style="font-size:10px" aria-hidden="true"></i> High confidence</div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px">
+          <div class="field-item">
+            <div class="field-label">First EMI due date</div>
+            <input type="date" class="field-val" value="2026-07-05" style="width:100%;font-size:13px;font-weight:500;border:0.5px solid #EF9F27;border-radius:var(--border-radius-md);padding:7px 10px;background:var(--color-background-primary);color:var(--color-text-primary)">
+            <div class="confidence-tag c-low"><i class="ti ti-alert-triangle" style="font-size:10px" aria-hidden="true"></i> Please verify this date</div>
+          </div>
+        </div>
+
+        <div class="warning-row">
+          <i class="ti ti-alert-triangle" aria-hidden="true"></i>
+          <span>The due date was partially visible in the scan. We've made our best guess — please confirm it's correct before saving.</span>
+        </div>
+      </div>
+
+      <div class="action-row">
+        <button class="btn-secondary" onclick="resetUpload()"><i class="ti ti-refresh" style="font-size:13px" aria-hidden="true"></i> Re-upload</button>
+        <button class="btn-primary" onclick="sendPrompt('All 4 DebtWise screens are now complete. Help me package this as a portfolio project — what should the GitHub README say, and how should I write the LinkedIn post about building it?')">
+          <i class="ti ti-check" style="font-size:13px" aria-hidden="true"></i> Save loan ↗
+        </button>
+      </div>
+      <button class="try-another" onclick="resetUpload()"><i class="ti ti-plus" style="font-size:13px;vertical-align:-2px" aria-hidden="true"></i> Add another loan</button>
+    </div>
+
+  </div>
+
+  <div class="nav-bottom">
+    <div class="nav-item">
+      <i class="ti ti-home nav-icon" aria-hidden="true"></i>
+      <span class="nav-label">Home</span>
+    </div>
+    <div class="nav-item active">
+      <i class="ti ti-upload nav-icon" aria-hidden="true"></i>
+      <span class="nav-label">Add loan</span>
+    </div>
+    <div class="nav-item">
+      <i class="ti ti-chart-line nav-icon" aria-hidden="true"></i>
+      <span class="nav-label">Strategy</span>
+    </div>
+    <div class="nav-item">
+      <i class="ti ti-settings nav-icon" aria-hidden="true"></i>
+      <span class="nav-label">Settings</span>
+    </div>
+  </div>
+</div>
+
+<script>
+function show(id){document.getElementById(id).style.display='block'}
+function hide(id){document.getElementById(id).style.display='none'}
+
+function handleDrag(e,over){
+  e.preventDefault();
+  document.getElementById('upload-zone').classList.toggle('dragover',over);
+}
+function handleDrop(e){
+  e.preventDefault();
+  document.getElementById('upload-zone').classList.remove('dragover');
+  const f=e.dataTransfer.files[0];
+  if(f) startProcessing(f.name, (f.size/1024/1024).toFixed(1)+' MB');
+}
+function handleFile(f){
+  if(f) startProcessing(f.name, (f.size/1024/1024).toFixed(1)+' MB');
+}
+function simulateUpload(type){
+  const name = type==='camera' ? 'Sanction_Letter_photo.jpg' : null;
+  if(type==='manual'){
+    sendPrompt('Show me the DebtWise manual loan entry form');
+    return;
+  }
+  startProcessing(name || 'HDFC_Sanction_Letter.pdf','2.3 MB');
+}
+function startProcessing(fname,fsize){
+  document.getElementById('preview-filename').textContent = fname || 'HDFC_Sanction_Letter.pdf';
+  const isPdf = (fname||'').toLowerCase().endsWith('.pdf');
+  document.getElementById('preview-filesize').textContent = fsize + ' · ' + (isPdf ? 'PDF document' : 'Image file');
+  document.querySelector('.file-icon i').className = isPdf ? 'ti ti-file-type-pdf' : 'ti ti-photo';
+
+  hide('upload-view');
+  document.getElementById('processing-view').style.display='block';
+  runSteps();
+}
+function runSteps(){
+  const steps=[
+    {delay:800, s:'s2', title:'Reading document', desc:'Parsing text layers and structure…'},
+    {delay:2000, s:'s2', done:true, next:'s3', title:'AI field extraction', desc:'Found loan amount, interest rate, tenure…'},
+    {delay:3500, s:'s3', done:true, next:'s4', title:'Verification', desc:'Cross-checking extracted values…'},
+    {delay:4800, s:'s4', done:true, finish:true}
+  ];
+  steps.forEach(({delay,s,done,next,title,desc,finish})=>{
+    setTimeout(()=>{
+      if(done){
+        const el=document.getElementById(s);
+        el.className='step-circle done';
+        el.innerHTML='<i class="ti ti-check" style="font-size:14px" aria-hidden="true"></i>';
+      }
+      if(next){
+        const nel=document.getElementById(next);
+        nel.className='step-circle active spinning';
+        nel.innerHTML='<div class="spinner"></div>';
+      }
+      if(title) document.getElementById('s2-title') && (document.getElementById('s2-title').textContent=title);
+      if(finish) setTimeout(showResults,400);
+    },delay);
+  });
+}
+function showResults(){
+  document.getElementById('processing-view').style.display='none';
+  document.getElementById('results-view').style.display='block';
+}
+function resetUpload(){
+  document.getElementById('results-view').style.display='none';
+  document.getElementById('processing-view').style.display='none';
+  document.getElementById('upload-view').style.display='block';
+  document.getElementById('file-input').value='';
+  const s2=document.getElementById('s2');
+  s2.className='step-circle active spinning';
+  s2.innerHTML='<div class="spinner"></div>';
+  ['s3','s4'].forEach(id=>{
+    const el=document.getElementById(id);
+    el.className='step-circle';
+  });
+  document.getElementById('s3').innerHTML='<i class="ti ti-brain" style="font-size:14px" aria-hidden="true"></i>';
+  document.getElementById('s4').innerHTML='<i class="ti ti-check" style="font-size:14px" aria-hidden="true"></i>';
+}
+</script>
