@@ -1,3 +1,9 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DebtWise — Dashboard</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <link rel="stylesheet" href="debtwise.css">
 <style>
@@ -63,7 +69,7 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary)}
 .upcoming-name{font-size:13px;font-weight:500;color:var(--color-text-primary)}
 .upcoming-date{font-size:11px;color:var(--color-text-secondary);margin-top:1px}
 .upcoming-amount{font-size:13px;font-weight:500;color:var(--color-text-primary)}
-.modal-bg{display:none;min-height:500px;background:rgba(0,0,0,0.45);align-items:center;justify-content:center;border-radius:var(--border-radius-lg);padding:1rem}
+.modal-bg{display:none;position:fixed;inset:0;z-index:100;background:rgba(0,0,0,0.45);align-items:center;justify-content:center;padding:1rem;overflow-y:auto}
 .modal-bg.open{display:flex}
 .modal{background:var(--color-background-primary);border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary);padding:1.25rem;width:100%;max-width:380px}
 .modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
@@ -77,7 +83,7 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary)}
 .btn-cancel{flex:1;font-size:13px;padding:8px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:none;color:var(--color-text-secondary);cursor:pointer}
 .btn-save{flex:2;font-size:13px;padding:8px;border-radius:var(--border-radius-md);background:#1D9E75;color:#fff;border:none;cursor:pointer;font-weight:500}
 .btn-save:hover{background:#0F6E56}
-.paid-modal-bg{display:none;min-height:400px;background:rgba(0,0,0,0.45);align-items:center;justify-content:center;border-radius:var(--border-radius-lg);padding:1rem}
+.paid-modal-bg{display:none;position:fixed;inset:0;z-index:100;background:rgba(0,0,0,0.45);align-items:center;justify-content:center;padding:1rem;overflow-y:auto}
 .paid-modal-bg.open{display:flex}
 .nav-bottom{background:var(--color-background-primary);border-top:0.5px solid var(--color-border-tertiary);display:flex;padding:10px 0 6px}
 .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px}
@@ -86,6 +92,8 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary)}
 .nav-label{font-size:10px;color:var(--color-text-tertiary)}
 .nav-item.active .nav-label{color:#1D9E75}
 </style>
+</head>
+<body>
 
 <h2 class="sr-only">DebtWise dashboard showing all debts, total outstanding balance, and upcoming EMI payments</h2>
 
@@ -347,5 +355,7 @@ const months=['January','February','March','April','May','June','July','August',
 const now=new Date();
 document.getElementById('greeting-date').textContent=days[now.getDay()]+', '+now.getDate()+' '+months[now.getMonth()]+' '+now.getFullYear();
 const hr=now.getHours();
-document.querySelector('.greeting-name').textContent=(hr<12?'Good morning':'hr<17?Good afternoon':'Good evening')+', Gitesh';
+document.querySelector('.greeting-name').textContent=(hr<12?'Good morning':(hr<17?'Good afternoon':'Good evening'))+', Gitesh';
 </script>
+</body>
+</html>
