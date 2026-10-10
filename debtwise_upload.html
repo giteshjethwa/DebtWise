@@ -81,7 +81,8 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary)}
 .warning-row span{font-size:12px;color:#633806;line-height:1.5}
 .action-row{display:flex;gap:8px;margin-bottom:20px}
 .btn-primary{flex:2;padding:11px;border-radius:var(--border-radius-md);background:#1D9E75;color:#fff;font-size:13px;font-weight:500;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
-.btn-primary:hover{background:#0F6E56}
+.btn-primary:hover:not(:disabled){background:#0F6E56}
+.btn-primary:disabled{background:var(--color-border-secondary);color:var(--color-text-tertiary);cursor:not-allowed}
 .btn-secondary{flex:1;padding:10px;border-radius:var(--border-radius-md);background:none;border:0.5px solid var(--color-border-secondary);font-size:13px;color:var(--color-text-secondary);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
 .btn-secondary:hover{background:var(--color-background-secondary)}
 .try-another{width:100%;padding:10px;border-radius:var(--border-radius-md);background:none;border:0.5px solid var(--color-border-secondary);font-size:13px;color:var(--color-text-secondary);cursor:pointer;margin-bottom:20px}
@@ -264,8 +265,8 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary)}
 
       <div class="action-row">
         <button class="btn-secondary" onclick="resetUpload()"><i class="ti ti-refresh" style="font-size:13px" aria-hidden="true"></i> Re-upload</button>
-        <button class="btn-primary" onclick="sendPrompt('All 4 DebtWise screens are now complete. Help me package this as a portfolio project — what should the GitHub README say, and how should I write the LinkedIn post about building it?')">
-          <i class="ti ti-check" style="font-size:13px" aria-hidden="true"></i> Save loan ↗
+        <button class="btn-primary" disabled title="Saving loans is not built yet">
+          <i class="ti ti-clock" style="font-size:13px" aria-hidden="true"></i> Save loan · coming soon
         </button>
       </div>
       <button class="try-another" onclick="resetUpload()"><i class="ti ti-plus" style="font-size:13px;vertical-align:-2px" aria-hidden="true"></i> Add another loan</button>
@@ -313,7 +314,7 @@ function handleFile(f){
 function simulateUpload(type){
   const name = type==='camera' ? 'Sanction_Letter_photo.jpg' : null;
   if(type==='manual'){
-    sendPrompt('Show me the DebtWise manual loan entry form');
+    window.location.href='debtwise_dashboard.html';
     return;
   }
   startProcessing(name || 'HDFC_Sanction_Letter.pdf','2.3 MB');
