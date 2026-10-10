@@ -162,7 +162,7 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary)}
           <div class="progress-bar"><div class="progress-fill" style="width:38%;background:#E24B4A"></div></div>
         </div>
         <div class="debt-actions">
-          <button class="action-btn primary" onclick="markPaid('Personal Loan','8,350')"><i class="ti ti-check" style="font-size:13px" aria-hidden="true"></i> Mark paid</button>
+          <button class="action-btn primary" onclick="markPaid('Personal Loan',8350,242500,14.5)"><i class="ti ti-check" style="font-size:13px" aria-hidden="true"></i> Mark paid</button>
         </div>
       </div>
 
@@ -184,7 +184,7 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary)}
           <div class="progress-bar"><div class="progress-fill" style="width:22%"></div></div>
         </div>
         <div class="debt-actions">
-          <button class="action-btn primary" onclick="markPaid('Home Loan','28,500')"><i class="ti ti-check" style="font-size:13px" aria-hidden="true"></i> Mark paid</button>
+          <button class="action-btn primary" onclick="markPaid('Home Loan',28500,1480000,8.75)"><i class="ti ti-check" style="font-size:13px" aria-hidden="true"></i> Mark paid</button>
         </div>
       </div>
 
@@ -320,12 +320,12 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary)}
 function openModal(){document.getElementById('modal-bg').classList.add('open')}
 function closeModal(){document.getElementById('modal-bg').classList.remove('open')}
 function closePaidModal(){document.getElementById('paid-modal-bg').classList.remove('open')}
-function markPaid(name,emi){
+function markPaid(name,emi,outstanding,annualRate){
   document.getElementById('paid-title').textContent='Mark paid — '+name;
-  document.getElementById('paid-emi-amt').textContent='₹'+emi;
-  const raw=parseInt(emi.replace(/,/g,''));
-  const interest=Math.round(raw*0.35);
-  const principal=raw-interest;
+  document.getElementById('paid-emi-amt').textContent='₹'+emi.toLocaleString('en-IN');
+  // Interest this month = outstanding balance x monthly rate; the rest of the EMI repays principal.
+  const interest=Math.min(emi,Math.round(outstanding*annualRate/100/12));
+  const principal=emi-interest;
   document.getElementById('paid-interest').textContent='₹'+interest.toLocaleString('en-IN');
   document.getElementById('paid-principal').textContent='₹'+principal.toLocaleString('en-IN');
   const today=new Date().toISOString().split('T')[0];
