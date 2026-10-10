@@ -11,7 +11,7 @@
 body{font-family:var(--font-sans);background:var(--color-background-tertiary)}
 .app{background:var(--color-background-tertiary);min-height:100vh}
 .topbar{background:var(--color-background-primary);border-bottom:0.5px solid var(--color-border-tertiary);padding:14px 20px;display:flex;align-items:center;gap:10px}
-.back-btn{background:none;border:none;cursor:pointer;color:var(--color-text-secondary);font-size:18px;padding:2px;display:flex;align-items:center}
+.back-btn{background:none;border:none;cursor:pointer;color:var(--color-text-secondary);font-size:18px;padding:2px;display:flex;align-items:center;text-decoration:none}
 .logo-icon{width:32px;height:32px;border-radius:var(--border-radius-md);background:#E1F5EE;display:flex;align-items:center;justify-content:center}
 .topbar-title{font-size:15px;font-weight:500;color:var(--color-text-primary)}
 .main{padding:20px}
@@ -87,7 +87,7 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary)}
 .btn-secondary:hover{background:var(--color-background-secondary)}
 .try-another{width:100%;padding:10px;border-radius:var(--border-radius-md);background:none;border:0.5px solid var(--color-border-secondary);font-size:13px;color:var(--color-text-secondary);cursor:pointer;margin-bottom:20px}
 .nav-bottom{background:var(--color-background-primary);border-top:0.5px solid var(--color-border-tertiary);display:flex;padding:10px 0 6px}
-.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px;text-decoration:none}
 .nav-icon{font-size:20px;color:var(--color-text-tertiary)}
 .nav-label{font-size:10px;color:var(--color-text-tertiary)}
 .nav-item.active .nav-icon,.nav-item.active .nav-label{color:#1D9E75}
@@ -99,7 +99,7 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary)}
 
 <div class="app">
   <div class="topbar">
-    <button class="back-btn" aria-label="Back"><i class="ti ti-arrow-left" aria-hidden="true"></i></button>
+    <a class="back-btn" href="debtwise_dashboard.html" aria-label="Back to dashboard"><i class="ti ti-arrow-left" aria-hidden="true"></i></a>
     <div class="logo-icon"><i class="ti ti-chart-pie" style="color:#1D9E75;font-size:16px" aria-hidden="true"></i></div>
     <span class="topbar-title">Add loan via letter</span>
   </div>
@@ -213,7 +213,6 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary)}
       <div class="extracted-card">
         <div class="extracted-header">
           <span class="extracted-title">Extracted loan details</span>
-          <button class="edit-all-btn"><i class="ti ti-edit" style="font-size:12px" aria-hidden="true"></i> Edit all</button>
         </div>
 
         <div class="field-grid">
@@ -275,22 +274,18 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary)}
   </div>
 
   <div class="nav-bottom">
-    <div class="nav-item">
+    <a class="nav-item" href="debtwise_dashboard.html">
       <i class="ti ti-home nav-icon" aria-hidden="true"></i>
       <span class="nav-label">Home</span>
-    </div>
+    </a>
     <div class="nav-item active">
       <i class="ti ti-upload nav-icon" aria-hidden="true"></i>
       <span class="nav-label">Add loan</span>
     </div>
-    <div class="nav-item">
+    <a class="nav-item" href="debtwise_strategy.html">
       <i class="ti ti-chart-line nav-icon" aria-hidden="true"></i>
       <span class="nav-label">Strategy</span>
-    </div>
-    <div class="nav-item">
-      <i class="ti ti-settings nav-icon" aria-hidden="true"></i>
-      <span class="nav-label">Settings</span>
-    </div>
+    </a>
   </div>
 </div>
 

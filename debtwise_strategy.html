@@ -14,7 +14,7 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary)}
 .topbar-left{display:flex;align-items:center;gap:10px}
 .logo-icon{width:32px;height:32px;border-radius:var(--border-radius-md);background:#E1F5EE;display:flex;align-items:center;justify-content:center}
 .logo-text{font-size:15px;font-weight:500;color:var(--color-text-primary)}
-.back-btn{background:none;border:none;cursor:pointer;color:var(--color-text-secondary);font-size:18px;padding:2px;display:flex;align-items:center}
+.back-btn{background:none;border:none;cursor:pointer;color:var(--color-text-secondary);font-size:18px;padding:2px;display:flex;align-items:center;text-decoration:none}
 .main{padding:20px}
 .page-title{font-size:18px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px}
 .page-sub{font-size:13px;color:var(--color-text-secondary);margin-bottom:20px;line-height:1.5}
@@ -62,7 +62,7 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary)}
 .cta-btn:hover{background:#0F6E56}
 .sec-btn{width:100%;padding:10px;border-radius:var(--border-radius-md);background:none;border:0.5px solid var(--color-border-secondary);font-size:13px;color:var(--color-text-secondary);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:20px}
 .nav-bottom{background:var(--color-background-primary);border-top:0.5px solid var(--color-border-tertiary);display:flex;padding:10px 0 6px}
-.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px;text-decoration:none}
 .nav-icon{font-size:20px;color:var(--color-text-tertiary)}
 .nav-label{font-size:10px;color:var(--color-text-tertiary)}
 .nav-item.active .nav-icon,.nav-item.active .nav-label{color:#1D9E75}
@@ -75,7 +75,7 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary)}
 <div class="app">
   <div class="topbar">
     <div class="topbar-left">
-      <button class="back-btn" aria-label="Back to dashboard"><i class="ti ti-arrow-left" aria-hidden="true"></i></button>
+      <a class="back-btn" href="debtwise_dashboard.html" aria-label="Back to dashboard"><i class="ti ti-arrow-left" aria-hidden="true"></i></a>
       <div class="logo-icon"><i class="ti ti-chart-pie" style="color:#1D9E75;font-size:16px" aria-hidden="true"></i></div>
       <span class="logo-text">Payoff strategy</span>
     </div>
@@ -149,31 +149,21 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary)}
       <div class="tip-text" id="tip-text">With snowball, you'll clear the <strong>Business Loan (ICICI)</strong> first in just 2 months — that frees up ₹5,500/mo to throw at the next debt. Small win, big momentum.</div>
     </div>
 
-    <button class="cta-btn" onclick="sendPrompt('Build the DebtWise sanction letter upload screen where user uploads a PDF or scanned image and AI auto-fills all the loan details')">
-      <i class="ti ti-upload" aria-hidden="true"></i> Build next: sanction letter upload ↗
-    </button>
-    <button class="sec-btn" onclick="sendPrompt('Build the DebtWise early payment simulator — what if I pay extra this month on one specific loan')">
-      <i class="ti ti-calculator" aria-hidden="true"></i> Build early payment simulator ↗
-    </button>
 
   </div>
 
   <div class="nav-bottom">
-    <div class="nav-item" onclick="sendPrompt('Show the DebtWise dashboard')">
+    <a class="nav-item" href="debtwise_dashboard.html">
       <i class="ti ti-home nav-icon" aria-hidden="true"></i>
       <span class="nav-label">Home</span>
-    </div>
-    <div class="nav-item" onclick="sendPrompt('Build the DebtWise sanction letter upload screen')">
+    </a>
+    <a class="nav-item" href="debtwise_upload.html">
       <i class="ti ti-upload nav-icon" aria-hidden="true"></i>
       <span class="nav-label">Add loan</span>
-    </div>
+    </a>
     <div class="nav-item active">
       <i class="ti ti-chart-line nav-icon" aria-hidden="true"></i>
       <span class="nav-label">Strategy</span>
-    </div>
-    <div class="nav-item">
-      <i class="ti ti-settings nav-icon" aria-hidden="true"></i>
-      <span class="nav-label">Settings</span>
     </div>
   </div>
 </div>
