@@ -76,6 +76,9 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary)}
 .confidence-tag{font-size:10px;display:flex;align-items:center;gap:3px}
 .c-high{color:#0F6E56}
 .c-low{color:#854F0B}
+.demo-banner{display:flex;gap:8px;align-items:flex-start;background:#FAEEDA;border-radius:var(--border-radius-md);padding:10px 12px;margin-bottom:16px}
+.demo-banner i{color:#854F0B;font-size:15px;flex-shrink:0;margin-top:1px}
+.demo-banner span{font-size:12px;color:#633806;line-height:1.5}
 .warning-row{background:#FAEEDA;border-radius:var(--border-radius-md);padding:10px 12px;margin-top:12px;display:flex;gap:8px;align-items:flex-start}
 .warning-row i{color:#854F0B;font-size:15px;flex-shrink:0;margin-top:1px}
 .warning-row span{font-size:12px;color:#633806;line-height:1.5}
@@ -95,7 +98,7 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary)}
 </head>
 <body>
 
-<h2 class="sr-only">DebtWise sanction letter upload screen — upload a PDF or image and AI automatically extracts loan details</h2>
+<h2 class="sr-only">DebtWise sanction letter upload screen — preview of the sanction letter upload flow, using sample data</h2>
 
 <div class="app">
   <div class="topbar">
@@ -106,9 +109,14 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary)}
 
   <div class="main">
 
+    <div class="demo-banner" role="note">
+      <i class="ti ti-flask" aria-hidden="true"></i>
+      <span><strong>Prototype preview.</strong> Real letter extraction isn't built yet. This walkthrough shows the intended experience with sample data, and your file is not read or uploaded.</span>
+    </div>
+
     <div id="upload-view">
       <div class="page-title">Upload your sanction letter</div>
-      <div class="page-sub">Our AI reads your letter and fills in all loan details automatically. Works with PDFs and photos from any Indian bank.</div>
+      <div class="page-sub">In the finished version, AI will read your letter and fill in the loan details for you. PDFs and photos from Indian banks are the target.</div>
 
       <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()" ondragover="handleDrag(event,true)" ondragleave="handleDrag(event,false)" ondrop="handleDrop(event)">
         <input type="file" id="file-input" accept=".pdf,image/*" style="display:none" onchange="handleFile(this.files[0])">
@@ -139,11 +147,11 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary)}
 
       <div class="security-note">
         <i class="ti ti-shield-lock" aria-hidden="true"></i>
-        <span>Your document is processed securely and never stored. Only the extracted fields are saved to your account. We do not retain your original file.</span>
+        <span>In this preview your file isn't read, uploaded or stored — it stays on your device. When extraction is built, this note will say exactly what happens to your document.</span>
       </div>
 
       <div style="background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px 16px;margin-bottom:20px">
-        <div style="font-size:12px;font-weight:500;color:var(--color-text-secondary);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.04em">Works with letters from</div>
+        <div style="font-size:12px;font-weight:500;color:var(--color-text-secondary);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.04em">Planned support for letters from</div>
         <div style="display:flex;flex-wrap:wrap;gap:8px">
           <span style="font-size:12px;padding:4px 10px;border-radius:10px;background:var(--color-background-secondary);color:var(--color-text-secondary);border:0.5px solid var(--color-border-tertiary)">HDFC Bank</span>
           <span style="font-size:12px;padding:4px 10px;border-radius:10px;background:var(--color-background-secondary);color:var(--color-text-secondary);border:0.5px solid var(--color-border-tertiary)">ICICI Bank</span>
@@ -151,14 +159,14 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary)}
           <span style="font-size:12px;padding:4px 10px;border-radius:10px;background:var(--color-background-secondary);color:var(--color-text-secondary);border:0.5px solid var(--color-border-tertiary)">Axis Bank</span>
           <span style="font-size:12px;padding:4px 10px;border-radius:10px;background:var(--color-background-secondary);color:var(--color-text-secondary);border:0.5px solid var(--color-border-tertiary)">Bajaj Finserv</span>
           <span style="font-size:12px;padding:4px 10px;border-radius:10px;background:var(--color-background-secondary);color:var(--color-text-secondary);border:0.5px solid var(--color-border-tertiary)">Kotak</span>
-          <span style="font-size:12px;padding:4px 10px;border-radius:10px;background:var(--color-background-secondary);color:var(--color-text-secondary);border:0.5px solid var(--color-border-tertiary)">+ 40 more</span>
+          <span style="font-size:12px;padding:4px 10px;border-radius:10px;background:var(--color-background-secondary);color:var(--color-text-secondary);border:0.5px solid var(--color-border-tertiary)">and more</span>
         </div>
       </div>
     </div>
 
     <div id="processing-view" class="processing-view">
-      <div class="page-title" style="margin-bottom:4px">Reading your letter</div>
-      <div class="page-sub">Hang on — this usually takes under 10 seconds.</div>
+      <div class="page-title" style="margin-bottom:4px">Running the sample walkthrough</div>
+      <div class="page-sub">These steps are simulated — nothing is being read from your file.</div>
 
       <div class="file-preview" id="file-preview">
         <div class="file-icon"><i class="ti ti-file-type-pdf" aria-hidden="true"></i></div>
@@ -174,28 +182,28 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary)}
           <div class="step-circle done" id="s1"><i class="ti ti-check" style="font-size:14px" aria-hidden="true"></i></div>
           <div class="step-body">
             <div class="step-title">Document received</div>
-            <div class="step-desc">File uploaded securely</div>
+            <div class="step-desc">File selected on your device</div>
           </div>
         </div>
         <div class="step-row">
           <div class="step-circle active spinning" id="s2"><div class="spinner"></div></div>
           <div class="step-body">
             <div class="step-title" id="s2-title">Reading document</div>
-            <div class="step-desc" id="s2-desc">Extracting text from your letter…</div>
+            <div class="step-desc" id="s2-desc">Sample step — no text is read</div>
           </div>
         </div>
         <div class="step-row">
           <div class="step-circle" id="s3"><i class="ti ti-brain" style="font-size:14px" aria-hidden="true"></i></div>
           <div class="step-body">
             <div class="step-title">AI field extraction</div>
-            <div class="step-desc">Identifying loan amount, rate, tenure…</div>
+            <div class="step-desc">Sample step — no AI is called</div>
           </div>
         </div>
         <div class="step-row">
           <div class="step-circle" id="s4"><i class="ti ti-check" style="font-size:14px" aria-hidden="true"></i></div>
           <div class="step-body">
             <div class="step-title">Verification</div>
-            <div class="step-desc">Checking extracted values for accuracy</div>
+            <div class="step-desc">Sample step — nothing is checked</div>
           </div>
         </div>
       </div>
@@ -205,14 +213,14 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary)}
       <div class="success-banner">
         <i class="ti ti-circle-check" aria-hidden="true"></i>
         <div>
-          <div class="success-text">Letter read successfully</div>
-          <div class="success-sub">6 of 6 fields extracted · 1 field needs your attention</div>
+          <div class="success-text">Sample result</div>
+          <div class="success-sub">Example values for a sample HDFC home loan letter — not read from your file</div>
         </div>
       </div>
 
       <div class="extracted-card">
         <div class="extracted-header">
-          <span class="extracted-title">Extracted loan details</span>
+          <span class="extracted-title">Sample loan details</span>
         </div>
 
         <div class="field-grid">
@@ -258,7 +266,7 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary)}
 
         <div class="warning-row">
           <i class="ti ti-alert-triangle" aria-hidden="true"></i>
-          <span>The due date was partially visible in the scan. We've made our best guess — please confirm it's correct before saving.</span>
+          <span>Sample warning: this is how the screen will flag a value the AI couldn't read clearly, so you can confirm it before saving.</span>
         </div>
       </div>
 
@@ -326,9 +334,9 @@ function startProcessing(fname,fsize){
 }
 function runSteps(){
   const steps=[
-    {delay:800, s:'s2', title:'Reading document', desc:'Parsing text layers and structure…'},
-    {delay:2000, s:'s2', done:true, next:'s3', title:'AI field extraction', desc:'Found loan amount, interest rate, tenure…'},
-    {delay:3500, s:'s3', done:true, next:'s4', title:'Verification', desc:'Cross-checking extracted values…'},
+    {delay:800, s:'s2', title:'Reading document', desc:'Sample step'},
+    {delay:2000, s:'s2', done:true, next:'s3', title:'AI field extraction', desc:'Sample step'},
+    {delay:3500, s:'s3', done:true, next:'s4', title:'Verification', desc:'Sample step'},
     {delay:4800, s:'s4', done:true, finish:true}
   ];
   steps.forEach(({delay,s,done,next,title,desc,finish})=>{
