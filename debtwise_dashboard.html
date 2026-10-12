@@ -63,6 +63,13 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary)}
 .action-btn:hover{background:var(--color-background-secondary)}
 .action-btn.primary{background:#1D9E75;color:#fff;border-color:#1D9E75}
 .action-btn.primary:hover{background:#0F6E56}
+.action-btn.icon-btn{flex:0 0 40px;padding:7px 0;color:var(--color-text-tertiary);font-size:14px}
+.action-btn.icon-btn:hover{color:#A32D2D;background:#FCEBEB;border-color:#F4C3C3}
+.btn-danger{flex:2;font-size:13px;padding:8px;border-radius:var(--border-radius-md);background:#A32D2D;color:#fff;border:none;cursor:pointer;font-weight:500}
+.btn-danger:hover{background:#7F2020}
+.del-text{font-size:13px;color:var(--color-text-secondary);line-height:1.6}
+.del-err{display:none;background:#FCEBEB;color:#A32D2D;border-radius:var(--border-radius-md);padding:10px 12px;font-size:12px;line-height:1.5;margin-top:12px}
+.del-err.show{display:block}
 .empty-state{background:var(--color-background-primary);border:0.5px dashed var(--color-border-secondary);border-radius:var(--border-radius-lg);padding:2rem;text-align:center;display:none}
 .empty-title{font-size:14px;font-weight:500;color:var(--color-text-primary);margin-bottom:6px}
 .empty-sub{font-size:13px;color:var(--color-text-secondary);margin-bottom:1rem;line-height:1.5}
@@ -95,8 +102,9 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary)}
 .field input.invalid{border-color:var(--color-border-danger)}
 .lf-note{display:none;background:#E1F5EE;color:#0F6E56;border-radius:var(--border-radius-md);padding:10px 12px;font-size:12px;line-height:1.5;margin-top:12px}
 .lf-note.show{display:block}
-.paid-modal-bg{display:none;position:fixed;inset:0;z-index:100;background:rgba(0,0,0,0.45);align-items:center;justify-content:center;padding:1rem;overflow-y:auto}
-.paid-modal-bg.open{display:flex}
+.lf-note.error{background:#FCEBEB;color:#A32D2D}
+.paid-modal-bg,.del-modal-bg{display:none;position:fixed;inset:0;z-index:100;background:rgba(0,0,0,0.45);align-items:center;justify-content:center;padding:1rem;overflow-y:auto}
+.paid-modal-bg.open,.del-modal-bg.open{display:flex}
 .nav-bottom{background:var(--color-background-primary);border-top:0.5px solid var(--color-border-tertiary);display:flex;padding:10px 0 6px}
 .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px;text-decoration:none}
 .nav-item.active .nav-icon{color:#1D9E75}
@@ -127,7 +135,7 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary)}
     </div>
 
     <div class="sample-banner" id="sample-banner" role="note">
-      <span>You're looking at sample loans, not real data.</span>
+      <span>Loans tagged SAMPLE are examples, not real data, and they count towards the totals below.</span>
       <button onclick="clearSamples()">Clear samples</button>
     </div>
 
@@ -221,10 +229,25 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary)}
       <i class="ti ti-file-upload" style="color:#1D9E75;font-size:15px;flex-shrink:0;margin-top:1px" aria-hidden="true"></i>
       <span>Have a sanction letter? <span style="color:#1D9E75;cursor:pointer;font-weight:500" onclick="window.location.href='debtwise_upload.html'">Upload it instead</span> and we'll fill this for you automatically.</span>
     </div>
-    <div class="lf-note" id="lf-note" role="status">Everything checks out. Saving loans isn't built yet — that's the next step.</div>
+    <div class="lf-note" id="lf-note" role="status"></div>
     <div class="modal-footer">
       <button class="btn-cancel" onclick="closeModal()">Cancel</button>
       <button class="btn-save" onclick="saveLoan()"><i class="ti ti-check" aria-hidden="true"></i> Save loan</button>
+    </div>
+  </div>
+</div>
+
+<div class="del-modal-bg" id="del-modal-bg" role="dialog" aria-modal="true" aria-labelledby="del-title">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="del-title">Delete this loan?</span>
+      <button class="close-btn" onclick="closeDelModal()" aria-label="Close"><i class="ti ti-x" aria-hidden="true"></i></button>
+    </div>
+    <div class="del-text" id="del-text"></div>
+    <div class="del-err" id="del-err" role="alert"></div>
+    <div class="modal-footer">
+      <button class="btn-cancel" id="del-cancel" onclick="closeDelModal()">Cancel</button>
+      <button class="btn-danger" onclick="confirmDelete()">Delete loan</button>
     </div>
   </div>
 </div>
@@ -253,55 +276,40 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary)}
 
 <script src="debtwise_store.js"></script>
 <script>
+const S=DebtWiseStore;
 const $=id=>document.getElementById(id);
-const num=id=>{const v=$(id).value.trim();return v===''?NaN:Number(v)};
-const inr=n=>'₹'+Math.round(n).toLocaleString('en-IN');
-function todayStr(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 
-// One rule per add-loan field; each returns an error message, or '' when the value is fine.
-const LOAN_RULES={
-  lender:()=>$('lf-lender').value.trim()?'':'Enter the lender name',
-  amount:()=>{const a=num('lf-amount');return(isNaN(a)||a<=0)?'Enter the original loan amount':''},
-  outstanding:()=>{
-    const o=num('lf-outstanding'),a=num('lf-amount');
-    if(isNaN(o)||o<=0)return'Enter how much you still owe';
-    if(!isNaN(a)&&o>a)return'Outstanding can\u2019t be more than the loan amount ('+inr(a)+')';
-    return''},
-  rate:()=>{const r=num('lf-rate');return(isNaN(r)||r<=0||r>50)?'Enter a rate between 0.1 and 50':''},
-  emi:()=>{
-    const e=num('lf-emi'),o=num('lf-outstanding'),r=num('lf-rate');
-    if(isNaN(e)||e<=0)return'Enter your monthly EMI';
-    if(!isNaN(o)&&e>o)return'EMI can\u2019t be more than the outstanding amount';
-    if(!isNaN(o)&&!isNaN(r)&&r>0){const i=o*r/100/12;if(e<=i)return'EMI is below this month\u2019s interest ('+inr(i)+'), so the balance would never fall'}
-    return''},
-  tenure:()=>{const t=num('lf-tenure');return(isNaN(t)||!Number.isInteger(t)||t<1||t>480)?'Enter whole months, from 1 to 480':''},
-  start:()=>{const v=$('lf-start').value;if(!v)return'Pick the loan start date';return v>todayStr()?'Start date can\u2019t be in the future':''},
-  due:()=>{const v=$('lf-due').value,s=$('lf-start').value;if(!v)return'Pick your next EMI date';return(s&&v<s)?'Next EMI date can\u2019t be before the start date':''}
-};
+// Form field id -> the key DebtWiseStore.validateLoan uses. The rules themselves live in debtwise_store.js.
+const LOAN_FIELDS={lender:'lender',amount:'amount',outstanding:'outstanding',rate:'rate',emi:'emi',tenure:'tenure',start:'startDate',due:'nextDue'};
 // Fields whose rule reads another field: re-check them (if filled) when the source changes.
 const LOAN_DEPENDENTS={amount:['outstanding'],outstanding:['emi'],rate:['emi'],start:['due']};
-function checkField(k){
-  const msg=LOAN_RULES[k](),err=$('lf-err-'+k),el=$('lf-'+k);
-  err.textContent=msg;err.classList.toggle('show',!!msg);
-  el.classList.toggle('invalid',!!msg);el.setAttribute('aria-invalid',msg?'true':'false');
-  return!msg}
+
+function readForm(){return{type:$('lf-type').value,lender:$('lf-lender').value,amount:$('lf-amount').value,outstanding:$('lf-outstanding').value,rate:$('lf-rate').value,emi:$('lf-emi').value,tenure:$('lf-tenure').value,startDate:$('lf-start').value,nextDue:$('lf-due').value}}
+function showError(k,msg){
+  const err=$('lf-err-'+k),el=$('lf-'+k);
+  err.textContent=msg||'';err.classList.toggle('show',!!msg);
+  el.classList.toggle('invalid',!!msg);el.setAttribute('aria-invalid',msg?'true':'false')}
+function checkField(k){const msg=S.validateLoan(readForm())[LOAN_FIELDS[k]]||'';showError(k,msg);return!msg}
 function recheckDependents(k){(LOAN_DEPENDENTS[k]||[]).forEach(d=>{if($('lf-'+d).value!=='')checkField(d)})}
-Object.keys(LOAN_RULES).forEach(k=>{
+Object.keys(LOAN_FIELDS).forEach(k=>{
   const el=$('lf-'+k);
   el.addEventListener('blur',()=>{checkField(k);recheckDependents(k)});
   el.addEventListener('input',()=>{if($('lf-err-'+k).classList.contains('show'))checkField(k);recheckDependents(k)});
 });
+function setNote(msg,isError){const n=$('lf-note');n.textContent=msg||'';n.classList.toggle('error',!!isError);n.classList.toggle('show',!!msg)}
 function saveLoan(){
+  const r=S.createLoan(readForm());
+  if(r.ok){closeModal();render();return}
   let first=null;
-  Object.keys(LOAN_RULES).forEach(k=>{if(!checkField(k)&&!first)first=k});
-  const note=$('lf-note');
-  if(first){note.classList.remove('show');$('lf-'+first).focus();return}
-  note.classList.add('show');
+  Object.keys(LOAN_FIELDS).forEach(k=>{const msg=r.errors[LOAN_FIELDS[k]]||'';showError(k,msg);if(msg&&!first)first=k});
+  if(r.errors._storage){setNote(r.errors._storage,true);return}
+  setNote('');
+  if(first)$('lf-'+first).focus();
 }
 function resetLoanForm(){
-  Object.keys(LOAN_RULES).forEach(k=>{const el=$('lf-'+k);el.value='';el.classList.remove('invalid');el.removeAttribute('aria-invalid');$('lf-err-'+k).classList.remove('show')});
-  $('lf-type').selectedIndex=0;$('lf-note').classList.remove('show')}
-function openModal(){$('lf-start').max=todayStr();$('modal-bg').classList.add('open')}
+  Object.keys(LOAN_FIELDS).forEach(k=>{const el=$('lf-'+k);el.value='';showError(k,'');el.removeAttribute('aria-invalid')});
+  $('lf-type').selectedIndex=0;setNote('')}
+function openModal(){$('lf-start').max=S.todayStr();$('modal-bg').classList.add('open')}
 function closeModal(){$('modal-bg').classList.remove('open');resetLoanForm()}
 function closePaidModal(){document.getElementById('paid-modal-bg').classList.remove('open')}
 function markPaid(id){
@@ -324,7 +332,6 @@ const hr=now.getHours();
 document.querySelector('.greeting-name').textContent=(hr<12?'Good morning':(hr<17?'Good afternoon':'Good evening'))+', Gitesh';
 
 /* ---------- render everything from stored loans ---------- */
-const S=DebtWiseStore;
 const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const esc=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmtShort=d=>{const p=S.parseDate(d);return p.getDate()+' '+MON[p.getMonth()]};
@@ -354,7 +361,7 @@ function cardHtml(l,today){
       '<div><div class="debt-num-label">Rate</div><div class="debt-num-value">'+esc(l.rate)+'%</div></div></div>'+
     '<div class="progress-wrap"><div class="progress-label"><span>Paid so far</span><span>'+pct+'%</span></div>'+
     '<div class="progress-bar"><div class="progress-fill" style="width:'+pct+'%'+(st==='overdue'?';background:#E24B4A':'')+'"></div></div></div>'+
-    '<div class="debt-actions">'+action+'</div></div>';
+    '<div class="debt-actions">'+action+'<button class="action-btn icon-btn" data-del="'+esc(l.id)+'" aria-label="Delete '+esc(titleCase(l.type))+' from '+esc(l.lender)+'"><i class="ti ti-trash" aria-hidden="true"></i></button></div></div>';
 }
 function upcomingRowHtml(l,today){
   const st=S.statusOf(l,today), n=S.daysBetween(today,l.nextDue);
@@ -408,9 +415,37 @@ function render(){
   $('upcoming-section').style.display=has?'block':'none';
   $('sample-banner').style.display=loans.some(l=>l.isSample)?'flex':'none';
 }
+let pendingDeleteId=null;
+function askDelete(id){
+  const l=S.loadLoans().find(x=>x.id===id);
+  if(!l)return;
+  pendingDeleteId=id;
+  $('del-text').textContent=titleCase(l.type)+' — '+l.lender+' ('+S.inr(l.outstanding)+' outstanding) will be removed from this browser. This can\u2019t be undone.';
+  $('del-err').classList.remove('show');
+  $('del-modal-bg').classList.add('open');
+  $('del-cancel').focus();
+}
+function closeDelModal(){pendingDeleteId=null;$('del-modal-bg').classList.remove('open')}
+function confirmDelete(){
+  const id=pendingDeleteId;
+  if(id)S.deleteLoan(id);
+  // Judge by what is actually stored: a loan already gone (e.g. removed in another tab) counts as deleted.
+  if(S.loadLoans().some(l=>l.id===id)){
+    $('del-err').textContent='This browser wouldn\u2019t let DebtWise delete the loan. Check that storage isn\u2019t blocked.';
+    $('del-err').classList.add('show');return;
+  }
+  closeDelModal();render();
+}
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Escape')return;
+  closeModal();closePaidModal();closeDelModal();
+});
 function loadSamples(){S.seedSampleLoans();render()}
 function clearSamples(){S.clearSampleLoans();render()}
-$('debt-list').addEventListener('click',e=>{const b=e.target.closest('[data-pay]');if(b)markPaid(b.dataset.pay)});
+$('debt-list').addEventListener('click',e=>{
+  const b=e.target.closest('[data-pay]');if(b)markPaid(b.dataset.pay);
+  const d=e.target.closest('[data-del]');if(d)askDelete(d.dataset.del);
+});
 window.addEventListener('pageshow',render);
 render();
 </script>
