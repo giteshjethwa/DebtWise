@@ -80,8 +80,9 @@
   }
   function totals(loans, today) {
     today = today || todayStr();
-    const t = { count: loans.length, totalOutstanding: 0, monthlyEmi: 0, overdue: 0, dueSoon: 0, needAttention: 0 };
+    const t = { count: loans.length, totalAmount: 0, totalOutstanding: 0, repaidPercent: 0, monthlyEmi: 0, overdue: 0, dueSoon: 0, needAttention: 0 };
     loans.forEach(l => {
+      t.totalAmount += l.amount;
       t.totalOutstanding += l.outstanding;
       t.monthlyEmi += l.emi;
       const s = statusOf(l, today);
@@ -89,6 +90,7 @@
       if (s === 'due-soon') t.dueSoon++;
     });
     t.needAttention = t.overdue + t.dueSoon;
+    t.repaidPercent = t.totalAmount > 0 ? Math.max(0, Math.min(100, Math.round((1 - t.totalOutstanding / t.totalAmount) * 100))) : 0;
     return t;
   }
   // The "Next due" tile needs two separate answers: what is already late, and what is coming.
@@ -99,6 +101,14 @@
     const upcoming = loans.filter(l => l.nextDue >= today).sort((a, b) => a.nextDue < b.nextDue ? -1 : a.nextDue > b.nextDue ? 1 : 0);
     const next = upcoming.length ? { loan: upcoming[0], date: upcoming[0].nextDue, daysAway: daysBetween(today, upcoming[0].nextDue) } : null;
     return { overdue: overdue, next: next };
+  }
+
+  // Most urgent first: overdue, due soon, upcoming, then already paid; ties by due date.
+  const URGENCY = { 'overdue': 0, 'due-soon': 1, 'upcoming': 2, 'paid': 3 };
+  function sortByUrgency(loans, today) {
+    today = today || todayStr();
+    return loans.slice().sort((a, b) =>
+      (URGENCY[statusOf(a, today)] - URGENCY[statusOf(b, today)]) || (a.nextDue < b.nextDue ? -1 : a.nextDue > b.nextDue ? 1 : 0));
   }
 
   /* ---------- validation (single source of truth for the add-loan form) ---------- */
@@ -212,14 +222,17 @@
     return saveLoans(sampleLoans(today));
   }
 
+  // Removes only the sample loans, leaving anything the user entered themselves.
+  function clearSampleLoans() { return saveLoans(loadLoans().filter(l => !l.isSample)); }
+
   const api = {
     KEY: KEY, LOAN_TYPES: LOAN_TYPES, DUE_SOON_DAYS: DUE_SOON_DAYS,
     todayStr: todayStr, parseDate: parseDate, daysBetween: daysBetween, addDays: addDays, addMonths: addMonths,
     inr: inr, monthlyInterest: monthlyInterest, splitEmi: splitEmi, repaidPercent: repaidPercent,
-    statusOf: statusOf, totals: totals, nextDueInfo: nextDueInfo,
+    statusOf: statusOf, totals: totals, nextDueInfo: nextDueInfo, sortByUrgency: sortByUrgency,
     validateLoan: validateLoan,
     loadLoans: loadLoans, saveLoans: saveLoans, createLoan: createLoan, deleteLoan: deleteLoan, clearLoans: clearLoans,
-    sampleLoans: sampleLoans, seedSampleLoans: seedSampleLoans
+    sampleLoans: sampleLoans, seedSampleLoans: seedSampleLoans, clearSampleLoans: clearSampleLoans
   };
   root.DebtWiseStore = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;

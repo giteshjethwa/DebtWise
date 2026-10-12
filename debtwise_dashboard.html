@@ -44,6 +44,13 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary)}
 .badge-overdue{background:#FCEBEB;color:#A32D2D}
 .badge-soon{background:#FAEEDA;color:#854F0B}
 .badge-ok{background:#E1F5EE;color:#0F6E56}
+.badge-up{background:var(--color-background-secondary);color:var(--color-text-secondary)}
+.sample-tag{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.05em;color:#854F0B;background:#FAEEDA;border-radius:6px;padding:1px 5px;margin-left:6px;vertical-align:1px}
+.sample-banner{display:none;gap:10px;align-items:center;justify-content:space-between;background:#FAEEDA;border-radius:var(--border-radius-md);padding:10px 12px;margin-bottom:16px;font-size:12px;color:#633806;line-height:1.5}
+.sample-banner button{flex-shrink:0;font-size:12px;padding:5px 10px;border-radius:var(--border-radius-md);border:0.5px solid #854F0B;background:none;color:#633806;cursor:pointer}
+.empty-actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.secondary-btn{display:inline-flex;align-items:center;gap:6px;font-size:13px;padding:8px 16px;border-radius:var(--border-radius-md);background:none;color:var(--color-text-secondary);border:0.5px solid var(--color-border-secondary);cursor:pointer}
+.secondary-btn:hover{background:var(--color-background-secondary)}
 .debt-nums{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px}
 .debt-num-label{font-size:10px;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:0.04em}
 .debt-num-value{font-size:13px;font-weight:500;color:var(--color-text-primary);margin-top:2px}
@@ -71,7 +78,7 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary)}
 .upcoming-amount{font-size:13px;font-weight:500;color:var(--color-text-primary)}
 .modal-bg{display:none;position:fixed;inset:0;z-index:100;background:rgba(0,0,0,0.45);align-items:center;justify-content:center;padding:1rem;overflow-y:auto}
 .modal-bg.open{display:flex}
-.modal{background:var(--color-background-primary);border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary);padding:1.25rem;width:100%;max-width:380px}
+.modal{background:var(--color-background-primary);border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary);padding:1.25rem;width:100%;max-width:380px;margin:auto}
 .modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
 .modal-title{font-size:15px;font-weight:500;color:var(--color-text-primary)}
 .close-btn{background:none;border:none;cursor:pointer;color:var(--color-text-tertiary);font-size:18px;padding:2px}
@@ -83,6 +90,11 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary)}
 .btn-cancel{flex:1;font-size:13px;padding:8px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:none;color:var(--color-text-secondary);cursor:pointer}
 .btn-save{flex:2;font-size:13px;padding:8px;border-radius:var(--border-radius-md);background:#1D9E75;color:#fff;border:none;cursor:pointer;font-weight:500}
 .btn-save:hover{background:#0F6E56}
+.field .lf-err{display:none;font-size:11px;color:var(--color-text-danger);margin-top:3px;line-height:1.4}
+.field .lf-err.show{display:block}
+.field input.invalid{border-color:var(--color-border-danger)}
+.lf-note{display:none;background:#E1F5EE;color:#0F6E56;border-radius:var(--border-radius-md);padding:10px 12px;font-size:12px;line-height:1.5;margin-top:12px}
+.lf-note.show{display:block}
 .paid-modal-bg{display:none;position:fixed;inset:0;z-index:100;background:rgba(0,0,0,0.45);align-items:center;justify-content:center;padding:1rem;overflow-y:auto}
 .paid-modal-bg.open{display:flex}
 .nav-bottom{background:var(--color-background-primary);border-top:0.5px solid var(--color-border-tertiary);display:flex;padding:10px 0 6px}
@@ -114,26 +126,31 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary)}
       <div class="greeting-sub" id="greeting-date">Monday, 9 June 2026</div>
     </div>
 
+    <div class="sample-banner" id="sample-banner" role="note">
+      <span>You're looking at sample loans, not real data.</span>
+      <button onclick="clearSamples()">Clear samples</button>
+    </div>
+
     <div class="metrics">
       <div class="metric">
         <div class="metric-label">Total outstanding</div>
-        <div class="metric-value danger" id="m-total">₹18,42,500</div>
-        <div class="metric-sub">across 3 loans</div>
+        <div class="metric-value" id="m-total">₹0</div>
+        <div class="metric-sub" id="m-total-sub">No loans added yet</div>
       </div>
       <div class="metric">
-        <div class="metric-label">This month's EMIs</div>
-        <div class="metric-value" id="m-emi">₹42,350</div>
-        <div class="metric-sub">2 due this week</div>
+        <div class="metric-label">Monthly EMIs</div>
+        <div class="metric-value" id="m-emi">₹0</div>
+        <div class="metric-sub" id="m-emi-sub">Nothing due</div>
       </div>
       <div class="metric">
-        <div class="metric-label">Next due date</div>
-        <div class="metric-value" style="font-size:15px" id="m-next">15 Jun</div>
-        <div class="metric-sub">HDFC Home Loan</div>
+        <div class="metric-label" id="m-next-label">Next due date</div>
+        <div class="metric-value" style="font-size:15px" id="m-next">None</div>
+        <div class="metric-sub" id="m-next-sub">No upcoming EMIs</div>
       </div>
       <div class="metric">
-        <div class="metric-label">Interest paid (YTD)</div>
-        <div class="metric-value" style="font-size:16px">₹1,24,800</div>
-        <div class="metric-sub">Jan – Jun 2026</div>
+        <div class="metric-label">Repaid so far</div>
+        <div class="metric-value" id="m-repaid">0%</div>
+        <div class="metric-sub" id="m-repaid-sub">No loans added yet</div>
       </div>
     </div>
 
@@ -142,110 +159,23 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary)}
       <button class="add-btn" onclick="openModal()"><i class="ti ti-plus" aria-hidden="true" style="font-size:14px"></i> Add loan</button>
     </div>
 
-    <div class="debt-list" id="debt-list">
-
-      <div class="debt-card overdue">
-        <div class="debt-top">
-          <div class="debt-info">
-            <div class="debt-name">Personal Loan</div>
-            <div class="debt-bank">Bajaj Finserv</div>
-          </div>
-          <span class="debt-badge badge-overdue"><i class="ti ti-alert-circle" style="font-size:10px;vertical-align:-1px" aria-hidden="true"></i> Overdue</span>
-        </div>
-        <div class="debt-nums">
-          <div><div class="debt-num-label">Outstanding</div><div class="debt-num-value">₹2,42,500</div></div>
-          <div><div class="debt-num-label">EMI</div><div class="debt-num-value">₹8,350</div></div>
-          <div><div class="debt-num-label">Rate</div><div class="debt-num-value">14.5%</div></div>
-        </div>
-        <div class="progress-wrap">
-          <div class="progress-label"><span>Paid so far</span><span>38%</span></div>
-          <div class="progress-bar"><div class="progress-fill" style="width:38%;background:#E24B4A"></div></div>
-        </div>
-        <div class="debt-actions">
-          <button class="action-btn primary" onclick="markPaid('Personal Loan',8350,242500,14.5)"><i class="ti ti-check" style="font-size:13px" aria-hidden="true"></i> Mark paid</button>
-        </div>
+    <div class="empty-state" id="empty-state">
+      <div style="font-size:28px;color:var(--color-text-tertiary);margin-bottom:8px"><i class="ti ti-wallet" aria-hidden="true"></i></div>
+      <div class="empty-title">No loans yet</div>
+      <div class="empty-sub">Add a loan to see what you owe, what's due and how to pay it off faster. Or load three sample loans to look around.</div>
+      <div class="empty-actions">
+        <button class="add-first-btn" onclick="openModal()"><i class="ti ti-plus" aria-hidden="true"></i> Add your first loan</button>
+        <button class="secondary-btn" onclick="loadSamples()">Load sample loans</button>
       </div>
-
-      <div class="debt-card due-soon">
-        <div class="debt-top">
-          <div class="debt-info">
-            <div class="debt-name">Home Loan</div>
-            <div class="debt-bank">HDFC Bank</div>
-          </div>
-          <span class="debt-badge badge-soon"><i class="ti ti-clock" style="font-size:10px;vertical-align:-1px" aria-hidden="true"></i> Due in 6 days</span>
-        </div>
-        <div class="debt-nums">
-          <div><div class="debt-num-label">Outstanding</div><div class="debt-num-value">₹14,80,000</div></div>
-          <div><div class="debt-num-label">EMI</div><div class="debt-num-value">₹28,500</div></div>
-          <div><div class="debt-num-label">Rate</div><div class="debt-num-value">8.75%</div></div>
-        </div>
-        <div class="progress-wrap">
-          <div class="progress-label"><span>Paid so far</span><span>22%</span></div>
-          <div class="progress-bar"><div class="progress-fill" style="width:22%"></div></div>
-        </div>
-        <div class="debt-actions">
-          <button class="action-btn primary" onclick="markPaid('Home Loan',28500,1480000,8.75)"><i class="ti ti-check" style="font-size:13px" aria-hidden="true"></i> Mark paid</button>
-        </div>
-      </div>
-
-      <div class="debt-card ok">
-        <div class="debt-top">
-          <div class="debt-info">
-            <div class="debt-name">Business Loan</div>
-            <div class="debt-bank">ICICI Bank</div>
-          </div>
-          <span class="debt-badge badge-ok"><i class="ti ti-check" style="font-size:10px;vertical-align:-1px" aria-hidden="true"></i> Paid this month</span>
-        </div>
-        <div class="debt-nums">
-          <div><div class="debt-num-label">Outstanding</div><div class="debt-num-value">₹1,20,000</div></div>
-          <div><div class="debt-num-label">EMI</div><div class="debt-num-value">₹5,500</div></div>
-          <div><div class="debt-num-label">Rate</div><div class="debt-num-value">11.0%</div></div>
-        </div>
-        <div class="progress-wrap">
-          <div class="progress-label"><span>Paid so far</span><span>65%</span></div>
-          <div class="progress-bar"><div class="progress-fill" style="width:65%"></div></div>
-        </div>
-        <div class="debt-actions">
-          <button class="action-btn" style="opacity:0.5;cursor:default"><i class="ti ti-check" style="font-size:13px" aria-hidden="true"></i> Paid</button>
-        </div>
-      </div>
-
     </div>
 
-    <div class="section-header">
-      <span class="section-title">Upcoming this month</span>
-    </div>
-    <div class="upcoming">
-      <div class="upcoming-row">
-        <div class="upcoming-left">
-          <div class="upcoming-icon" style="background:#FCEBEB"><i class="ti ti-alert-circle" style="color:#A32D2D;font-size:15px" aria-hidden="true"></i></div>
-          <div>
-            <div class="upcoming-name">Personal Loan — Bajaj</div>
-            <div class="upcoming-date">Was due 5 Jun · Overdue</div>
-          </div>
-        </div>
-        <div class="upcoming-amount" style="color:#A32D2D">₹8,350</div>
+    <div class="debt-list" id="debt-list"></div>
+
+    <div id="upcoming-section">
+      <div class="section-header">
+        <span class="section-title">Upcoming payments</span>
       </div>
-      <div class="upcoming-row">
-        <div class="upcoming-left">
-          <div class="upcoming-icon" style="background:#FAEEDA"><i class="ti ti-calendar" style="color:#854F0B;font-size:15px" aria-hidden="true"></i></div>
-          <div>
-            <div class="upcoming-name">Home Loan — HDFC</div>
-            <div class="upcoming-date">Due 15 Jun · 6 days away</div>
-          </div>
-        </div>
-        <div class="upcoming-amount">₹28,500</div>
-      </div>
-      <div class="upcoming-row">
-        <div class="upcoming-left">
-          <div class="upcoming-icon" style="background:#E1F5EE"><i class="ti ti-check" style="color:#0F6E56;font-size:15px" aria-hidden="true"></i></div>
-          <div>
-            <div class="upcoming-name">Business Loan — ICICI</div>
-            <div class="upcoming-date">Paid on 3 Jun</div>
-          </div>
-        </div>
-        <div class="upcoming-amount" style="color:#0F6E56">₹5,500</div>
-      </div>
+      <div class="upcoming" id="upcoming-list"></div>
     </div>
 
   </div>
@@ -272,24 +202,29 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary)}
       <span class="modal-title">Add a loan manually</span>
       <button class="close-btn" onclick="closeModal()" aria-label="Close"><i class="ti ti-x" aria-hidden="true"></i></button>
     </div>
-    <div class="field"><label>Loan type</label><select><option>Personal loan</option><option>Home loan</option><option>Vehicle loan</option><option>Business loan</option></select></div>
-    <div class="field"><label>Lender / bank name</label><input type="text" placeholder="e.g. HDFC Bank"></div>
+    <div class="field"><label for="lf-type">Loan type</label><select id="lf-type"><option>Personal loan</option><option>Home loan</option><option>Vehicle loan</option><option>Business loan</option></select></div>
+    <div class="field"><label for="lf-lender">Lender / bank name</label><input type="text" id="lf-lender" placeholder="e.g. HDFC Bank"><div class="lf-err" id="lf-err-lender" role="alert"></div></div>
     <div class="field-row">
-      <div class="field"><label>Loan amount (₹)</label><input type="number" placeholder="500000"></div>
-      <div class="field"><label>Interest rate (%)</label><input type="number" placeholder="8.5" step="0.1"></div>
+      <div class="field"><label for="lf-amount">Loan amount (₹)</label><input type="number" id="lf-amount" placeholder="500000" min="0"><div class="lf-err" id="lf-err-amount" role="alert"></div></div>
+      <div class="field"><label for="lf-outstanding">Outstanding now (₹)</label><input type="number" id="lf-outstanding" placeholder="420000" min="0"><div class="lf-err" id="lf-err-outstanding" role="alert"></div></div>
     </div>
     <div class="field-row">
-      <div class="field"><label>EMI amount (₹)</label><input type="number" placeholder="12000"></div>
-      <div class="field"><label>Tenure (months)</label><input type="number" placeholder="240"></div>
+      <div class="field"><label for="lf-rate">Interest rate (%)</label><input type="number" id="lf-rate" placeholder="8.5" step="0.1" min="0"><div class="lf-err" id="lf-err-rate" role="alert"></div></div>
+      <div class="field"><label for="lf-emi">EMI amount (₹)</label><input type="number" id="lf-emi" placeholder="12000" min="0"><div class="lf-err" id="lf-err-emi" role="alert"></div></div>
     </div>
-    <div class="field"><label>First due date</label><input type="date"></div>
+    <div class="field-row">
+      <div class="field"><label for="lf-tenure">Tenure (months)</label><input type="number" id="lf-tenure" placeholder="240" min="1" step="1"><div class="lf-err" id="lf-err-tenure" role="alert"></div></div>
+      <div class="field"><label for="lf-start">Loan start date</label><input type="date" id="lf-start"><div class="lf-err" id="lf-err-start" role="alert"></div></div>
+    </div>
+    <div class="field"><label for="lf-due">Next EMI due date</label><input type="date" id="lf-due"><div class="lf-err" id="lf-err-due" role="alert"></div></div>
     <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px;font-size:12px;color:var(--color-text-secondary);display:flex;gap:8px;align-items:flex-start">
       <i class="ti ti-file-upload" style="color:#1D9E75;font-size:15px;flex-shrink:0;margin-top:1px" aria-hidden="true"></i>
       <span>Have a sanction letter? <span style="color:#1D9E75;cursor:pointer;font-weight:500" onclick="window.location.href='debtwise_upload.html'">Upload it instead</span> and we'll fill this for you automatically.</span>
     </div>
+    <div class="lf-note" id="lf-note" role="status">Everything checks out. Saving loans isn't built yet — that's the next step.</div>
     <div class="modal-footer">
       <button class="btn-cancel" onclick="closeModal()">Cancel</button>
-      <button class="btn-save" onclick="closeModal()"><i class="ti ti-check" aria-hidden="true"></i> Save loan</button>
+      <button class="btn-save" onclick="saveLoan()"><i class="ti ti-check" aria-hidden="true"></i> Save loan</button>
     </div>
   </div>
 </div>
@@ -316,21 +251,70 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary)}
   </div>
 </div>
 
+<script src="debtwise_store.js"></script>
 <script>
-function openModal(){document.getElementById('modal-bg').classList.add('open')}
-function closeModal(){document.getElementById('modal-bg').classList.remove('open')}
+const $=id=>document.getElementById(id);
+const num=id=>{const v=$(id).value.trim();return v===''?NaN:Number(v)};
+const inr=n=>'₹'+Math.round(n).toLocaleString('en-IN');
+function todayStr(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+
+// One rule per add-loan field; each returns an error message, or '' when the value is fine.
+const LOAN_RULES={
+  lender:()=>$('lf-lender').value.trim()?'':'Enter the lender name',
+  amount:()=>{const a=num('lf-amount');return(isNaN(a)||a<=0)?'Enter the original loan amount':''},
+  outstanding:()=>{
+    const o=num('lf-outstanding'),a=num('lf-amount');
+    if(isNaN(o)||o<=0)return'Enter how much you still owe';
+    if(!isNaN(a)&&o>a)return'Outstanding can\u2019t be more than the loan amount ('+inr(a)+')';
+    return''},
+  rate:()=>{const r=num('lf-rate');return(isNaN(r)||r<=0||r>50)?'Enter a rate between 0.1 and 50':''},
+  emi:()=>{
+    const e=num('lf-emi'),o=num('lf-outstanding'),r=num('lf-rate');
+    if(isNaN(e)||e<=0)return'Enter your monthly EMI';
+    if(!isNaN(o)&&e>o)return'EMI can\u2019t be more than the outstanding amount';
+    if(!isNaN(o)&&!isNaN(r)&&r>0){const i=o*r/100/12;if(e<=i)return'EMI is below this month\u2019s interest ('+inr(i)+'), so the balance would never fall'}
+    return''},
+  tenure:()=>{const t=num('lf-tenure');return(isNaN(t)||!Number.isInteger(t)||t<1||t>480)?'Enter whole months, from 1 to 480':''},
+  start:()=>{const v=$('lf-start').value;if(!v)return'Pick the loan start date';return v>todayStr()?'Start date can\u2019t be in the future':''},
+  due:()=>{const v=$('lf-due').value,s=$('lf-start').value;if(!v)return'Pick your next EMI date';return(s&&v<s)?'Next EMI date can\u2019t be before the start date':''}
+};
+// Fields whose rule reads another field: re-check them (if filled) when the source changes.
+const LOAN_DEPENDENTS={amount:['outstanding'],outstanding:['emi'],rate:['emi'],start:['due']};
+function checkField(k){
+  const msg=LOAN_RULES[k](),err=$('lf-err-'+k),el=$('lf-'+k);
+  err.textContent=msg;err.classList.toggle('show',!!msg);
+  el.classList.toggle('invalid',!!msg);el.setAttribute('aria-invalid',msg?'true':'false');
+  return!msg}
+function recheckDependents(k){(LOAN_DEPENDENTS[k]||[]).forEach(d=>{if($('lf-'+d).value!=='')checkField(d)})}
+Object.keys(LOAN_RULES).forEach(k=>{
+  const el=$('lf-'+k);
+  el.addEventListener('blur',()=>{checkField(k);recheckDependents(k)});
+  el.addEventListener('input',()=>{if($('lf-err-'+k).classList.contains('show'))checkField(k);recheckDependents(k)});
+});
+function saveLoan(){
+  let first=null;
+  Object.keys(LOAN_RULES).forEach(k=>{if(!checkField(k)&&!first)first=k});
+  const note=$('lf-note');
+  if(first){note.classList.remove('show');$('lf-'+first).focus();return}
+  note.classList.add('show');
+}
+function resetLoanForm(){
+  Object.keys(LOAN_RULES).forEach(k=>{const el=$('lf-'+k);el.value='';el.classList.remove('invalid');el.removeAttribute('aria-invalid');$('lf-err-'+k).classList.remove('show')});
+  $('lf-type').selectedIndex=0;$('lf-note').classList.remove('show')}
+function openModal(){$('lf-start').max=todayStr();$('modal-bg').classList.add('open')}
+function closeModal(){$('modal-bg').classList.remove('open');resetLoanForm()}
 function closePaidModal(){document.getElementById('paid-modal-bg').classList.remove('open')}
-function markPaid(name,emi,outstanding,annualRate){
-  document.getElementById('paid-title').textContent='Mark paid — '+name;
-  document.getElementById('paid-emi-amt').textContent='₹'+emi.toLocaleString('en-IN');
+function markPaid(id){
+  const loan=S.loadLoans().find(l=>l.id===id);
+  if(!loan)return;
   // Interest this month = outstanding balance x monthly rate; the rest of the EMI repays principal.
-  const interest=Math.min(emi,Math.round(outstanding*annualRate/100/12));
-  const principal=emi-interest;
-  document.getElementById('paid-interest').textContent='₹'+interest.toLocaleString('en-IN');
-  document.getElementById('paid-principal').textContent='₹'+principal.toLocaleString('en-IN');
-  const today=new Date().toISOString().split('T')[0];
-  document.getElementById('paid-date').value=today;
-  document.getElementById('paid-modal-bg').classList.add('open');
+  const {interest,principal}=S.splitEmi(loan);
+  $('paid-title').textContent='Mark paid — '+titleCase(loan.type);
+  $('paid-emi-amt').textContent=S.inr(loan.emi);
+  $('paid-interest').textContent=S.inr(interest);
+  $('paid-principal').textContent=S.inr(principal);
+  $('paid-date').value=S.todayStr();
+  $('paid-modal-bg').classList.add('open');
 }
 const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -338,6 +322,97 @@ const now=new Date();
 document.getElementById('greeting-date').textContent=days[now.getDay()]+', '+now.getDate()+' '+months[now.getMonth()]+' '+now.getFullYear();
 const hr=now.getHours();
 document.querySelector('.greeting-name').textContent=(hr<12?'Good morning':(hr<17?'Good afternoon':'Good evening'))+', Gitesh';
+
+/* ---------- render everything from stored loans ---------- */
+const S=DebtWiseStore;
+const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const esc=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmtShort=d=>{const p=S.parseDate(d);return p.getDate()+' '+MON[p.getMonth()]};
+const titleCase=v=>String(v).replace(/\b[a-z]/g,c=>c.toUpperCase());
+const inDays=n=>n===0?'today':n===1?'tomorrow':'in '+n+' days';
+const plural=(n,one,many)=>n+' '+(n===1?one:many);
+
+function badgeHtml(l,st,today){
+  const n=S.daysBetween(today,l.nextDue);
+  if(st==='overdue')return '<span class="debt-badge badge-overdue"><i class="ti ti-alert-circle" style="font-size:10px;vertical-align:-1px" aria-hidden="true"></i> Overdue</span>';
+  if(st==='due-soon')return '<span class="debt-badge badge-soon"><i class="ti ti-clock" style="font-size:10px;vertical-align:-1px" aria-hidden="true"></i> Due '+inDays(n)+'</span>';
+  if(st==='paid')return '<span class="debt-badge badge-ok"><i class="ti ti-check" style="font-size:10px;vertical-align:-1px" aria-hidden="true"></i> Paid this month</span>';
+  return '<span class="debt-badge badge-up">Due '+fmtShort(l.nextDue)+'</span>';
+}
+function cardHtml(l,today){
+  const st=S.statusOf(l,today), pct=S.repaidPercent(l);
+  const cls={'overdue':' overdue','due-soon':' due-soon','paid':' ok','upcoming':''}[st];
+  const action=st==='paid'
+    ? '<button class="action-btn" style="opacity:0.5;cursor:default" disabled><i class="ti ti-check" style="font-size:13px" aria-hidden="true"></i> Paid</button>'
+    : '<button class="action-btn primary" data-pay="'+esc(l.id)+'"><i class="ti ti-check" style="font-size:13px" aria-hidden="true"></i> Mark paid</button>';
+  return '<div class="debt-card'+cls+'">'+
+    '<div class="debt-top"><div class="debt-info"><div class="debt-name">'+esc(titleCase(l.type))+'</div>'+
+    '<div class="debt-bank">'+esc(l.lender)+(l.isSample?'<span class="sample-tag">Sample</span>':'')+'</div></div>'+badgeHtml(l,st,today)+'</div>'+
+    '<div class="debt-nums">'+
+      '<div><div class="debt-num-label">Outstanding</div><div class="debt-num-value">'+S.inr(l.outstanding)+'</div></div>'+
+      '<div><div class="debt-num-label">EMI</div><div class="debt-num-value">'+S.inr(l.emi)+'</div></div>'+
+      '<div><div class="debt-num-label">Rate</div><div class="debt-num-value">'+esc(l.rate)+'%</div></div></div>'+
+    '<div class="progress-wrap"><div class="progress-label"><span>Paid so far</span><span>'+pct+'%</span></div>'+
+    '<div class="progress-bar"><div class="progress-fill" style="width:'+pct+'%'+(st==='overdue'?';background:#E24B4A':'')+'"></div></div></div>'+
+    '<div class="debt-actions">'+action+'</div></div>';
+}
+function upcomingRowHtml(l,today){
+  const st=S.statusOf(l,today), n=S.daysBetween(today,l.nextDue);
+  const look={
+    'overdue':{bg:'#FCEBEB',icon:'ti-alert-circle',fg:'#A32D2D',amt:'color:#A32D2D'},
+    'due-soon':{bg:'#FAEEDA',icon:'ti-calendar',fg:'#854F0B',amt:''},
+    'upcoming':{bg:'var(--color-background-secondary)',icon:'ti-calendar',fg:'#4A5550',amt:''},
+    'paid':{bg:'#E1F5EE',icon:'ti-check',fg:'#0F6E56',amt:'color:#0F6E56'}}[st];
+  const when=st==='overdue'?'Was due '+fmtShort(l.nextDue)+' · Overdue'
+           :st==='paid'?'Paid on '+fmtShort(l.lastPaidOn)
+           :'Due '+fmtShort(l.nextDue)+' · '+(n===0?'today':n===1?'tomorrow':n+' days away');
+  return '<div class="upcoming-row"><div class="upcoming-left">'+
+    '<div class="upcoming-icon" style="background:'+look.bg+'"><i class="ti '+look.icon+'" style="color:'+look.fg+';font-size:15px" aria-hidden="true"></i></div>'+
+    '<div><div class="upcoming-name">'+esc(titleCase(l.type))+' — '+esc(l.lender)+'</div><div class="upcoming-date">'+when+'</div></div></div>'+
+    '<div class="upcoming-amount" style="'+look.amt+'">'+S.inr(l.emi)+'</div></div>';
+}
+function render(){
+  const today=S.todayStr(), loans=S.loadLoans(), t=S.totals(loans,today), has=loans.length>0;
+
+  // summary tiles
+  $('m-total').textContent=S.inr(t.totalOutstanding);
+  $('m-total').classList.toggle('danger',has);
+  $('m-total-sub').textContent=has?'across '+plural(t.count,'loan','loans'):'No loans added yet';
+  $('m-emi').textContent=S.inr(t.monthlyEmi);
+  const parts=[]; if(t.overdue)parts.push(t.overdue+' overdue'); if(t.dueSoon)parts.push(t.dueSoon+' due this week');
+  $('m-emi-sub').textContent=has?(parts.join(' · ')||'None due this week'):'Nothing due';
+  $('m-repaid').textContent=t.repaidPercent+'%';
+  $('m-repaid-sub').textContent=has?'of '+S.inr(t.totalAmount)+' borrowed':'No loans added yet';
+
+  // "Next due" is either what is already late, or the next date that has not happened yet
+  const nd=S.nextDueInfo(loans,today), el=$('m-next');
+  el.classList.remove('danger');
+  if(nd.overdue.length){
+    $('m-next-label').textContent='Overdue';
+    el.textContent=plural(nd.overdue.length,'loan','loans'); el.classList.add('danger');
+    $('m-next-sub').textContent=nd.overdue.length===1?nd.overdue[0].lender+' · was due '+fmtShort(nd.overdue[0].nextDue):'EMIs are past their due date';
+  }else if(nd.next){
+    $('m-next-label').textContent='Next due date';
+    el.textContent=fmtShort(nd.next.date);
+    $('m-next-sub').textContent=nd.next.loan.lender+' · '+inDays(nd.next.daysAway);
+  }else{
+    $('m-next-label').textContent='Next due date';
+    el.textContent='None'; $('m-next-sub').textContent='No upcoming EMIs';
+  }
+
+  // lists, empty state, sample notice
+  const sorted=S.sortByUrgency(loans,today);
+  $('debt-list').innerHTML=sorted.map(l=>cardHtml(l,today)).join('');
+  $('upcoming-list').innerHTML=sorted.map(l=>upcomingRowHtml(l,today)).join('');
+  $('empty-state').style.display=has?'none':'block';
+  $('upcoming-section').style.display=has?'block':'none';
+  $('sample-banner').style.display=loans.some(l=>l.isSample)?'flex':'none';
+}
+function loadSamples(){S.seedSampleLoans();render()}
+function clearSamples(){S.clearSampleLoans();render()}
+$('debt-list').addEventListener('click',e=>{const b=e.target.closest('[data-pay]');if(b)markPaid(b.dataset.pay)});
+window.addEventListener('pageshow',render);
+render();
 </script>
 </body>
 </html>

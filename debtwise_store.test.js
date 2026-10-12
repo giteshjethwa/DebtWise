@@ -64,6 +64,19 @@ test('totals match the dashboard (18,42,500 / 42,350 / 2 need attention)', () =>
   assert.strictEqual(t.count, 3);
   assert.strictEqual(t.overdue, 1);
   assert.strictEqual(t.needAttention, 2);
+  assert.strictEqual(t.totalAmount, 2633000);
+  assert.strictEqual(t.repaidPercent, 30);
+});
+test('totals of an empty list are all zero', () => {
+  assert.deepStrictEqual(S.totals([], TODAY), { count: 0, totalAmount: 0, totalOutstanding: 0, repaidPercent: 0, monthlyEmi: 0, overdue: 0, dueSoon: 0, needAttention: 0 });
+});
+test('sortByUrgency: overdue, due-soon, upcoming, paid; ties by due date', () => {
+  const [p, h, b] = S.sampleLoans(TODAY);
+  const later = Object.assign({}, h, { id: 'later', nextDue: '2026-08-01' });
+  const sooner = Object.assign({}, h, { id: 'sooner', nextDue: '2026-07-01' });
+  assert.deepStrictEqual(S.sortByUrgency([b, later, h, sooner, p], TODAY).map(l => l.id),
+    ['sample_personal', 'sample_home', 'sooner', 'later', 'sample_business']);
+  assert.deepStrictEqual(S.sortByUrgency([], TODAY), []);
 });
 test('Next due never picks a past date (the review bug)', () => {
   const info = S.nextDueInfo(S.sampleLoans(TODAY), TODAY);
@@ -162,6 +175,13 @@ test('a browser that blocks storage gives a clear error, not a silent loss', () 
   const r = S.createLoan(valid(), TODAY);
   assert.strictEqual(r.ok, false);
   assert.ok(r.errors._storage);
+});
+test('clearSampleLoans removes only samples, keeps the user\u2019s own loans', () => {
+  S.seedSampleLoans(TODAY);
+  const mine = S.createLoan(valid(), TODAY).loan;
+  assert.strictEqual(S.loadLoans().length, 4);
+  S.clearSampleLoans();
+  assert.deepStrictEqual(S.loadLoans().map(l => l.id), [mine.id]);
 });
 test('seedSampleLoans fills an empty store but never overwrites real loans', () => {
   assert.strictEqual(S.seedSampleLoans(TODAY), true);
