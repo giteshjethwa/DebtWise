@@ -68,6 +68,8 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary)}
 .btn-danger{flex:2;font-size:13px;padding:8px;border-radius:var(--border-radius-md);background:#A32D2D;color:#fff;border:none;cursor:pointer;font-weight:500}
 .btn-danger:hover{background:#7F2020}
 .del-text{font-size:13px;color:var(--color-text-secondary);line-height:1.6}
+.last-pay{font-size:11px;color:var(--color-text-tertiary);margin-top:10px}
+.link-btn{background:none;border:none;padding:0;font-size:11px;font-family:inherit;color:#0F6E56;cursor:pointer;text-decoration:underline}
 .modal-err{display:none;background:#FCEBEB;color:#A32D2D;border-radius:var(--border-radius-md);padding:10px 12px;font-size:12px;line-height:1.5;margin-top:12px}
 .modal-err.show{display:block}
 .empty-state{background:var(--color-background-primary);border:0.5px dashed var(--color-border-secondary);border-radius:var(--border-radius-lg);padding:2rem;text-align:center;display:none}
@@ -103,8 +105,8 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary)}
 .lf-note{display:none;background:#E1F5EE;color:#0F6E56;border-radius:var(--border-radius-md);padding:10px 12px;font-size:12px;line-height:1.5;margin-top:12px}
 .lf-note.show{display:block}
 .lf-note.error{background:#FCEBEB;color:#A32D2D}
-.paid-modal-bg,.del-modal-bg{display:none;position:fixed;inset:0;z-index:100;background:rgba(0,0,0,0.45);align-items:center;justify-content:center;padding:1rem;overflow-y:auto}
-.paid-modal-bg.open,.del-modal-bg.open{display:flex}
+.paid-modal-bg,.del-modal-bg,.undo-modal-bg{display:none;position:fixed;inset:0;z-index:100;background:rgba(0,0,0,0.45);align-items:center;justify-content:center;padding:1rem;overflow-y:auto}
+.paid-modal-bg.open,.del-modal-bg.open,.undo-modal-bg.open{display:flex}
 .nav-bottom{background:var(--color-background-primary);border-top:0.5px solid var(--color-border-tertiary);display:flex;padding:10px 0 6px}
 .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px;text-decoration:none}
 .nav-item.active .nav-icon{color:#1D9E75}
@@ -237,6 +239,21 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary)}
   </div>
 </div>
 
+<div class="undo-modal-bg" id="undo-modal-bg" role="dialog" aria-modal="true" aria-labelledby="undo-title">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="undo-title">Undo last payment?</span>
+      <button class="close-btn" onclick="closeUndoModal()" aria-label="Close"><i class="ti ti-x" aria-hidden="true"></i></button>
+    </div>
+    <div class="del-text" id="undo-text"></div>
+    <div class="modal-err" id="undo-err" role="alert"></div>
+    <div class="modal-footer">
+      <button class="btn-cancel" id="undo-cancel" onclick="closeUndoModal()">Cancel</button>
+      <button class="btn-save" onclick="confirmUndo()">Undo payment</button>
+    </div>
+  </div>
+</div>
+
 <div class="del-modal-bg" id="del-modal-bg" role="dialog" aria-modal="true" aria-labelledby="del-title">
   <div class="modal">
     <div class="modal-header">
@@ -361,6 +378,11 @@ function badgeHtml(l,st,today){
   if(st==='paid-off')return '<span class="debt-badge badge-ok"><i class="ti ti-circle-check" style="font-size:10px;vertical-align:-1px" aria-hidden="true"></i> Paid off</span>';
   return '<span class="debt-badge badge-up">Due '+fmtShort(l.nextDue)+'</span>';
 }
+function lastPayHtml(l){
+  const lp=(l.payments||[]).slice(-1)[0];
+  if(!lp)return '';
+  return '<div class="last-pay">Last payment '+S.inr(lp.emi)+' · '+fmtShort(lp.date)+' · <button class="link-btn" data-undo="'+esc(l.id)+'">Undo</button></div>';
+}
 function cardHtml(l,today){
   const st=S.statusOf(l,today), pct=S.repaidPercent(l);
   const cls={'overdue':' overdue','due-soon':' due-soon','paid':' ok','paid-off':' ok','upcoming':''}[st];
@@ -376,6 +398,7 @@ function cardHtml(l,today){
       '<div><div class="debt-num-label">Rate</div><div class="debt-num-value">'+esc(l.rate)+'%</div></div></div>'+
     '<div class="progress-wrap"><div class="progress-label"><span>Paid so far</span><span>'+pct+'%</span></div>'+
     '<div class="progress-bar"><div class="progress-fill" style="width:'+pct+'%'+(st==='overdue'?';background:#E24B4A':'')+'"></div></div></div>'+
+    lastPayHtml(l)+
     '<div class="debt-actions">'+action+'<button class="action-btn icon-btn" data-del="'+esc(l.id)+'" aria-label="Delete '+esc(titleCase(l.type))+' from '+esc(l.lender)+'"><i class="ti ti-trash" aria-hidden="true"></i></button></div></div>';
 }
 function upcomingRowHtml(l,today){
@@ -456,13 +479,31 @@ function confirmDelete(){
 }
 document.addEventListener('keydown',e=>{
   if(e.key!=='Escape')return;
-  closeModal();closePaidModal();closeDelModal();
+  closeModal();closePaidModal();closeDelModal();closeUndoModal();
 });
+let pendingUndoId=null;
+function askUndo(id){
+  const l=S.loadLoans().find(x=>x.id===id), last=l&&(l.payments||[]).slice(-1)[0];
+  if(!last)return;
+  pendingUndoId=id;
+  $('undo-text').textContent='Undo the '+S.inr(last.emi)+' payment from '+fmtShort(last.date)+'? The balance goes back to '+S.inr(last.outstandingBefore)+' and the next EMI due date goes back to '+fmtShort(last.dueBefore)+'.';
+  $('undo-err').classList.remove('show');
+  $('undo-modal-bg').classList.add('open');
+  $('undo-cancel').focus();
+}
+function closeUndoModal(){pendingUndoId=null;$('undo-modal-bg').classList.remove('open')}
+function confirmUndo(){
+  if(!pendingUndoId)return;   // already confirmed (e.g. double click)
+  const r=S.undoLastPayment(pendingUndoId);
+  if(!r.ok){$('undo-err').textContent=r.error;$('undo-err').classList.add('show');return}
+  closeUndoModal();render();
+}
 function loadSamples(){S.seedSampleLoans();render()}
 function clearSamples(){S.clearSampleLoans();render()}
 $('debt-list').addEventListener('click',e=>{
   const b=e.target.closest('[data-pay]');if(b)markPaid(b.dataset.pay);
   const d=e.target.closest('[data-del]');if(d)askDelete(d.dataset.del);
+  const u=e.target.closest('[data-undo]');if(u)askUndo(u.dataset.undo);
 });
 window.addEventListener('pageshow',render);
 render();

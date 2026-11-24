@@ -209,17 +209,43 @@
     return { ok: true, loan: updated, payment: payment };
   }
 
+  // Reverses the most recent payment exactly, using the "before" values stored on that payment.
+  // Refuses if the loan has changed since, so it can never restore stale numbers.
+  function undoLastPayment(id) {
+    const loans = loadLoans(), idx = loans.findIndex(l => l.id === id);
+    if (idx === -1) return { ok: false, error: 'That loan no longer exists.' };
+    const loan = loans[idx], pays = loan.payments || [];
+    if (!pays.length) return { ok: false, error: 'There\u2019s no payment to undo.' };
+    const last = pays[pays.length - 1];
+    if (loan.outstanding !== last.outstandingAfter || loan.lastPaidOn !== last.date) {
+      return { ok: false, error: 'This loan has changed since that payment, so it can\u2019t be undone safely.' };
+    }
+    const restored = Object.assign({}, loan, {
+      outstanding: last.outstandingBefore, nextDue: last.dueBefore,
+      lastPaidOn: last.lastPaidBefore, payments: pays.slice(0, -1)
+    });
+    loans[idx] = restored;
+    if (!saveLoans(loans)) return { ok: false, error: 'This browser wouldn\u2019t let DebtWise save the change. Check that storage isn\u2019t blocked.' };
+    return { ok: true, loan: restored, payment: last };
+  }
+
   /* ---------- storage ---------- */
   function readRaw() { try { return root.localStorage.getItem(KEY); } catch (err) { return null; } }
   function writeRaw(s) { try { root.localStorage.setItem(KEY, s); return true; } catch (err) { return false; } }
 
+  const isNum = v => typeof v === 'number' && isFinite(v);
+  function isStoredPayment(p) {
+    return !!p && typeof p === 'object' && !!parseDate(p.date) && !!parseDate(p.dueBefore) &&
+      (p.lastPaidBefore === null || !!parseDate(p.lastPaidBefore)) && typeof p.mode === 'string' &&
+      ['emi', 'interest', 'principal', 'outstandingBefore', 'outstandingAfter'].every(k => isNum(p[k]));
+  }
   function isStoredLoan(l) {
     return !!l && typeof l === 'object' && typeof l.id === 'string' && typeof l.type === 'string' &&
       typeof l.lender === 'string' &&
       ['amount', 'outstanding', 'rate', 'emi', 'tenure'].every(k => typeof l[k] === 'number' && isFinite(l[k])) &&
       !!parseDate(l.startDate) && !!parseDate(l.nextDue) &&
       (l.lastPaidOn === null || l.lastPaidOn === undefined || !!parseDate(l.lastPaidOn)) &&
-      (l.payments === undefined || Array.isArray(l.payments)) &&
+      (l.payments === undefined || (Array.isArray(l.payments) && l.payments.every(isStoredPayment))) &&
       (l.dueDay === undefined || (Number.isInteger(l.dueDay) && l.dueDay >= 1 && l.dueDay <= 31));
   }
   // Always returns an array. Corrupt JSON or malformed entries are dropped, never thrown.
@@ -298,7 +324,7 @@
     todayStr: todayStr, parseDate: parseDate, daysBetween: daysBetween, addDays: addDays, addMonths: addMonths,
     inr: inr, monthlyInterest: monthlyInterest, splitEmi: splitEmi, repaidPercent: repaidPercent,
     statusOf: statusOf, totals: totals, nextDueInfo: nextDueInfo, sortByUrgency: sortByUrgency,
-    PAYMENT_MODES: PAYMENT_MODES, dueDayOf: dueDayOf, previewPayment: previewPayment, recordPayment: recordPayment,
+    PAYMENT_MODES: PAYMENT_MODES, dueDayOf: dueDayOf, previewPayment: previewPayment, recordPayment: recordPayment, undoLastPayment: undoLastPayment,
     validateLoan: validateLoan,
     loadLoans: loadLoans, saveLoans: saveLoans, createLoan: createLoan, deleteLoan: deleteLoan, clearLoans: clearLoans,
     sampleLoans: sampleLoans, seedSampleLoans: seedSampleLoans, clearSampleLoans: clearSampleLoans

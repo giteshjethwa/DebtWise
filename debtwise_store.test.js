@@ -267,6 +267,77 @@ test('malformed payments / dueDay on a stored loan are dropped on load', () => {
   assert.deepStrictEqual(S.loadLoans().map(l => l.id), ['sample_home']);
 });
 
+console.log('undo');
+test('undo puts the loan back exactly as it was before the payment', () => {
+  seed();
+  for (const id of ['sample_personal', 'sample_home']) {
+    const original = JSON.parse(JSON.stringify(get(id)));
+    assert.strictEqual(S.recordPayment(id, PAY, TODAY).ok, true);
+    assert.notDeepStrictEqual(get(id), original);
+    const r = S.undoLastPayment(id);
+    assert.strictEqual(r.ok, true);
+    assert.deepStrictEqual(get(id), original, id);
+  }
+  assert.strictEqual(S.totals(S.loadLoans(), TODAY).totalOutstanding, 1842500);
+});
+test('undo only removes the latest payment; earlier ones stay', () => {
+  const l = Object.assign({}, S.sampleLoans(TODAY)[0], { nextDue: '2026-04-05', dueDay: 5 });
+  S.saveLoans([l]);
+  S.recordPayment(l.id, PAY, TODAY); S.recordPayment(l.id, PAY, TODAY); S.recordPayment(l.id, PAY, TODAY);
+  assert.strictEqual(get(l.id).payments.length, 3);
+  S.undoLastPayment(l.id);
+  assert.strictEqual(get(l.id).payments.length, 2);
+  assert.strictEqual(get(l.id).nextDue, '2026-06-05');
+  assert.strictEqual(S.statusOf(get(l.id), TODAY), 'overdue');
+  S.undoLastPayment(l.id); S.undoLastPayment(l.id);
+  assert.deepStrictEqual(get(l.id), l);
+});
+test('pay, undo, pay again works (undo frees the month)', () => {
+  seed();
+  S.recordPayment('sample_home', PAY, TODAY); S.undoLastPayment('sample_home');
+  assert.strictEqual(S.statusOf(get('sample_home'), TODAY), 'due-soon');
+  assert.strictEqual(S.recordPayment('sample_home', PAY, TODAY).ok, true);
+  assert.strictEqual(get('sample_home').payments.length, 1);
+});
+test('undoing a final payment brings the balance and status back', () => {
+  const l = Object.assign({}, S.sampleLoans(TODAY)[1], { outstanding: 3000 });
+  S.saveLoans([l]);
+  S.recordPayment(l.id, PAY, TODAY);
+  assert.strictEqual(S.statusOf(get(l.id), TODAY), 'paid-off');
+  assert.strictEqual(S.undoLastPayment(l.id).ok, true);
+  assert.strictEqual(get(l.id).outstanding, 3000);
+  assert.strictEqual(S.statusOf(get(l.id), TODAY), 'due-soon');
+});
+test('the sample loan\u2019s own payment can be undone (it becomes overdue again)', () => {
+  seed();
+  assert.strictEqual(S.undoLastPayment('sample_business').ok, true);
+  assert.strictEqual(get('sample_business').outstanding, 124400);
+  assert.strictEqual(get('sample_business').lastPaidOn, null);
+  assert.strictEqual(get('sample_business').nextDue, '2026-06-03');
+  assert.strictEqual(S.statusOf(get('sample_business'), TODAY), 'overdue');
+});
+test('undo guards: unknown loan, nothing to undo, loan changed since, blocked storage', () => {
+  seed();
+  assert.strictEqual(S.undoLastPayment('nope').error, 'That loan no longer exists.');
+  assert.strictEqual(S.undoLastPayment('sample_home').error, 'There\u2019s no payment to undo.');
+  S.recordPayment('sample_home', PAY, TODAY);
+  const ls = S.loadLoans(); ls.find(l => l.id === 'sample_home').outstanding += 1; S.saveLoans(ls);   // tampered
+  const snap = JSON.stringify(S.loadLoans());
+  assert.strictEqual(S.undoLastPayment('sample_home').error, 'This loan has changed since that payment, so it can\u2019t be undone safely.');
+  assert.strictEqual(JSON.stringify(S.loadLoans()), snap);
+  ls.find(l => l.id === 'sample_home').outstanding -= 1; S.saveLoans(ls);
+  failWrites = true; const r = S.undoLastPayment('sample_home'); failWrites = false;
+  assert.strictEqual(r.ok, false); assert.ok(/storage/.test(r.error));
+  assert.strictEqual(get('sample_home').payments.length, 1);
+});
+test('a damaged payment record drops that loan on load instead of crashing later', () => {
+  const good = S.sampleLoans(TODAY)[2], other = S.sampleLoans(TODAY)[1];
+  const bad = p => Object.assign({}, other, { id: 'bad', payments: [p] });
+  const rec = good.payments[0];
+  backing[S.KEY] = JSON.stringify([good, bad(Object.assign({}, rec, { date: 'soon' })), bad(Object.assign({}, rec, { principal: 'lots' })), bad(null), bad(Object.assign({}, rec, { dueBefore: undefined }))]);
+  assert.deepStrictEqual(S.loadLoans().map(l => l.id), ['sample_business']);
+});
+
 console.log('storage');
 test('empty store loads as []', () => assert.deepStrictEqual(S.loadLoans(), []));
 test('createLoan stores a normalised loan and it loads back', () => {
