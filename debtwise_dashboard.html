@@ -68,8 +68,8 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary)}
 .btn-danger{flex:2;font-size:13px;padding:8px;border-radius:var(--border-radius-md);background:#A32D2D;color:#fff;border:none;cursor:pointer;font-weight:500}
 .btn-danger:hover{background:#7F2020}
 .del-text{font-size:13px;color:var(--color-text-secondary);line-height:1.6}
-.del-err{display:none;background:#FCEBEB;color:#A32D2D;border-radius:var(--border-radius-md);padding:10px 12px;font-size:12px;line-height:1.5;margin-top:12px}
-.del-err.show{display:block}
+.modal-err{display:none;background:#FCEBEB;color:#A32D2D;border-radius:var(--border-radius-md);padding:10px 12px;font-size:12px;line-height:1.5;margin-top:12px}
+.modal-err.show{display:block}
 .empty-state{background:var(--color-background-primary);border:0.5px dashed var(--color-border-secondary);border-radius:var(--border-radius-lg);padding:2rem;text-align:center;display:none}
 .empty-title{font-size:14px;font-weight:500;color:var(--color-text-primary);margin-bottom:6px}
 .empty-sub{font-size:13px;color:var(--color-text-secondary);margin-bottom:1rem;line-height:1.5}
@@ -244,7 +244,7 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary)}
       <button class="close-btn" onclick="closeDelModal()" aria-label="Close"><i class="ti ti-x" aria-hidden="true"></i></button>
     </div>
     <div class="del-text" id="del-text"></div>
-    <div class="del-err" id="del-err" role="alert"></div>
+    <div class="modal-err" id="del-err" role="alert"></div>
     <div class="modal-footer">
       <button class="btn-cancel" id="del-cancel" onclick="closeDelModal()">Cancel</button>
       <button class="btn-danger" onclick="confirmDelete()">Delete loan</button>
@@ -264,12 +264,14 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary)}
         <div><div style="font-size:10px;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:0.04em">Principal</div><div style="font-size:14px;font-weight:500;color:#0F6E56;margin-top:3px" id="paid-principal">₹5,420</div></div>
         <div><div style="font-size:10px;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:0.04em">Interest</div><div style="font-size:14px;font-weight:500;color:#A32D2D;margin-top:3px" id="paid-interest">₹2,930</div></div>
       </div>
+      <div id="paid-after" style="font-size:12px;color:var(--color-text-secondary);margin-top:12px;line-height:1.5"></div>
     </div>
-    <div class="field"><label>Payment date</label><input type="date" id="paid-date"></div>
-    <div class="field"><label>Payment mode</label><select><option>UPI</option><option>Net banking</option><option>Auto debit</option><option>Cheque</option></select></div>
+    <div class="field"><label for="paid-date">Payment date</label><input type="date" id="paid-date"></div>
+    <div class="field"><label for="paid-mode">Payment mode</label><select id="paid-mode"><option>UPI</option><option>Net banking</option><option>Auto debit</option><option>Cheque</option></select></div>
+    <div class="modal-err" id="paid-err" role="alert"></div>
     <div class="modal-footer">
       <button class="btn-cancel" onclick="closePaidModal()">Cancel</button>
-      <button class="btn-save" onclick="closePaidModal()" style="background:#0F6E56"><i class="ti ti-check" aria-hidden="true"></i> Confirm payment</button>
+      <button class="btn-save" onclick="confirmPayment()" style="background:#0F6E56"><i class="ti ti-check" aria-hidden="true"></i> Confirm payment</button>
     </div>
   </div>
 </div>
@@ -311,18 +313,30 @@ function resetLoanForm(){
   $('lf-type').selectedIndex=0;setNote('')}
 function openModal(){$('lf-start').max=S.todayStr();$('modal-bg').classList.add('open')}
 function closeModal(){$('modal-bg').classList.remove('open');resetLoanForm()}
-function closePaidModal(){document.getElementById('paid-modal-bg').classList.remove('open')}
+let pendingPayId=null;
+function closePaidModal(){pendingPayId=null;$('paid-modal-bg').classList.remove('open');$('paid-err').classList.remove('show')}
 function markPaid(id){
   const loan=S.loadLoans().find(l=>l.id===id);
   if(!loan)return;
-  // Interest this month = outstanding balance x monthly rate; the rest of the EMI repays principal.
-  const {interest,principal}=S.splitEmi(loan);
+  const pv=S.previewPayment(loan);   // what this payment would do; nothing changes until Confirm
+  pendingPayId=id;
   $('paid-title').textContent='Mark paid — '+titleCase(loan.type);
-  $('paid-emi-amt').textContent=S.inr(loan.emi);
-  $('paid-interest').textContent=S.inr(interest);
-  $('paid-principal').textContent=S.inr(principal);
-  $('paid-date').value=S.todayStr();
+  $('paid-emi-amt').textContent=S.inr(pv.emi);
+  $('paid-interest').textContent=S.inr(pv.interest);
+  $('paid-principal').textContent=S.inr(pv.principal);
+  $('paid-after').textContent=pv.final
+    ?'This is the final payment — it clears the loan.'
+    :'Balance after this payment: '+S.inr(pv.outstandingAfter)+' · Next EMI due '+fmtShort(pv.nextDue);
+  const d=$('paid-date');d.max=S.todayStr();d.min=loan.startDate;d.value=S.todayStr();
+  $('paid-mode').selectedIndex=0;
+  $('paid-err').classList.remove('show');
   $('paid-modal-bg').classList.add('open');
+}
+function confirmPayment(){
+  if(!pendingPayId)return;   // already confirmed (e.g. double click)
+  const r=S.recordPayment(pendingPayId,{date:$('paid-date').value,mode:$('paid-mode').value});
+  if(!r.ok){$('paid-err').textContent=r.error;$('paid-err').classList.add('show');return}
+  closePaidModal();render();
 }
 const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -344,13 +358,14 @@ function badgeHtml(l,st,today){
   if(st==='overdue')return '<span class="debt-badge badge-overdue"><i class="ti ti-alert-circle" style="font-size:10px;vertical-align:-1px" aria-hidden="true"></i> Overdue</span>';
   if(st==='due-soon')return '<span class="debt-badge badge-soon"><i class="ti ti-clock" style="font-size:10px;vertical-align:-1px" aria-hidden="true"></i> Due '+inDays(n)+'</span>';
   if(st==='paid')return '<span class="debt-badge badge-ok"><i class="ti ti-check" style="font-size:10px;vertical-align:-1px" aria-hidden="true"></i> Paid this month</span>';
+  if(st==='paid-off')return '<span class="debt-badge badge-ok"><i class="ti ti-circle-check" style="font-size:10px;vertical-align:-1px" aria-hidden="true"></i> Paid off</span>';
   return '<span class="debt-badge badge-up">Due '+fmtShort(l.nextDue)+'</span>';
 }
 function cardHtml(l,today){
   const st=S.statusOf(l,today), pct=S.repaidPercent(l);
-  const cls={'overdue':' overdue','due-soon':' due-soon','paid':' ok','upcoming':''}[st];
-  const action=st==='paid'
-    ? '<button class="action-btn" style="opacity:0.5;cursor:default" disabled><i class="ti ti-check" style="font-size:13px" aria-hidden="true"></i> Paid</button>'
+  const cls={'overdue':' overdue','due-soon':' due-soon','paid':' ok','paid-off':' ok','upcoming':''}[st];
+  const action=(st==='paid'||st==='paid-off')
+    ? '<button class="action-btn" style="opacity:0.5;cursor:default" disabled><i class="ti ti-check" style="font-size:13px" aria-hidden="true"></i> '+(st==='paid-off'?'Paid off':'Paid')+'</button>'
     : '<button class="action-btn primary" data-pay="'+esc(l.id)+'"><i class="ti ti-check" style="font-size:13px" aria-hidden="true"></i> Mark paid</button>';
   return '<div class="debt-card'+cls+'">'+
     '<div class="debt-top"><div class="debt-info"><div class="debt-name">'+esc(titleCase(l.type))+'</div>'+
@@ -369,25 +384,28 @@ function upcomingRowHtml(l,today){
     'overdue':{bg:'#FCEBEB',icon:'ti-alert-circle',fg:'#A32D2D',amt:'color:#A32D2D'},
     'due-soon':{bg:'#FAEEDA',icon:'ti-calendar',fg:'#854F0B',amt:''},
     'upcoming':{bg:'var(--color-background-secondary)',icon:'ti-calendar',fg:'#4A5550',amt:''},
-    'paid':{bg:'#E1F5EE',icon:'ti-check',fg:'#0F6E56',amt:'color:#0F6E56'}}[st];
+    'paid':{bg:'#E1F5EE',icon:'ti-check',fg:'#0F6E56',amt:'color:#0F6E56'},
+    'paid-off':{bg:'#E1F5EE',icon:'ti-circle-check',fg:'#0F6E56',amt:'color:var(--color-text-tertiary)'}}[st];
   const when=st==='overdue'?'Was due '+fmtShort(l.nextDue)+' · Overdue'
-           :st==='paid'?'Paid on '+fmtShort(l.lastPaidOn)
+           :st==='paid-off'?(l.lastPaidOn?'Paid off on '+fmtShort(l.lastPaidOn):'Paid off')
+           :st==='paid'?'Paid on '+fmtShort(l.lastPaidOn)+' · next due '+fmtShort(l.nextDue)
            :'Due '+fmtShort(l.nextDue)+' · '+(n===0?'today':n===1?'tomorrow':n+' days away');
   return '<div class="upcoming-row"><div class="upcoming-left">'+
     '<div class="upcoming-icon" style="background:'+look.bg+'"><i class="ti '+look.icon+'" style="color:'+look.fg+';font-size:15px" aria-hidden="true"></i></div>'+
     '<div><div class="upcoming-name">'+esc(titleCase(l.type))+' — '+esc(l.lender)+'</div><div class="upcoming-date">'+when+'</div></div></div>'+
-    '<div class="upcoming-amount" style="'+look.amt+'">'+S.inr(l.emi)+'</div></div>';
+    '<div class="upcoming-amount" style="'+look.amt+'">'+(st==='paid-off'?'—':S.inr(l.emi))+'</div></div>';
 }
 function render(){
   const today=S.todayStr(), loans=S.loadLoans(), t=S.totals(loans,today), has=loans.length>0;
 
   // summary tiles
   $('m-total').textContent=S.inr(t.totalOutstanding);
-  $('m-total').classList.toggle('danger',has);
-  $('m-total-sub').textContent=has?'across '+plural(t.count,'loan','loans'):'No loans added yet';
+  $('m-total').classList.toggle('danger',t.totalOutstanding>0);
+  const sub=[]; if(t.activeCount)sub.push('across '+plural(t.activeCount,'active loan','active loans')); if(t.paidOff)sub.push(t.paidOff+' paid off');
+  $('m-total-sub').textContent=has?sub.join(' · '):'No loans added yet';
   $('m-emi').textContent=S.inr(t.monthlyEmi);
   const parts=[]; if(t.overdue)parts.push(t.overdue+' overdue'); if(t.dueSoon)parts.push(t.dueSoon+' due this week');
-  $('m-emi-sub').textContent=has?(parts.join(' · ')||'None due this week'):'Nothing due';
+  $('m-emi-sub').textContent=parts.join(' · ')||(t.activeCount?'None due this week':'Nothing due');
   $('m-repaid').textContent=t.repaidPercent+'%';
   $('m-repaid-sub').textContent=has?'of '+S.inr(t.totalAmount)+' borrowed':'No loans added yet';
 

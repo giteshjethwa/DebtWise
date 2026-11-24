@@ -14,7 +14,9 @@
  *     tenure:      240               total tenure (months)
  *     startDate:   '2022-04-05'      loan start date (YYYY-MM-DD)
  *     nextDue:     '2026-06-15'      next EMI date (YYYY-MM-DD)
- *     lastPaidOn:  null | '2026-06-03'   set when the user marks an EMI paid
+ *     lastPaidOn:  null | '2026-06-03'   date of the most recent recorded payment
+ *     dueDay:      15                day of month the EMI falls due (keeps a 31st loan on the 31st)
+ *     payments:    [ … ]             one record per payment, see recordPayment()
  *     createdAt:   ISO timestamp
  *     isSample:    true              only on loans created by sampleLoans()
  *   }
@@ -46,8 +48,9 @@
   }
   function addDays(s, n) { const d = parseDate(s); d.setDate(d.getDate() + n); return toDateStr(d); }
   // Keeps the day of month where it exists, otherwise clamps (31 Jan + 1 month = 28/29 Feb).
-  function addMonths(s, n) {
-    const d = parseDate(s), day = d.getDate();
+  // Pass `dayOverride` to aim for a specific day (so 28 Feb + 1 month with day 31 gives 31 Mar).
+  function addMonths(s, n, dayOverride) {
+    const d = parseDate(s), day = dayOverride || d.getDate();
     const t = new Date(d.getFullYear(), d.getMonth() + n, 1);
     const last = new Date(t.getFullYear(), t.getMonth() + 1, 0).getDate();
     t.setDate(Math.min(day, last));
@@ -69,23 +72,28 @@
   }
 
   /* ---------- status, totals, next due ---------- */
-  // 'paid' | 'overdue' | 'due-soon' | 'upcoming'
+  // 'paid-off' | 'paid' | 'overdue' | 'due-soon' | 'upcoming'
+  // 'paid' means an EMI was recorded this month AND the next one is not already late. A borrower
+  // who is two months behind and pays one EMI is still overdue.
   function statusOf(loan, today) {
     today = today || todayStr();
-    if (loan.lastPaidOn && loan.lastPaidOn.slice(0, 7) === today.slice(0, 7)) return 'paid';
+    if (loan.outstanding <= 0) return 'paid-off';
     const d = daysBetween(today, loan.nextDue);
+    if (d >= 0 && loan.lastPaidOn && loan.lastPaidOn.slice(0, 7) === today.slice(0, 7)) return 'paid';
     if (d < 0) return 'overdue';
     if (d <= DUE_SOON_DAYS) return 'due-soon';
     return 'upcoming';
   }
   function totals(loans, today) {
     today = today || todayStr();
-    const t = { count: loans.length, totalAmount: 0, totalOutstanding: 0, repaidPercent: 0, monthlyEmi: 0, overdue: 0, dueSoon: 0, needAttention: 0 };
+    const t = { count: loans.length, activeCount: 0, paidOff: 0, totalAmount: 0, totalOutstanding: 0, repaidPercent: 0, monthlyEmi: 0, overdue: 0, dueSoon: 0, needAttention: 0 };
     loans.forEach(l => {
-      t.totalAmount += l.amount;
-      t.totalOutstanding += l.outstanding;
-      t.monthlyEmi += l.emi;
       const s = statusOf(l, today);
+      t.totalAmount += l.amount;            // paid-off loans still count as borrowed and repaid
+      t.totalOutstanding += l.outstanding;
+      if (s === 'paid-off') { t.paidOff++; return; }
+      t.activeCount++;
+      t.monthlyEmi += l.emi;
       if (s === 'overdue') t.overdue++;
       if (s === 'due-soon') t.dueSoon++;
     });
@@ -98,13 +106,13 @@
   function nextDueInfo(loans, today) {
     today = today || todayStr();
     const overdue = loans.filter(l => statusOf(l, today) === 'overdue');
-    const upcoming = loans.filter(l => l.nextDue >= today).sort((a, b) => a.nextDue < b.nextDue ? -1 : a.nextDue > b.nextDue ? 1 : 0);
+    const upcoming = loans.filter(l => statusOf(l, today) !== 'paid-off' && l.nextDue >= today).sort((a, b) => a.nextDue < b.nextDue ? -1 : a.nextDue > b.nextDue ? 1 : 0);
     const next = upcoming.length ? { loan: upcoming[0], date: upcoming[0].nextDue, daysAway: daysBetween(today, upcoming[0].nextDue) } : null;
     return { overdue: overdue, next: next };
   }
 
-  // Most urgent first: overdue, due soon, upcoming, then already paid; ties by due date.
-  const URGENCY = { 'overdue': 0, 'due-soon': 1, 'upcoming': 2, 'paid': 3 };
+  // Most urgent first: overdue, due soon, upcoming, paid this month, paid off; ties by due date.
+  const URGENCY = { 'overdue': 0, 'due-soon': 1, 'upcoming': 2, 'paid': 3, 'paid-off': 4 };
   function sortByUrgency(loans, today) {
     today = today || todayStr();
     return loans.slice().sort((a, b) =>
@@ -146,6 +154,61 @@
     return e;
   }
 
+  /* ---------- payments ---------- */
+  const PAYMENT_MODES = ['UPI', 'Net banking', 'Auto debit', 'Cheque'];
+  const round2 = n => Math.round(n * 100) / 100;
+  // Loans saved before dueDay existed fall back to the day of their current due date.
+  function dueDayOf(loan) { return loan.dueDay || parseDate(loan.nextDue).getDate(); }
+
+  // What paying the next EMI would do, without changing anything.
+  // The last payment can be smaller than the EMI: it is the remaining balance plus that month's interest.
+  function previewPayment(loan) {
+    const split = splitEmi(loan);
+    const final = split.principal >= loan.outstanding;
+    const principal = final ? round2(loan.outstanding) : split.principal;
+    return {
+      emi: final ? round2(split.interest + principal) : loan.emi,
+      interest: split.interest,
+      principal: principal,
+      final: final,
+      outstandingAfter: final ? 0 : round2(loan.outstanding - principal),
+      // Rolled from the due date, not the payment date, and aimed at the original day of month.
+      nextDue: final ? loan.nextDue : addMonths(loan.nextDue, 1, dueDayOf(loan))
+    };
+  }
+
+  // Records one EMI: reduces the balance by the principal, moves the due date on a month and keeps a
+  // history record with everything needed to undo it later.
+  // Returns { ok:true, loan, payment } or { ok:false, error }.
+  function recordPayment(id, opts, today) {
+    today = today || todayStr();
+    opts = opts || {};
+    const loans = loadLoans(), idx = loans.findIndex(l => l.id === id);
+    if (idx === -1) return { ok: false, error: 'That loan no longer exists.' };
+    const loan = loans[idx];
+    const status = statusOf(loan, today);
+    if (status === 'paid-off') return { ok: false, error: 'This loan is already paid off.' };
+    if (status === 'paid') return { ok: false, error: 'This month\u2019s EMI is already recorded.' };
+    if (!parseDate(opts.date)) return { ok: false, error: 'Pick the payment date.' };
+    if (opts.date > today) return { ok: false, error: 'Payment date can\u2019t be in the future.' };
+    if (opts.date < loan.startDate) return { ok: false, error: 'Payment date can\u2019t be before the loan started.' };
+    if (PAYMENT_MODES.indexOf(opts.mode) === -1) return { ok: false, error: 'Pick a payment mode.' };
+
+    const pv = previewPayment(loan);
+    const payment = {
+      date: opts.date, mode: opts.mode, emi: pv.emi, interest: pv.interest, principal: pv.principal,
+      outstandingBefore: loan.outstanding, outstandingAfter: pv.outstandingAfter,
+      dueBefore: loan.nextDue, lastPaidBefore: loan.lastPaidOn || null
+    };
+    const updated = Object.assign({}, loan, {
+      outstanding: pv.outstandingAfter, nextDue: pv.nextDue, lastPaidOn: opts.date,
+      dueDay: dueDayOf(loan), payments: (loan.payments || []).concat([payment])
+    });
+    loans[idx] = updated;
+    if (!saveLoans(loans)) return { ok: false, error: 'This browser wouldn\u2019t let DebtWise save the payment. Check that storage isn\u2019t blocked.' };
+    return { ok: true, loan: updated, payment: payment };
+  }
+
   /* ---------- storage ---------- */
   function readRaw() { try { return root.localStorage.getItem(KEY); } catch (err) { return null; } }
   function writeRaw(s) { try { root.localStorage.setItem(KEY, s); return true; } catch (err) { return false; } }
@@ -155,7 +218,9 @@
       typeof l.lender === 'string' &&
       ['amount', 'outstanding', 'rate', 'emi', 'tenure'].every(k => typeof l[k] === 'number' && isFinite(l[k])) &&
       !!parseDate(l.startDate) && !!parseDate(l.nextDue) &&
-      (l.lastPaidOn === null || l.lastPaidOn === undefined || !!parseDate(l.lastPaidOn));
+      (l.lastPaidOn === null || l.lastPaidOn === undefined || !!parseDate(l.lastPaidOn)) &&
+      (l.payments === undefined || Array.isArray(l.payments)) &&
+      (l.dueDay === undefined || (Number.isInteger(l.dueDay) && l.dueDay >= 1 && l.dueDay <= 31));
   }
   // Always returns an array. Corrupt JSON or malformed entries are dropped, never thrown.
   function loadLoans() {
@@ -189,6 +254,8 @@
       startDate: input.startDate,
       nextDue: input.nextDue,
       lastPaidOn: null,
+      dueDay: parseDate(input.nextDue).getDate(),
+      payments: [],
       createdAt: new Date().toISOString()
     };
     const loans = loadLoans();
@@ -209,11 +276,12 @@
   function sampleLoans(today) {
     today = today || todayStr();
     const paidDay = today.slice(0, 8) + pad(Math.min(3, +today.slice(8, 10)));
-    const base = { lastPaidOn: null, createdAt: new Date().toISOString(), isSample: true };
+    const base = { lastPaidOn: null, payments: [], createdAt: new Date().toISOString(), isSample: true };
     return [
-      Object.assign({}, base, { id: 'sample_personal', type: 'Personal loan', lender: 'Bajaj Finserv', amount: 390000, outstanding: 242500, rate: 14.5, emi: 8350, tenure: 60, startDate: addMonths(today, -26), nextDue: addDays(today, -4) }),
-      Object.assign({}, base, { id: 'sample_home', type: 'Home loan', lender: 'HDFC Bank', amount: 1900000, outstanding: 1480000, rate: 8.75, emi: 28500, tenure: 240, startDate: addMonths(today, -50), nextDue: addDays(today, 6) }),
-      Object.assign({}, base, { id: 'sample_business', type: 'Business loan', lender: 'ICICI Bank', amount: 343000, outstanding: 120000, rate: 11, emi: 5500, tenure: 84, startDate: addMonths(today, -40), nextDue: addMonths(paidDay, 1), lastPaidOn: paidDay })
+      Object.assign({}, base, { id: 'sample_personal', type: 'Personal loan', lender: 'Bajaj Finserv', amount: 390000, outstanding: 242500, rate: 14.5, emi: 8350, tenure: 60, startDate: addMonths(today, -26), nextDue: addDays(today, -4), dueDay: parseDate(addDays(today, -4)).getDate() }),
+      Object.assign({}, base, { id: 'sample_home', type: 'Home loan', lender: 'HDFC Bank', amount: 1900000, outstanding: 1480000, rate: 8.75, emi: 28500, tenure: 240, startDate: addMonths(today, -50), nextDue: addDays(today, 6), dueDay: parseDate(addDays(today, 6)).getDate() }),
+      Object.assign({}, base, { id: 'sample_business', type: 'Business loan', lender: 'ICICI Bank', amount: 343000, outstanding: 120000, rate: 11, emi: 5500, tenure: 84, startDate: addMonths(today, -40), nextDue: addMonths(paidDay, 1), lastPaidOn: paidDay, dueDay: +paidDay.slice(8),
+        payments: [{ date: paidDay, mode: 'UPI', emi: 5500, interest: 1100, principal: 4400, outstandingBefore: 124400, outstandingAfter: 120000, dueBefore: paidDay, lastPaidBefore: null }] })
     ];
   }
   // Only fills an empty store, so it can never overwrite a user's own loans.
@@ -230,6 +298,7 @@
     todayStr: todayStr, parseDate: parseDate, daysBetween: daysBetween, addDays: addDays, addMonths: addMonths,
     inr: inr, monthlyInterest: monthlyInterest, splitEmi: splitEmi, repaidPercent: repaidPercent,
     statusOf: statusOf, totals: totals, nextDueInfo: nextDueInfo, sortByUrgency: sortByUrgency,
+    PAYMENT_MODES: PAYMENT_MODES, dueDayOf: dueDayOf, previewPayment: previewPayment, recordPayment: recordPayment,
     validateLoan: validateLoan,
     loadLoans: loadLoans, saveLoans: saveLoans, createLoan: createLoan, deleteLoan: deleteLoan, clearLoans: clearLoans,
     sampleLoans: sampleLoans, seedSampleLoans: seedSampleLoans, clearSampleLoans: clearSampleLoans
